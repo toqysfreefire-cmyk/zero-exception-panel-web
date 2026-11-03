@@ -916,7 +916,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Auto-calculate discount when old price and base price change
-    function updateAutoDiscount() {
+    window.updateAutoDiscount = function(force) {
+        if (!prodBasePrice || !prodOldPrice || !prodDiscount) return;
         const base = parseFloat(prodBasePrice.value);
         const old = parseFloat(prodOldPrice.value);
         if (!isNaN(base) && !isNaN(old) && old > 0 && base > 0 && old !== base) {
@@ -925,11 +926,25 @@ document.addEventListener('DOMContentLoaded', () => {
             const disc = Math.round(((maxP - minP) / maxP) * 100);
             if (disc > 0) {
                 prodDiscount.value = `${disc}% OFF`;
+                prodDiscount.style.borderColor = '#10B981';
+                prodDiscount.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.4)';
+                if (force && typeof showToast === 'function') {
+                    showToast(`Auto Discount: ${disc}% OFF calculated!`, 'success');
+                }
+            }
+        } else if (force) {
+            if (typeof showToast === 'function') {
+                showToast('Please enter both Base Price and Old Price with different values.', 'warning');
             }
         }
+    };
+    function updateAutoDiscount(force) {
+        window.updateAutoDiscount(force);
     }
-    if (prodBasePrice) prodBasePrice.addEventListener('input', updateAutoDiscount);
-    if (prodOldPrice) prodOldPrice.addEventListener('input', updateAutoDiscount);
+    ['input', 'change', 'keyup', 'blur'].forEach(ev => {
+        if (prodBasePrice) prodBasePrice.addEventListener(ev, () => updateAutoDiscount(false));
+        if (prodOldPrice) prodOldPrice.addEventListener(ev, () => updateAutoDiscount(false));
+    });
 
     // ============================================================
     // DURATION PACKAGES BUILDER
@@ -1362,9 +1377,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         prodStatus.value = product.status || 'online';
-        prodBasePrice.value = product.basePrice || '';
+        prodBasePrice.value = product.basePrice || product.price || '';
         prodOldPrice.value = product.oldPrice || '';
         prodDiscount.value = product.discount || '';
+        if (!prodDiscount.value || prodDiscount.value.trim() === '') {
+            updateAutoDiscount(false);
+        }
         prodStatusText.value = product.statusText || 'Online';
         prodDescription.value = product.description || '';
         prodImageUrl.value = product.image || '';
