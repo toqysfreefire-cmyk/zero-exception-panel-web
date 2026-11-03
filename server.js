@@ -2238,6 +2238,144 @@ app.post('/api/gift-cards/redeem', (req, res) => {
     }
 });
 
+// FEATURE: PURCHASE GIFT CARD USING WALLET
+// ==========================================
+app.post('/api/gift-cards/purchase', (req, res) => {
+    try {
+        if (!req.session.user) {
+            return res.status(401).json({ success: false, message: 'গিফট কার্ড কিনতে প্রথমে আপনার অ্যাকাউন্টে লগইন করুন।' });
+        }
+
+        const rawAmount = req.body.amount;
+        const amount = Math.floor(Number(rawAmount) || 0);
+
+        if (!amount || isNaN(amount) || amount < 10) {
+            return res.status(400).json({ success: false, message: 'সর্বনিম্ন গিফট কার্ড অ্যামাউন্ট ১০৳ হতে হবে।' });
+        }
+
+        if (amount > 50000) {
+            return res.status(400).json({ success: false, message: 'একবারে সর্বোচ্চ ৫০,০০০৳ মূল্যের গিফট কার্ড কেনা যাবে।' });
+        }
+
+        const userId = req.session.user.id;
+        const users = readJson(USERS_FILE, []);
+        const userIdx = users.findIndex(u => String(u.id) === String(userId));
+        if (userIdx === -1) {
+            return res.status(404).json({ success: false, message: 'ব্যবহারকারীর তথ্য পাওয়া যায়নি।' });
+        }
+
+        const userBalance = Number(users[userIdx].wallet_balance) || 0;
+        if (userBalance < amount) {
+            return res.status(400).json({
+                success: false,
+                message: `আপনার ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! বর্তমান ব্যালেন্স: ${userBalance}৳, প্রয়োজন: ${amount}৳। আগে ওয়ালেট রিচার্জ করুন।`
+            });
+        }
+
+        // Deduct wallet balance
+        users[userIdx].wallet_balance = userBalance - amount;
+        writeJson(USERS_FILE, users);
+
+        // Generate unique code: e.g. ZX-XXXX-XXXX
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let code = '';
+        const giftCards = readJson(GIFT_CARDS_FILE, []);
+
+        let attempts = 0;
+        do {
+            let part1 = '';
+            let part2 = '';
+            for (let i = 0; i < 4; i++) {
+                part1 += chars.charAt(Math.floor(Math.random() * chars.length));
+                part2 += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            code = `ZX-${part1}-${part2}`;
+            attempts++;
+        } while (giftCards.some(c => c.code.toUpperCase() === code) && attempts < 10);
+
+        const newCard = {
+            id: 'gc-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
+            code: code,
+            amount: amount,
+            max_uses: 1,
+            used_count: 0,
+            used_by: [],
+            buyer_id: userId,
+            buyer_name: users[userIdx].name || 'User',
+            buyer_email: users[userIdx].email,
+            expires_at: new Date(Date.now() + 365 * 86400000).toISOString(),
+            is_active: true,
+            created_at: new Date().toISOString()
+        };
+
+        giftCards.unshift(newCard);
+        writeJson(GIFT_CARDS_FILE, giftCards);
+
+        // Record debit in wallet requests
+        const walletReqs = readJson(WALLET_REQUESTS_FILE, []);
+        walletReqs.unshift({
+            id: 'GC-BUY-' + Date.now(),
+            user_id: userId,
+            user_name: users[userIdx].name || 'User',
+            user_email: users[userIdx].email,
+            amount: -amount,
+            type: 'debit',
+            payment_method: 'Gift Card Purchase',
+            transaction_id: code,
+            status: 'approved',
+            created_at: new Date().toISOString()
+        });
+        writeJson(WALLET_REQUESTS_FILE, walletReqs);
+
+        req.session.user.wallet_balance = users[userIdx].wallet_balance;
+        req.session.save(() => {
+            return res.json({
+                success: true,
+                message: `🎉 অভিনন্দন! ${amount}৳ মূল্যের গিফট কার্ড সফলভাবে তৈরি হয়েছে!`,
+                card: {
+                    id: newCard.id,
+                    code: newCard.code,
+                    amount: newCard.amount,
+                    created_at: newCard.created_at,
+                    expires_at: newCard.expires_at,
+                    is_active: true,
+                    used_count: 0
+                },
+                newBalance: users[userIdx].wallet_balance
+            });
+        });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// FEATURE: GET USER'S PURCHASED GIFT CARDS
+// ==========================================
+app.get('/api/gift-cards/my-cards', (req, res) => {
+    try {
+        if (!req.session.user) {
+            return res.status(401).json({ success: false, message: 'লগইন করুন দয়া করে।' });
+        }
+
+        const userId = req.session.user.id;
+        const giftCards = readJson(GIFT_CARDS_FILE, []);
+        const myCards = giftCards.filter(c => String(c.buyer_id) === String(userId)).map(c => ({
+            id: c.id,
+            code: c.code,
+            amount: c.amount,
+            used_count: c.used_count || 0,
+            max_uses: c.max_uses || 1,
+            claimed: (c.used_count || 0) >= (c.max_uses || 1),
+            claimed_by: (c.used_by && c.used_by.length > 0) ? c.used_by[0].user_name : null,
+            created_at: c.created_at
+        }));
+
+        return res.json({ success: true, cards: myCards });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 // Admin Get Gift Cards
 app.get('/api/admin/gift-cards', (req, res) => {
     const cards = readJson(GIFT_CARDS_FILE, []);
