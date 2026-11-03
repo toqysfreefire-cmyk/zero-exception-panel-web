@@ -45,8 +45,8 @@
     "basePrice": 53,
     "oldPrice": 112,
     "discount": "52% OFF",
-    "status": "new",
-    "statusText": "Update Released",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/drip_client_non_root.png",
     "description": "DRIP CLIENT NON ROOT APK mod injector with direct ESP.",
     "packages": [
@@ -70,7 +70,10 @@
         "name": "30 Days",
         "price": 700
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "aim-hack-ios",
@@ -80,8 +83,8 @@
     "basePrice": 231,
     "oldPrice": 350,
     "discount": "34% OFF",
-    "status": "online",
-    "statusText": "Online",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/aim_hack_non_root_ios.png",
     "description": "AIM HACK NON ROOT + IOS universal cross-platform key.",
     "packages": [
@@ -101,7 +104,10 @@
         "name": "30 Days",
         "price": 1680
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "xreg-non-root",
@@ -111,8 +117,8 @@
     "basePrice": 210,
     "oldPrice": 350,
     "discount": "40% OFF",
-    "status": "online",
-    "statusText": "Online",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/xreg_non_root.png",
     "description": "XREG NON ROOT aim assistant and recoil reducer.",
     "packages": [
@@ -128,7 +134,10 @@
         "name": "7 Days",
         "price": 980
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "drip-wire-external",
@@ -138,8 +147,8 @@
     "basePrice": 210,
     "oldPrice": 350,
     "discount": "40% OFF",
-    "status": "online",
-    "statusText": "External Wire",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/drip_wire_external.png",
     "description": "DRIP WIRE EXTERNAL aim assistant and ESP overlay.",
     "packages": [
@@ -151,7 +160,10 @@
         "name": "7 Days",
         "price": 700
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "pato-brutal",
@@ -161,8 +173,8 @@
     "basePrice": 291,
     "oldPrice": 364,
     "discount": "20% OFF",
-    "status": "new",
-    "statusText": "Brutal Mode",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/non_root_pato.png",
     "description": "PATOTEAM BRUTAL NON ROOT VIP panel featuring instant aim assist.",
     "packages": [
@@ -178,7 +190,10 @@
         "name": "30 Days",
         "price": 1680
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "bala-mod",
@@ -188,8 +203,8 @@
     "basePrice": 420,
     "oldPrice": 600,
     "discount": "30% OFF",
-    "status": "online",
-    "statusText": "Online",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/bala_mod_non_root.png",
     "description": "BALA MOD NON ROOT lightweight key for Android.",
     "packages": [
@@ -209,7 +224,10 @@
         "name": "7 Days",
         "price": 3080
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "abcd-mod",
@@ -219,8 +237,8 @@
     "basePrice": 70,
     "oldPrice": 140,
     "discount": "50% OFF",
-    "status": "new",
-    "statusText": "Update Released",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/abcd_mod_non_root.png",
     "description": "ABCD MOD NON ROOT VIP edition panel.",
     "packages": [
@@ -236,7 +254,10 @@
         "name": "7 Days",
         "price": 224
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "crack-master",
@@ -246,8 +267,8 @@
     "basePrice": 70,
     "oldPrice": 112,
     "discount": "37% OFF",
-    "status": "online",
-    "statusText": "Online",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/crack_master.png",
     "description": "CRACK MASTER APK Mod Injector for Free Fire.",
     "packages": [
@@ -271,7 +292,10 @@
         "name": "30 Days",
         "price": 560
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "drip-proxy",
@@ -282,7 +306,7 @@
     "oldPrice": 168,
     "discount": "41% OFF",
     "status": "maintenance",
-    "statusText": "New Release",
+    "statusText": "Maintenance",
     "image": "images/drip_client_ff_proxy.png",
     "description": "DRIP CLIENT FF PROXY version bypass key.",
     "packages": [
@@ -304,7 +328,10 @@
       }
     ],
     "price": 98,
-    "duration_options": "1 Day|98\n3 Days|224\n7 Days|406\n30 Days|812"
+    "duration_options": "1 Day|98\n3 Days|224\n7 Days|406\n30 Days|812",
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "dolphin-root",
@@ -314,8 +341,8 @@
     "basePrice": 98,
     "oldPrice": 140,
     "discount": "30% OFF",
-    "status": "online",
-    "statusText": "Kernel Safe",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/dolphin_root_only.png",
     "description": "DHOLPHIN ROOT ONLY Magisk / KernelSU module root injector.",
     "packages": [
@@ -331,7 +358,10 @@
         "name": "30 Days",
         "price": 1372
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "angry-mod-root",
@@ -341,8 +371,8 @@
     "basePrice": 98,
     "oldPrice": 140,
     "discount": "30% OFF",
-    "status": "warning",
-    "statusText": "Kernel Only",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/angry_mod_root_only.png",
     "description": "ANGRY MOD ROOT ONLY kernel safe mod menu injector.",
     "packages": [
@@ -358,7 +388,10 @@
         "name": "30 Days",
         "price": 1050
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "migul-pro",
@@ -368,8 +401,8 @@
     "basePrice": 504,
     "oldPrice": 700,
     "discount": "28% OFF",
-    "status": "online",
-    "statusText": "VIP Pro",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/migul_pro_aim_kill.png",
     "description": "MIGUL PRO AIM KILL iOS / Android panel key.",
     "packages": [
@@ -385,7 +418,10 @@
         "name": "31 Days",
         "price": 2800
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "gbox-esign",
@@ -395,8 +431,8 @@
     "basePrice": 980,
     "oldPrice": 1260,
     "discount": "22% OFF",
-    "status": "new",
-    "statusText": "iOS Cert",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/gbox_esign.png",
     "description": "GBOX & ESIGN iOS installation signature key.",
     "packages": [
@@ -412,7 +448,10 @@
         "name": "90 Days Warranty",
         "price": 1400
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "drip-root-only",
@@ -422,8 +461,8 @@
     "basePrice": 168,
     "oldPrice": 252,
     "discount": "33% OFF",
-    "status": "online",
-    "statusText": "Root Only",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/drip_client_root_only.png",
     "description": "DRIP CLIENT ROOT ONLY full featured menu.",
     "packages": [
@@ -439,7 +478,10 @@
         "name": "30 Days",
         "price": 1680
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "br-mods-pc",
@@ -449,8 +491,8 @@
     "basePrice": 210,
     "oldPrice": 308,
     "discount": "31% OFF",
-    "status": "online",
-    "statusText": "Windows 10/11",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/br_mods_pc.png",
     "description": "BR MODS PC Mod Menu for Free Fire BlueStacks emulator.",
     "packages": [
@@ -466,7 +508,10 @@
         "name": "30 Days",
         "price": 980
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "zolo-pubg",
@@ -476,8 +521,8 @@
     "basePrice": 126,
     "oldPrice": 210,
     "discount": "40% OFF",
-    "status": "online",
-    "statusText": "Safe Mod",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/zolo_pubg.png",
     "description": "ZOLO PUBG Mobile Z Edition with Skeleton ESP.",
     "packages": [
@@ -493,7 +538,10 @@
         "name": "30 Days",
         "price": 980
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   },
   {
     "id": "carrom-auto",
@@ -503,8 +551,8 @@
     "basePrice": 112,
     "oldPrice": 168,
     "discount": "33% OFF",
-    "status": "online",
-    "statusText": "100% Aim Line",
+    "status": "maintenance",
+    "statusText": "Maintenance",
     "image": "images/carrom.png",
     "description": "CARROM Z Tool Auto Play guideline predictor.",
     "packages": [
@@ -528,6 +576,9 @@
         "name": "30 Days",
         "price": 980
       }
-    ]
+    ],
+    "is_maintenance": true,
+    "in_stock": false,
+    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।"
   }
 ]
