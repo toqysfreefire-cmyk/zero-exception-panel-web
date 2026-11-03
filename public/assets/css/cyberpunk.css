@@ -818,3 +818,41 @@ h1, h2, h3, h4, .text-gray-900 {
     background: #0a0f20 !important;
     border: 1.5px solid rgba(0, 240, 255, 0.35) !important;
 }
+
+/* ========================================================= */
+/* ZERO EXCEPTION CYBERPUNK SPLASH SCREEN & RAINBOW EFFECTS  */
+/* ========================================================= */
+@keyframes rainbowFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes cyberFlicker {
+    0%, 100% { opacity: 1; filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.8)); }
+    15% { opacity: 0.88; filter: drop-shadow(0 0 25px rgba(255, 0, 128, 0.9)); }
+    30% { opacity: 1; filter: drop-shadow(0 0 18px rgba(0, 240, 255, 0.9)); }
+    45% { opacity: 0.92; filter: drop-shadow(0 0 22px rgba(157, 78, 221, 0.9)); }
+    60% { opacity: 1; filter: drop-shadow(0 0 30px rgba(0, 240, 255, 0.95)); }
+    75% { opacity: 0.85; filter: drop-shadow(0 0 20px rgba(255, 230, 0, 0.85)); }
+    88% { opacity: 1; filter: drop-shadow(0 0 24px rgba(0, 240, 255, 0.9)); }
+}
+
+@keyframes pulseRing {
+    0% { transform: scale(0.97); box-shadow: 0 0 20px rgba(0, 240, 255, 0.4), inset 0 0 15px rgba(0, 240, 255, 0.3); }
+    50% { transform: scale(1.03); box-shadow: 0 0 45px rgba(0, 240, 255, 0.85), 0 0 60px rgba(255, 0, 128, 0.4), inset 0 0 25px rgba(0, 240, 255, 0.5); }
+    100% { transform: scale(0.97); box-shadow: 0 0 20px rgba(0, 240, 255, 0.4), inset 0 0 15px rgba(0, 240, 255, 0.3); }
+}
+
+@keyframes rotateScanner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.zero-rainbow-title {
+    background: linear-gradient(90deg, #00f0ff, #a855f7, #ec4899, #f59e0b, #10b981, #00f0ff);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbowFlow 3s ease infinite, cyberFlicker 2s ease-in-out infinite;
+}

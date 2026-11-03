@@ -485,6 +485,113 @@
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
+<!-- ZERO EXCEPTION CYBERPUNK APP SPLASH PRELOADER -->
+<div id="zeroAppSplash" style="position: fixed; inset: 0; z-index: 9999999; background: radial-gradient(circle at center, #0b152d 0%, #030712 85%, #010409 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Orbitron', 'Rajdhani', sans-serif; transition: opacity 0.45s ease, transform 0.45s ease; overflow: hidden; pointer-events: all;">
+    <!-- Cybernetic Grid Scanlines Background -->
+    <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none; opacity: 0.5;"></div>
+
+    <!-- Central Glowing Logo Container -->
+    <div style="position: relative; width: 140px; height: 140px; margin-bottom: 22px; display: flex; align-items: center; justify-content: center;">
+        <!-- Outer Rotating Holographic Ring -->
+        <div style="position: absolute; inset: -9px; border-radius: 36px; border: 2px dashed rgba(0, 240, 255, 0.6); animation: rotateScanner 9s linear infinite;"></div>
+        <!-- Outer Glowing Breathing Ring -->
+        <div style="position: absolute; inset: -2px; border-radius: 32px; border: 2px solid rgba(0, 240, 255, 0.8); animation: pulseRing 2.4s ease-in-out infinite;"></div>
+        
+        <!-- App Icon -->
+        <img src="/uploads/settings/site-icon.png" alt="Zero Exception" style="width: 128px; height: 128px; border-radius: 28px; object-fit: cover; box-shadow: 0 0 35px rgba(0, 240, 255, 0.6); position: relative; z-index: 2;">
+    </div>
+
+    <!-- ZERO EXCEPTION Rainbow Flicker Text -->
+    <div style="text-align: center; margin-bottom: 24px; position: relative; z-index: 2;">
+        <h1 class="zero-rainbow-title" style="margin: 0; font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase;">
+            ZERO EXCEPTION
+        </h1>
+        <p style="margin: 6px 0 0 0; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; color: #38bdf8; letter-spacing: 2px; text-transform: uppercase; opacity: 0.9;">
+            ULTIMATE GAMING ENGINE
+        </p>
+    </div>
+
+    <!-- Cyberpunk Progress Bar & Percent Indicator -->
+    <div style="width: 82%; max-width: 280px; position: relative; z-index: 2; text-align: center;">
+        <div style="width: 100%; height: 8px; background: rgba(15, 23, 42, 0.85); border: 1.5px solid rgba(0, 240, 255, 0.45); border-radius: 999px; overflow: hidden; box-shadow: 0 0 15px rgba(0, 240, 255, 0.25); padding: 1.5px;">
+            <div id="zeroSplashProgress" style="width: 0%; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #00f0ff, #3b82f6, #ec4899, #00f0ff); background-size: 200% 100%; animation: rainbowFlow 2s linear infinite; box-shadow: 0 0 12px #00f0ff; transition: width 0.08s ease-out;"></div>
+        </div>
+
+        <!-- Percent and Status Text Line -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px;">
+            <span id="zeroSplashStatus" style="color: #94a3b8; font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">INITIALIZING CORE...</span>
+            <span id="zeroSplashPercent" style="color: #00f0ff; font-family: 'Orbitron', monospace; font-weight: 900; font-size: 13px; text-shadow: 0 0 8px #00f0ff;">0%</span>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    var splash = document.getElementById('zeroAppSplash');
+    if (!splash) return;
+
+    var progress = document.getElementById('zeroSplashProgress');
+    var percentText = document.getElementById('zeroSplashPercent');
+    var statusText = document.getElementById('zeroSplashStatus');
+
+    var duration = 1600; // ~1.6 seconds smooth loading
+    var start = null;
+
+    var statuses = [
+        { at: 0, text: "INITIALIZING ZERO CORE..." },
+        { at: 28, text: "CONNECTING SECURE ENGINE..." },
+        { at: 58, text: "SYNCING PANELS & LICENSES..." },
+        { at: 85, text: "FINALIZING SECURITY CHECK..." },
+        { at: 100, text: "ACCESS GRANTED. WELCOME!" }
+    ];
+
+    function step(timestamp) {
+        if (!start) start = timestamp;
+        var elapsed = timestamp - start;
+        var progressRatio = Math.min(elapsed / duration, 1);
+        
+        var eased = 1 - Math.pow(1 - progressRatio, 3);
+        var current = Math.min(Math.floor(eased * 100), 100);
+
+        if (progress) progress.style.width = current + '%';
+        if (percentText) percentText.textContent = current + '%';
+
+        for (var i = statuses.length - 1; i >= 0; i--) {
+            if (current >= statuses[i].at) {
+                if (statusText && statusText.textContent !== statuses[i].text) {
+                    statusText.textContent = statuses[i].text;
+                }
+                break;
+            }
+        }
+
+        if (progressRatio < 1) {
+            requestAnimationFrame(step);
+        } else {
+            if (statusText) {
+                statusText.textContent = "ACCESS GRANTED. WELCOME!";
+                statusText.style.color = "#10b981";
+            }
+            if (percentText) {
+                percentText.textContent = "100%";
+                percentText.style.color = "#10b981";
+                percentText.style.textShadow = "0 0 12px #10b981";
+            }
+
+            setTimeout(function() {
+                splash.style.opacity = '0';
+                splash.style.transform = 'scale(1.05)';
+                setTimeout(function() {
+                    splash.style.display = 'none';
+                    if (splash.parentNode) splash.parentNode.removeChild(splash);
+                }, 450);
+            }, 260);
+        }
+    }
+
+    requestAnimationFrame(step);
+})();
+</script>
 <div class="body-bg no-select min-h-screen flex flex-col justify-between">
     <div>
         <!-- Notice announcement bar -->
