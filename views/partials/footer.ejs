@@ -320,15 +320,17 @@
                 <div class="modal-body p-4 sm:p-5">
                     <!-- TAB 1: BUY GIFT CARD -->
                     <div id="gcTabContentBuy" class="gc-tab-panel">
-                        <% const activeUser = (typeof user !== 'undefined' && user) ? user : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null); %>
-                        <% if (activeUser) { %>
+                        <% const activeUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : ((typeof user !== 'undefined' && user) ? user : null); %>
+                        
+                        <!-- BUY FORM CONTAINER -->
+                        <div id="gcBuyFormBox" class="<%= activeUser ? '' : 'hidden' %>">
                             <!-- Balance Indicator -->
                             <div class="p-3 mb-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-between">
                                 <span class="text-xs text-gray-300">
                                     <i class="fas fa-wallet text-cyan-400 mr-1.5"></i> আপনার ওয়ালেট ব্যালেন্স:
                                 </span>
                                 <span class="font-orbitron font-black text-sm text-cyan-300" id="gcUserBalanceDisplay">
-                                    <%= (activeUser.wallet_balance || 0) %>৳
+                                    <%= (activeUser && activeUser.wallet_balance !== undefined) ? activeUser.wallet_balance : 0 %>৳
                                 </span>
                             </div>
 
@@ -379,18 +381,19 @@
                                     <i class="fab fa-whatsapp"></i> হোয়াটসঅ্যাপে ফ্রেন্ডকে পাঠান
                                 </button>
                             </div>
-                        <% } else { %>
-                            <div class="py-8 text-center">
-                                <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-cyan-500/20 border border-cyan-400/40 text-2xl flex items-center justify-center text-cyan-400">
-                                    <i class="fas fa-lock"></i>
-                                </div>
-                                <h4 class="font-bold text-white text-sm mb-1 font-orbitron">লগইন প্রয়োজন</h4>
-                                <p class="text-xs text-gray-400 mb-4">গিফট কার্ড কিনতে আপনার অ্যাকাউন্টে লগইন করতে হবে।</p>
-                                <a href="/login" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-xs uppercase bg-gradient-to-r from-cyan-400 to-emerald-400 text-black shadow cursor-pointer font-orbitron">
-                                    <i class="fas fa-sign-in-alt"></i> লগইন করুন
-                                </a>
+                        </div>
+
+                        <!-- LOGIN REQUIRED FALLBACK CONTAINER -->
+                        <div id="gcLoginRequiredBox" class="<%= activeUser ? 'hidden' : '' %> py-8 text-center">
+                            <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-cyan-500/20 border border-cyan-400/40 text-2xl flex items-center justify-center text-cyan-400">
+                                <i class="fas fa-lock"></i>
                             </div>
-                        <% } %>
+                            <h4 class="font-bold text-white text-sm mb-1 font-orbitron">লগইন প্রয়োজন</h4>
+                            <p class="text-xs text-gray-400 mb-4">গিফট কার্ড কিনতে আপনার অ্যাকাউন্টে লগইন করতে হবে।</p>
+                            <a href="/login" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-xs uppercase bg-gradient-to-r from-cyan-400 to-emerald-400 text-black shadow cursor-pointer font-orbitron">
+                                <i class="fas fa-sign-in-alt"></i> লগইন করুন
+                            </a>
+                        </div>
                     </div>
 
                     <!-- TAB 2: REDEEM CODE -->
@@ -1350,6 +1353,22 @@ var currentGeneratedGiftAmount = 0;
 function openGiftCardModal(initialTab) {
     var modalEl = document.getElementById('redeemGiftCardModal');
     if (modalEl) {
+        // Synchronize live login state and wallet balance dynamically
+        var walletEl = document.querySelector('.header-wallet-btn b');
+        var userDropdown = document.querySelector('.user-dropdown-wrap');
+        var buyBox = document.getElementById('gcBuyFormBox');
+        var loginBox = document.getElementById('gcLoginRequiredBox');
+
+        if (walletEl || userDropdown) {
+            if (buyBox) buyBox.classList.remove('hidden');
+            if (loginBox) loginBox.classList.add('hidden');
+            if (walletEl) {
+                var balText = walletEl.innerText.replace(/[^\d.]/g, '');
+                var disp = document.getElementById('gcUserBalanceDisplay');
+                if (disp && balText) disp.innerText = balText + '৳';
+            }
+        }
+
         var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
         modal.show();
         switchGiftTab(initialTab || 'buy');
