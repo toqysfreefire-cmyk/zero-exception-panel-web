@@ -320,17 +320,17 @@
                 <div class="modal-body p-4 sm:p-5">
                     <!-- TAB 1: BUY GIFT CARD -->
                     <div id="gcTabContentBuy" class="gc-tab-panel">
-                        <% const activeUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : ((typeof user !== 'undefined' && user) ? user : null); %>
+                        <% const authUser = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : ((typeof user !== 'undefined' && user) ? user : null); %>
                         
-                        <!-- BUY FORM CONTAINER -->
-                        <div id="gcBuyFormBox" class="<%= activeUser ? '' : 'hidden' %>">
+                        <!-- BUY FORM CONTAINER (Always in DOM, controlled by auth state) -->
+                        <div id="gcBuyFormBox" style="<%= authUser ? 'display: block;' : 'display: none;' %>">
                             <!-- Balance Indicator -->
                             <div class="p-3 mb-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-between">
                                 <span class="text-xs text-gray-300">
                                     <i class="fas fa-wallet text-cyan-400 mr-1.5"></i> আপনার ওয়ালেট ব্যালেন্স:
                                 </span>
                                 <span class="font-orbitron font-black text-sm text-cyan-300" id="gcUserBalanceDisplay">
-                                    <%= (activeUser && activeUser.wallet_balance !== undefined) ? activeUser.wallet_balance : 0 %>৳
+                                    <%= (authUser && authUser.wallet_balance !== undefined) ? authUser.wallet_balance : 0 %>৳
                                 </span>
                             </div>
 
@@ -384,7 +384,7 @@
                         </div>
 
                         <!-- LOGIN REQUIRED FALLBACK CONTAINER -->
-                        <div id="gcLoginRequiredBox" class="<%= activeUser ? 'hidden' : '' %> py-8 text-center">
+                        <div id="gcLoginRequiredBox" style="<%= authUser ? 'display: none;' : 'display: block;' %>" class="py-8 text-center">
                             <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-cyan-500/20 border border-cyan-400/40 text-2xl flex items-center justify-center text-cyan-400">
                                 <i class="fas fa-lock"></i>
                             </div>
@@ -1350,25 +1350,42 @@ if (btnPwaPrompt) {
 var currentGeneratedGiftCode = '';
 var currentGeneratedGiftAmount = 0;
 
+function syncGiftCardLoginState() {
+    var walletEl = document.querySelector('.header-wallet-btn b');
+    var userDropdown = document.querySelector('.user-dropdown-wrap');
+    var logoutLink = document.querySelector('a[href="/logout"]');
+    var buyBox = document.getElementById('gcBuyFormBox');
+    var loginBox = document.getElementById('gcLoginRequiredBox');
+
+    var isLoggedIn = !!(walletEl || userDropdown || logoutLink);
+
+    if (isLoggedIn) {
+        if (buyBox) buyBox.style.display = 'block';
+        if (loginBox) loginBox.style.display = 'none';
+        if (walletEl) {
+            var balText = walletEl.innerText.replace(/[^\d.]/g, '');
+            var disp = document.getElementById('gcUserBalanceDisplay');
+            if (disp && balText !== '') disp.innerText = balText + '৳';
+        }
+    } else {
+        if (buyBox) buyBox.style.display = 'none';
+        if (loginBox) loginBox.style.display = 'block';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var modalEl = document.getElementById('redeemGiftCardModal');
+    if (modalEl) {
+        modalEl.addEventListener('show.bs.modal', function() {
+            syncGiftCardLoginState();
+        });
+    }
+});
+
 function openGiftCardModal(initialTab) {
     var modalEl = document.getElementById('redeemGiftCardModal');
     if (modalEl) {
-        // Synchronize live login state and wallet balance dynamically
-        var walletEl = document.querySelector('.header-wallet-btn b');
-        var userDropdown = document.querySelector('.user-dropdown-wrap');
-        var buyBox = document.getElementById('gcBuyFormBox');
-        var loginBox = document.getElementById('gcLoginRequiredBox');
-
-        if (walletEl || userDropdown) {
-            if (buyBox) buyBox.classList.remove('hidden');
-            if (loginBox) loginBox.classList.add('hidden');
-            if (walletEl) {
-                var balText = walletEl.innerText.replace(/[^\d.]/g, '');
-                var disp = document.getElementById('gcUserBalanceDisplay');
-                if (disp && balText) disp.innerText = balText + '৳';
-            }
-        }
-
+        syncGiftCardLoginState();
         var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
         modal.show();
         switchGiftTab(initialTab || 'buy');
