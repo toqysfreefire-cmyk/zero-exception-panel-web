@@ -57,7 +57,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|53\n3 Days|140\n7 Days|224\n15 Days|413\n30 Days|700",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 110
   },
   {
     "id": "aim-hack-ios",
@@ -79,7 +80,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|231\n3 Days|420\n7 Days|910\n30 Days|1680",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 350
   },
   {
     "id": "xreg-non-root",
@@ -101,7 +103,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|210\n3 Days|490\n7 Days|980",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 350
   },
   {
     "id": "drip-wire-external",
@@ -123,7 +126,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|210\n7 Days|700",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 350
   },
   {
     "id": "pato-brutal",
@@ -145,7 +149,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|291\n7 Days|910\n30 Days|1680",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 364
   },
   {
     "id": "bala-mod",
@@ -167,7 +172,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|420\n2 Days|770\n3 Days|1050\n7 Days|3080",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 600
   },
   {
     "id": "abcd-mod",
@@ -189,7 +195,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|70\n3 Days|140\n7 Days|224",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 140
   },
   {
     "id": "crack-master",
@@ -211,7 +218,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|70\n3 Days|140\n7 Days|280\n15 Days|420\n30 Days|560",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 111
   },
   {
     "id": "drip-proxy",
@@ -275,7 +283,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|98\n7 Days|532\n30 Days|1372",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 140
   },
   {
     "id": "angry-mod-root",
@@ -297,7 +306,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|98\n7 Days|420\n30 Days|1050",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 140
   },
   {
     "id": "migul-pro",
@@ -319,7 +329,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|504\n7 Days|1330\n31 Days|2800",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 700
   },
   {
     "id": "gbox-esign",
@@ -341,7 +352,8 @@
     "supported_phones": "",
     "duration_options": "30 Days Warranty|980\n60 Days Warranty|1190\n90 Days Warranty|1400",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 1256
   },
   {
     "id": "drip-root-only",
@@ -363,7 +375,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|168\n7 Days|700\n30 Days|1680",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 251
   },
   {
     "id": "br-mods-pc",
@@ -385,7 +398,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|210\n10 Days|700\n30 Days|980",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 304
   },
   {
     "id": "zolo-pubg",
@@ -407,7 +421,8 @@
     "supported_phones": "",
     "duration_options": "1 Day|126\n7 Days|490\n30 Days|980",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 210
   },
   {
     "id": "carrom-auto",
@@ -429,6 +444,7 @@
     "supported_phones": "",
     "duration_options": "1 Day|112\n3 Days|280\n7 Days|490\n15 Days|700\n30 Days|980",
     "status": "maintenance",
-    "statusText": "Maintenance"
+    "statusText": "Maintenance",
+    "oldPrice": 167
   }
 ]

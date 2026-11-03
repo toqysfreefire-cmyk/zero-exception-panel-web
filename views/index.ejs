@@ -230,21 +230,36 @@
                             <% } %>
 
                             <div class="text-center mt-1">
-                                <% if (typeof userDiscount !== 'undefined' && userDiscount > 0) { 
-                                    var origP = Number(product.price) || 0;
-                                    var discP = Math.round(origP * (1 - userDiscount / 100));
+                                <% 
+                                    var curPrice = Number(product.price) || 0;
+                                    var oldPriceNum = Number(product.oldPrice || product.old_price) || 0;
+                                    
+                                    // If oldPrice is not explicitly stored, derive it from discount string (e.g. "50% OFF")
+                                    if (!oldPriceNum && product.discount) {
+                                        var pctMatch = String(product.discount).match(/(\d+)\s*%/);
+                                        if (pctMatch) {
+                                            var pctInt = parseInt(pctMatch[1], 10);
+                                            if (pctInt > 0 && pctInt < 100) {
+                                                oldPriceNum = Math.round(curPrice / (1 - (pctInt / 100)));
+                                            }
+                                        }
+                                    }
                                 %>
-                                <span class="text-xs text-gray-400 line-through mr-1"><%= formatPrice(origP) %></span>
-                                <span class="product-price-custom text-emerald-600 font-extrabold">
-                                    <%= formatPrice(discP) %>
+
+                                <% if (typeof userDiscount !== 'undefined' && userDiscount > 0) { 
+                                    var discPrice = Math.round(curPrice * (1 - userDiscount / 100));
+                                %>
+                                <span class="old-price-strike mr-1.5" style="color: #ef4444 !important; text-decoration: line-through !important; text-decoration-color: #ef4444 !important; text-decoration-thickness: 2.5px !important; font-weight: 800; font-family: 'Orbitron', monospace; font-size: 13px; opacity: 0.95;"><%= formatPrice(curPrice) %></span>
+                                <span class="product-price-custom text-emerald-400 font-extrabold">
+                                    <%= formatPrice(discPrice) %>
                                 </span>
                                 <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1 rounded ml-1">-<%= userDiscount %>%</span>
                                 <% } else { %>
-                                <% if (product.oldPrice && Number(product.oldPrice) > Number(product.price)) { %>
-                                <span class="text-xs text-gray-400 line-through mr-1"><%= formatPrice(product.oldPrice) %></span>
+                                <% if (oldPriceNum && oldPriceNum > curPrice) { %>
+                                <span class="old-price-strike mr-1.5" style="color: #ef4444 !important; text-decoration: line-through !important; text-decoration-color: #ef4444 !important; text-decoration-thickness: 2.5px !important; font-weight: 800; font-family: 'Orbitron', monospace; font-size: 13px; opacity: 0.95;"><%= formatPrice(oldPriceNum) %></span>
                                 <% } %>
                                 <span class="product-price-custom">
-                                    <%= formatPrice(product.price) %>
+                                    <%= formatPrice(curPrice) %>
                                 </span>
                                 <% } %>
                             </div>
