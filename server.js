@@ -1140,6 +1140,7 @@ app.use((req, res, next) => {
 
     res.locals.isAdmin = !!req.session.admin;
     res.locals.currentUser = req.session.user || null;
+    res.locals.user = req.session.user || null;
     res.locals.userDiscount = activeDiscount;
     res.locals.isReseller = req.session.user && (req.session.user.role === 'reseller');
     res.locals.isSubReseller = req.session.user && (req.session.user.role === 'sub_reseller' || req.session.user.role === 'sub-reseller');

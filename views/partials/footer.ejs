@@ -320,14 +320,15 @@
                 <div class="modal-body p-4 sm:p-5">
                     <!-- TAB 1: BUY GIFT CARD -->
                     <div id="gcTabContentBuy" class="gc-tab-panel">
-                        <% if (typeof user !== 'undefined' && user) { %>
+                        <% const activeUser = (typeof user !== 'undefined' && user) ? user : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null); %>
+                        <% if (activeUser) { %>
                             <!-- Balance Indicator -->
                             <div class="p-3 mb-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-between">
                                 <span class="text-xs text-gray-300">
                                     <i class="fas fa-wallet text-cyan-400 mr-1.5"></i> আপনার ওয়ালেট ব্যালেন্স:
                                 </span>
                                 <span class="font-orbitron font-black text-sm text-cyan-300" id="gcUserBalanceDisplay">
-                                    <%= (user.wallet_balance || 0) %>৳
+                                    <%= (activeUser.wallet_balance || 0) %>৳
                                 </span>
                             </div>
 
