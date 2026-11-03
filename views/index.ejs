@@ -182,13 +182,24 @@
                      data-reveal-delay="<%= idx * 25 %>">
                     <div class="product-card <%= product.is_maintenance ? 'is-maintenance' : 'is-normal' %>">
                         <% const isFlash = (typeof flashSale !== 'undefined' && flashSale && flashSale.enabled && flashSale.product_ids && flashSale.product_ids.includes(product.id)); %>
+                        <% 
+                        const pPrice = Number(product.price) || 0;
+                        const pOldPrice = Number(product.oldPrice || product.old_price) || 0;
+                        let cardDiscount = product.discount || '';
+                        if (!cardDiscount && pOldPrice > 0 && pPrice > 0 && pOldPrice !== pPrice) {
+                            const maxP = Math.max(pOldPrice, pPrice);
+                            const minP = Math.min(pOldPrice, pPrice);
+                            const pct = Math.round(((maxP - minP) / maxP) * 100);
+                            if (pct > 0) cardDiscount = pct + '% OFF';
+                        }
+                        %>
                         <% if (isFlash) { %>
                         <div class="discount-badge-left" style="background: linear-gradient(135deg, #ec4899, #f43f5e) !important; border: 1.5px solid #fda4af !important; animation: pulse 1.5s infinite;">
                             <span>⚡ FLASH DEAL</span>
                         </div>
-                        <% } else if (product.discount) { %>
+                        <% } else if (cardDiscount) { %>
                         <div class="discount-badge-left">
-                            <span><%= product.discount %></span>
+                            <span><%= cardDiscount %></span>
                         </div>
                         <% } %>
 
@@ -229,6 +240,9 @@
                                 </span>
                                 <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1 rounded ml-1">-<%= userDiscount %>%</span>
                                 <% } else { %>
+                                <% if (product.oldPrice && Number(product.oldPrice) > Number(product.price)) { %>
+                                <span class="text-xs text-gray-400 line-through mr-1"><%= formatPrice(product.oldPrice) %></span>
+                                <% } %>
                                 <span class="product-price-custom">
                                     <%= formatPrice(product.price) %>
                                 </span>

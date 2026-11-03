@@ -919,9 +919,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateAutoDiscount() {
         const base = parseFloat(prodBasePrice.value);
         const old = parseFloat(prodOldPrice.value);
-        if (!isNaN(base) && !isNaN(old) && old > base) {
-            const disc = Math.round(((old - base) / old) * 100);
-            prodDiscount.value = `${disc}% OFF`;
+        if (!isNaN(base) && !isNaN(old) && old > 0 && base > 0 && old !== base) {
+            const maxP = Math.max(old, base);
+            const minP = Math.min(old, base);
+            const disc = Math.round(((maxP - minP) / maxP) * 100);
+            if (disc > 0) {
+                prodDiscount.value = `${disc}% OFF`;
+            }
         }
     }
     if (prodBasePrice) prodBasePrice.addEventListener('input', updateAutoDiscount);
@@ -1446,9 +1450,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const basePrice = Number(prodBasePrice.value);
             const oldPrice = prodOldPrice.value ? Number(prodOldPrice.value) : null;
             let discount = prodDiscount.value.trim();
-            if (!discount && oldPrice && oldPrice > basePrice) {
-                const pct = Math.round(((oldPrice - basePrice) / oldPrice) * 100);
-                discount = `${pct}% OFF`;
+            if (!discount && oldPrice && basePrice && oldPrice !== basePrice) {
+                const maxP = Math.max(oldPrice, basePrice);
+                const minP = Math.min(oldPrice, basePrice);
+                const pct = Math.round(((maxP - minP) / maxP) * 100);
+                if (pct > 0) discount = `${pct}% OFF`;
             }
 
             const status = prodStatus.value;

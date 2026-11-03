@@ -1,5 +1,43 @@
 [
   {
+    "id": "prod-1793715344295",
+    "title": "ZERO EXCEPTION PANEL",
+    "slug": "zero-exception-panel",
+    "category": "root",
+    "categoryName": "Free Fire Root",
+    "image": "/uploads/settings/site-icon.png",
+    "price": 70,
+    "basePrice": 70,
+    "oldPrice": 80,
+    "discount": "15% OFF",
+    "status": "online",
+    "statusText": "Online",
+    "is_maintenance": false,
+    "maintenance_message": "",
+    "description": "ZERO EXCEPTION official VIP gaming panel for Rooted devices. 100% headshot, safe anti-ban protection and 24/7 instant setup.",
+    "stock": 999,
+    "in_stock": true,
+    "setup_url": "",
+    "apk_url": "",
+    "feedback_url": "",
+    "supported_phones": "Xiaomi • Poco • Samsung • OnePlus • Realme • Vivo",
+    "duration_options": "1 Day|70\n7 Days|450\n31 Days|820",
+    "packages": [
+      {
+        "name": "1 Day",
+        "price": 70
+      },
+      {
+        "name": "7 Days",
+        "price": 450
+      },
+      {
+        "name": "31 Days",
+        "price": 820
+      }
+    ]
+  },
+  {
     "id": "drip-non-root",
     "title": "DRIP CLIENT NON ROOT",
     "slug": "drip-client-non-root",

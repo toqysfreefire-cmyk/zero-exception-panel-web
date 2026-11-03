@@ -868,36 +868,31 @@ function parseDurationOptions(rawValue, product = {}) {
                 const [first, second] = line.split('|').map(part => part.trim());
                 if (!first || second === undefined) return null;
 
+                const parsedPrice = Number(second);
+                if (isNaN(parsedPrice) || parsedPrice < 0) return null;
+
                 if (isRootService) {
-                    const legacyMultiplier = Number(second);
-                    const isLegacyPlan = ['Standard Device Rooting', 'Root + Gaming Kernel (120 FPS)', 'VIP Root + Anti-Ban Suite'].includes(first);
                     return {
                         label: first,
-                        price: isLegacyPlan && legacyMultiplier > 0 && legacyMultiplier <= 2
-                            ? Math.round(basePrice * legacyMultiplier)
-                            : Number(second)
+                        price: Math.round(parsedPrice)
                     };
                 }
 
-                const parsedDays = Number(first);
-                if (Number.isInteger(parsedDays) && parsedDays > 0) {
-                    return { days: parsedDays, price: Number(second) };
-                }
-
-                const legacyDays = first.match(/^(\d+)\s+days?\s+key$/i);
-                if (legacyDays) {
-                    const legacyMultiplier = Number(second);
-                    const knownLegacyMultipliers = { 1: 1, 7: 3.5, 30: 10 };
-                    const days = Number(legacyDays[1]);
+                // Match days number from e.g. "1 Day", "1", "7 Days", "31 Days Key", etc.
+                const dayMatch = first.match(/^(\d+)/);
+                if (dayMatch) {
+                    const days = parseInt(dayMatch[1], 10);
                     return {
                         days,
-                        price: knownLegacyMultipliers[days] === legacyMultiplier
-                            ? Math.round(basePrice * legacyMultiplier)
-                            : legacyMultiplier
+                        label: first.toLowerCase().includes('key') ? first : `${days} ${days === 1 ? 'Day' : 'Days'} Key`,
+                        price: Math.round(parsedPrice)
                     };
                 }
 
-                return null;
+                return {
+                    label: first,
+                    price: Math.round(parsedPrice)
+                };
             }).filter(Boolean)
             : []);
 
@@ -914,15 +909,29 @@ function parseDurationOptions(rawValue, product = {}) {
             return label ? { label, price: Math.round(priceValue) } : null;
         }
 
-        const labelDaysMatch = String(option.label || '').match(/^(\d+)\s+days?\s+key$/i);
-        const days = Number(option.days || (labelDaysMatch && labelDaysMatch[1]));
-        if (!Number.isInteger(days) || days < 1) return null;
+        const dayMatch = String(option.days || option.label || option.name || '').match(/^(\d+)/);
+        const days = dayMatch ? parseInt(dayMatch[1], 10) : null;
+        const rawLabel = String(option.label || option.name || '').trim();
 
-        return {
-            days,
-            label: `${days} ${days === 1 ? 'Day' : 'Days'} Key`,
-            price: Math.round(priceValue)
-        };
+        if (days && days > 0) {
+            const label = rawLabel && rawLabel.toLowerCase().includes('key') 
+                ? rawLabel 
+                : `${days} ${days === 1 ? 'Day' : 'Days'} Key`;
+            return {
+                days,
+                label,
+                price: Math.round(priceValue)
+            };
+        }
+
+        if (rawLabel) {
+            return {
+                label: rawLabel,
+                price: Math.round(priceValue)
+            };
+        }
+
+        return null;
     }).filter(Boolean);
 
     return parsed.length ? parsed : fallback;
@@ -3492,7 +3501,19 @@ app.post('/api/save-products', async (req, res) => {
                         categoryName: p.categoryName || existing.categoryName || '',
                         image: p.image || existing.image || '/images/logo.jpg',
                         price: Number(p.basePrice || p.price || existing.price || 0),
-                        discount: p.discount || '',
+                        discount: (() => {
+                            if (p.discount && String(p.discount).trim()) return String(p.discount).trim();
+                            const bPrice = Number(p.basePrice || p.price || 0);
+                            const oPrice = Number(p.oldPrice || 0);
+                            if (oPrice > 0 && bPrice > 0 && oPrice !== bPrice) {
+                                const maxP = Math.max(oPrice, bPrice);
+                                const minP = Math.min(oPrice, bPrice);
+                                const pct = Math.round(((maxP - minP) / maxP) * 100);
+                                if (pct > 0) return pct + '% OFF';
+                            }
+                            return '';
+                        })(),
+                        oldPrice: p.oldPrice ? Number(p.oldPrice) : null,
                         is_maintenance: p.status === 'maintenance',
                         maintenance_message: p.status === 'maintenance' ? (p.statusText || 'Currently under maintenance') : '',
                         description: p.description || existing.description || '',
@@ -4492,11 +4513,11 @@ app.post('/admin/products/add', requireAdmin, uploadProductImage.single('image_f
 
 // Edit Product (Supports image replacement via file upload or URL)
 app.post('/admin/products/edit/:id', requireAdmin, uploadProductImage.single('image_file'), (req, res) => {
-    const id = parseInt(req.params.id);
+    const rawId = req.params.id;
     const { title, category, price, discount, is_maintenance, image, setup_url, apk_url, feedback_url, maintenance_message, supported_phones, description, duration_options } = req.body;
     const products = readJson(PRODUCTS_FILE, []);
 
-    const idx = products.findIndex(p => p.id === id);
+    const idx = products.findIndex(p => String(p.id) === String(rawId) || p.id === parseInt(rawId));
     if (idx !== -1) {
         const safeCategory = category || products[idx].category || 'non-root';
         products[idx].title = title ? title.trim() : products[idx].title;
@@ -4542,9 +4563,9 @@ app.post('/admin/products/edit/:id', requireAdmin, uploadProductImage.single('im
 
 // Delete Product
 app.post('/admin/products/delete/:id', requireAdmin, (req, res) => {
-    const id = parseInt(req.params.id);
+    const rawId = req.params.id;
     let products = readJson(PRODUCTS_FILE, []);
-    products = products.filter(p => p.id !== id);
+    products = products.filter(p => String(p.id) !== String(rawId) && p.id !== parseInt(rawId));
     writeJson(PRODUCTS_FILE, products);
 
     req.session.adminSuccess = 'Product deleted successfully!';
