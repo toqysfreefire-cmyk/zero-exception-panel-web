@@ -4555,16 +4555,37 @@ app.post('/admin/products/delete/:id', requireAdmin, (req, res) => {
 
 // Toggle Maintenance Status
 app.post('/admin/products/toggle-maintenance/:id', requireAdmin, (req, res) => {
-    const id = parseInt(req.params.id);
+    const rawId = req.params.id;
     const products = readJson(PRODUCTS_FILE, []);
 
-    const prod = products.find(p => p.id === id);
+    const prod = products.find(p => String(p.id) === String(rawId) || p.id === parseInt(rawId));
     if (prod) {
         prod.is_maintenance = !prod.is_maintenance;
+        if (prod.is_maintenance && !prod.maintenance_message) {
+            prod.maintenance_message = 'প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।';
+        }
         writeJson(PRODUCTS_FILE, products);
         req.session.adminSuccess = `Status updated for "${prod.title}"!`;
     }
 
+    req.session.save(() => {
+        res.redirect('/admin');
+    });
+});
+
+// Batch Toggle All Products Maintenance
+app.post('/admin/products/maintenance-all', requireAdmin, (req, res) => {
+    const { status } = req.body || {}; // '1' = all maintenance, '0' = all online
+    const enableMaintenance = status === '1';
+    const products = readJson(PRODUCTS_FILE, []);
+    products.forEach(p => {
+        p.is_maintenance = enableMaintenance;
+        if (enableMaintenance && !p.maintenance_message) {
+            p.maintenance_message = 'প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।';
+        }
+    });
+    writeJson(PRODUCTS_FILE, products);
+    req.session.adminSuccess = enableMaintenance ? 'সকল প্রোডাক্ট সফলভাবে মেইনটেনেন্সে রাখা হয়েছে।' : 'সকল প্রোডাক্ট সফলভাবে অনলাইনে ফিরিয়ে আনা হয়েছে।';
     req.session.save(() => {
         res.redirect('/admin');
     });
