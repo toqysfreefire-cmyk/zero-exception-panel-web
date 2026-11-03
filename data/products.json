@@ -58,26 +58,6 @@
     "duration_options": "1 Day|53\n3 Days|140\n7 Days|224\n15 Days|413\n30 Days|700"
   },
   {
-    "id": "alpha-non-root",
-    "title": "ALPHA NON ROOT",
-    "slug": "alpha-non-root",
-    "category": "non-root",
-    "categoryName": "Free Fire NON ROOT",
-    "image": "images/jitu.jpg",
-    "price": 70,
-    "discount": "50% OFF",
-    "is_maintenance": false,
-    "maintenance_message": "প্যানেলটি বর্তমানে মেইনটেনেন্স এবং আপডেটের কাজ চলছে। খুব শীঘ্রই আবার অনলাইনে আসবে।",
-    "description": "ALPHA NON ROOT headshot scope and ESP locator.",
-    "stock": 999,
-    "in_stock": true,
-    "setup_url": "",
-    "apk_url": "",
-    "feedback_url": "",
-    "supported_phones": "",
-    "duration_options": "1 Day|70\n3 Days|112\n7 Days|210\n14 Days|350\n30 Days|560"
-  },
-  {
     "id": "aim-hack-ios",
     "title": "AIM HACK NON ROOT + IOS",
     "slug": "aim-hack-non-root-ios",
@@ -139,7 +119,7 @@
   },
   {
     "id": "pato-brutal",
-    "title": "PATOTEAM BRUTAL NON ROOT",
+    "title": "PHANTOM BRUTAL NON ROOT",
     "slug": "patoteam-brutal-non-root",
     "category": "non-root",
     "categoryName": "Free Fire NON ROOT",
@@ -235,11 +215,33 @@
     "apk_url": "",
     "feedback_url": "",
     "supported_phones": "",
-    "duration_options": "1 Day|98\n3 Days|224\n7 Days|406\n30 Days|812"
+    "duration_options": "1 Day|98\n3 Days|224\n7 Days|406\n30 Days|812",
+    "basePrice": 98,
+    "oldPrice": 168,
+    "status": "maintenance",
+    "statusText": "New Release",
+    "packages": [
+      {
+        "name": "1 Day",
+        "price": 98
+      },
+      {
+        "name": "3 Days",
+        "price": 224
+      },
+      {
+        "name": "7 Days",
+        "price": 406
+      },
+      {
+        "name": "30 Days",
+        "price": 812
+      }
+    ]
   },
   {
     "id": "dolphin-root",
-    "title": "DHOLPHIN ROOT ONLY",
+    "title": "3DOLPHIN ROOT ONLY",
     "slug": "dholphin-root-only",
     "category": "root",
     "categoryName": "FREE FIRE ROOT",
@@ -379,7 +381,7 @@
   },
   {
     "id": "carrom-auto",
-    "title": "CARROM Z TOOL AUTO PLAY",
+    "title": "CARROM 3 LINE AUTO PLAY",
     "slug": "carrom-z-tool-auto-play",
     "category": "demo",
     "categoryName": "DEMO / TOOLS",
