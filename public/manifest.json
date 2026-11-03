@@ -9,13 +9,13 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/uploads/settings/01KQFM748K0Y2NRR56VXKVZGNP.png",
+      "src": "/uploads/settings/site-icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/uploads/settings/01KQFM748K0Y2NRR56VXKVZGNP.png",
+      "src": "/uploads/settings/site-icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
