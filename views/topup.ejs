@@ -1,0 +1,1232 @@
+<%- include('partials/header') %>
+
+<%
+var isRoot = (product.id === 26) || (product.slug === 'root-service') || (product.title && product.title.toLowerCase().includes('root service-with phone'));
+var isRootService = (product.id === 25 || product.id === 26 || (product.slug && product.slug.toLowerCase().includes('root-service')));
+var isAccount = (product.category === 'accounts') || (product.slug && product.slug.toLowerCase().includes('account')) || (product.title && product.title.toLowerCase().includes('free fire account'));
+var whatsAppNumber = settings.whatsapp_number || '01727400370';
+var whatsAppIntl = settings.whatsapp_intl || '8801727400370';
+var paymentNumber = settings.payment_number || '01700878400';
+
+var pMethods = (settings && settings.payment_methods) || {};
+var bkashInfo = pMethods.bkash || { active: true, name: 'bKash', number: paymentNumber, type: 'Personal' };
+var nagadInfo = pMethods.nagad || { active: true, name: 'Nagad', number: paymentNumber, type: 'Personal' };
+var rocketInfo = pMethods.rocket || { active: true, name: 'Rocket', number: paymentNumber, type: 'Personal' };
+var binanceInfo = pMethods.binance || { active: true, name: 'Binance USDT', number: 'Pay ID: 1290554507', type: 'Crypto' };
+
+var availablePaymentGateways = [];
+if (bkashInfo && bkashInfo.active !== false) {
+    availablePaymentGateways.push({
+        id: 'bKash',
+        name: bkashInfo.name || 'bKash',
+        number: bkashInfo.number || paymentNumber,
+        sub: (bkashInfo.type || 'Personal') + ' Send Money',
+        note: 'Send Money (Personal)',
+        color: '#ff007f',
+        cssClass: 'method-name-bkash',
+        placeholder: 'Enter bKash TrxID (e.g. 9J4K7L8M)',
+        help: 'Copy the TrxID from your bKash confirmation SMS and paste it here.'
+    });
+}
+if (nagadInfo && nagadInfo.active !== false) {
+    availablePaymentGateways.push({
+        id: 'Nagad',
+        name: nagadInfo.name || 'Nagad',
+        number: nagadInfo.number || paymentNumber,
+        sub: (nagadInfo.type || 'Personal') + ' Send Money',
+        note: 'Send Money (Personal)',
+        color: '#ff7700',
+        cssClass: 'method-name-nagad',
+        placeholder: 'Enter Nagad TrxID (e.g. 7K2M9X1A)',
+        help: 'Copy the TrxID from your Nagad confirmation SMS and paste it here.'
+    });
+}
+if (rocketInfo && rocketInfo.active !== false) {
+    availablePaymentGateways.push({
+        id: 'Rocket',
+        name: rocketInfo.name || 'Rocket',
+        number: rocketInfo.number || paymentNumber,
+        sub: (rocketInfo.type || 'Personal') + ' Send Money',
+        note: 'Send Money (Personal)',
+        color: '#8b5cf6',
+        cssClass: 'method-name-rocket',
+        placeholder: 'Enter Rocket Transaction ID',
+        help: 'Copy the Transaction ID from your Rocket confirmation SMS and paste it here.'
+    });
+}
+if (binanceInfo && binanceInfo.active !== false) {
+    availablePaymentGateways.push({
+        id: 'Binance',
+        name: binanceInfo.name || 'Binance USDT',
+        number: binanceInfo.number || 'Pay ID: 1290554507',
+        sub: (binanceInfo.type || 'Crypto') + ' Pay ID / Transfer',
+        note: 'Crypto / USDT Pay ID',
+        color: '#f0b90b',
+        cssClass: 'method-name-binance',
+        placeholder: 'Enter Binance Pay ID / TxID / Order ID',
+        help: 'Send USDT via Binance Pay ID or TRC20, then paste your Pay ID or Transaction Hash here.'
+    });
+}
+
+var userWalletBal = (currentUser && currentUser.wallet_balance) ? parseFloat(currentUser.wallet_balance) : 0;
+if (currentUser) {
+    availablePaymentGateways.push({
+        id: 'Wallet Balance',
+        name: 'Store Wallet',
+        number: 'Available: ' + userWalletBal + '৳',
+        sub: userWalletBal + '৳ Available',
+        note: 'Instant 1-Click Pay',
+        color: '#10b981',
+        cssClass: 'method-name-wallet',
+        placeholder: 'Paid via Wallet (Auto Deducted)',
+        help: 'Order will be placed instantly and automatically deducted from your store wallet balance.'
+    });
+}
+
+if (availablePaymentGateways.length === 0) {
+    availablePaymentGateways.push({
+        id: 'bKash',
+        name: 'bKash',
+        number: paymentNumber,
+        sub: 'Personal Send Money',
+        note: 'Send Money (Personal)',
+        color: '#ff007f',
+        cssClass: 'method-name-bkash',
+        placeholder: 'Enter bKash TrxID',
+        help: 'Copy the TrxID from your confirmation SMS and paste it here.'
+    });
+}
+var initialGateway = availablePaymentGateways[0];
+
+function normalizeDurationOption(option, productItem) {
+    if (!option) return null;
+    if (typeof option === 'string') {
+        var splitValue = option.split('|');
+        var days = parseInt(splitValue[0], 10);
+        var price = parseFloat(splitValue[1]);
+        if (!Number.isInteger(days) || days < 1 || isNaN(price) || price < 0) return null;
+        return { days: days, label: days + (days === 1 ? ' Day Key' : ' Days Key'), price: price };
+    }
+
+    var label = option.label || option.name || option.title || option.variant || '';
+    var days = Number(option.days);
+    var price = Number(option.price);
+    if (!Number.isFinite(price)) {
+        var mult = Number(option.multiplier || option.value || 1);
+        price = Math.round((Number(productItem && productItem.price) || 0) * (Number.isFinite(mult) && mult > 0 ? mult : 1));
+    }
+
+    if (Number.isInteger(days) && days > 0) {
+        return {
+            days: days,
+            label: days + (days === 1 ? ' Day Key' : ' Days Key'),
+            price: price
+        };
+    }
+    return label ? { label: label.trim(), price: price } : null;
+}
+
+function getDurationOptionsForProduct(productItem) {
+    var rawOptions = productItem && productItem.duration_options;
+    var basePrice = Number(productItem && productItem.price) || 0;
+
+    if (productItem && (productItem.category === 'accounts' || (productItem.slug && productItem.slug.toLowerCase().includes('account')))) {
+        return [
+            { label: 'Full Account Access (Permanent)', price: Math.round(basePrice) }
+        ];
+    }
+
+    var fallback = [
+        { days: 1, label: '1 Day Key', price: Math.round(basePrice) },
+        { days: 7, label: '7 Days Key', price: Math.round(basePrice * 3.5) },
+        { days: 30, label: '30 Days Key', price: Math.round(basePrice * 10) }
+    ];
+
+    if (productItem && productItem.category && productItem.category.toLowerCase().includes('root-service')) {
+        fallback = [
+            { label: 'Standard Device Rooting', price: Math.round(basePrice) },
+            { label: 'Root + Gaming Kernel (120 FPS)', price: Math.round(basePrice * 1.35) },
+            { label: 'VIP Root + Anti-Ban Suite', price: Math.round(basePrice * 1.75) }
+        ];
+    }
+
+    var options = [];
+    if (Array.isArray(rawOptions)) {
+        options = rawOptions.map(function(option) {
+            return normalizeDurationOption(option, productItem);
+        }).filter(Boolean);
+    } else if (typeof rawOptions === 'string' && rawOptions.trim()) {
+        try {
+            var parsedOptions = JSON.parse(rawOptions);
+            if (Array.isArray(parsedOptions)) {
+                options = parsedOptions.map(function(option) {
+                    return normalizeDurationOption(option, productItem);
+                }).filter(Boolean);
+            }
+        } catch (error) {
+            options = rawOptions.split(/\r?\n/).map(function(option) {
+                return normalizeDurationOption(option, productItem);
+            }).filter(Boolean);
+        }
+    }
+
+    return options.length ? options : fallback;
+}
+
+var durationOptions = getDurationOptionsForProduct(product);
+%>
+
+<style>
+/* Cyberpunk HUD Checkout & Package Selection Styles */
+.package-card {
+    border: 1.5px solid rgba(0, 240, 255, 0.25) !important;
+    background: #080d1c !important;
+    border-radius: 14px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    user-select: none;
+    color: #ffffff !important;
+}
+.package-card:hover {
+    border-color: #00f0ff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.35) !important;
+}
+.package-card.active {
+    border-color: #00f0ff !important;
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.18) 0%, rgba(13, 27, 62, 0.95) 100%) !important;
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.45), inset 0 0 15px rgba(0, 240, 255, 0.15) !important;
+}
+.package-card .check-indicator {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #00f0ff;
+    color: #050811;
+    font-size: 11px;
+    font-weight: 900;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px #00f0ff;
+}
+.package-card.active .check-indicator {
+    display: flex;
+}
+.package-card .package-title {
+    color: #ffffff !important;
+    font-weight: 800;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.95rem;
+}
+.package-card.active .package-title {
+    color: #ffffff !important;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
+}
+.package-card .package-price {
+    color: #00f0ff !important;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1.35rem;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+}
+
+/* Payment Method Cards */
+.payment-method-card {
+    border: 1.5px solid rgba(0, 240, 255, 0.25) !important;
+    background: #080d1c !important;
+    border-radius: 14px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    user-select: none;
+    color: #ffffff !important;
+}
+.payment-method-card:hover {
+    transform: translateY(-2px);
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.3) !important;
+}
+.payment-method-card.active[data-method="bKash"] {
+    border-color: #ff007f !important;
+    background: linear-gradient(135deg, rgba(255, 0, 127, 0.25) 0%, rgba(20, 5, 25, 0.95) 100%) !important;
+    box-shadow: 0 0 25px rgba(255, 0, 127, 0.55), inset 0 0 15px rgba(255, 0, 127, 0.2) !important;
+}
+.payment-method-card.active[data-method="Nagad"] {
+    border-color: #ff7700 !important;
+    background: linear-gradient(135deg, rgba(255, 119, 0, 0.25) 0%, rgba(30, 12, 5, 0.95) 100%) !important;
+    box-shadow: 0 0 25px rgba(255, 119, 0, 0.55), inset 0 0 15px rgba(255, 119, 0, 0.2) !important;
+}
+.payment-method-card.active[data-method="Rocket"] {
+    border-color: #8b5cf6 !important;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(25, 10, 35, 0.95) 100%) !important;
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.55), inset 0 0 15px rgba(139, 92, 246, 0.2) !important;
+}
+.payment-method-card.active[data-method="Binance"] {
+    border-color: #f0b90b !important;
+    background: linear-gradient(135deg, rgba(240, 185, 11, 0.25) 0%, rgba(35, 28, 5, 0.95) 100%) !important;
+    box-shadow: 0 0 25px rgba(240, 185, 11, 0.55), inset 0 0 15px rgba(240, 185, 11, 0.2) !important;
+}
+.payment-method-card.active[data-method="Wallet Balance"] {
+    border-color: #10b981 !important;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 30, 15, 0.95) 100%) !important;
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.55), inset 0 0 15px rgba(16, 185, 129, 0.2) !important;
+}
+.payment-method-card .payment-check {
+    display: none;
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 900;
+    align-items: center;
+    justify-content: center;
+}
+.payment-method-card.active[data-method="bKash"] .payment-check {
+    background: #ff007f;
+    box-shadow: 0 0 12px #ff007f;
+}
+.payment-method-card.active[data-method="Nagad"] .payment-check {
+    background: #ff7700;
+    box-shadow: 0 0 12px #ff7700;
+}
+.payment-method-card.active[data-method="Rocket"] .payment-check {
+    background: #8b5cf6;
+    box-shadow: 0 0 12px #8b5cf6;
+}
+.payment-method-card.active[data-method="Binance"] .payment-check {
+    background: #f0b90b;
+    box-shadow: 0 0 12px #f0b90b;
+}
+.payment-method-card.active[data-method="Wallet Balance"] .payment-check {
+    background: #10b981;
+    box-shadow: 0 0 12px #10b981;
+}
+.payment-method-card.active .payment-check {
+    display: flex;
+}
+.payment-method-card .method-name-bkash {
+    color: #ff007f !important;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1.15rem;
+    letter-spacing: 0.5px;
+    display: block;
+}
+.payment-method-card.active[data-method="bKash"] .method-name-bkash {
+    text-shadow: 0 0 12px rgba(255, 0, 127, 0.85);
+}
+.payment-method-card .method-name-nagad {
+    color: #ff7700 !important;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1.15rem;
+    letter-spacing: 0.5px;
+    display: block;
+}
+.payment-method-card.active[data-method="Nagad"] .method-name-nagad {
+    text-shadow: 0 0 12px rgba(255, 119, 0, 0.85);
+}
+.payment-method-card .method-name-rocket {
+    color: #a78bfa !important;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1.15rem;
+    letter-spacing: 0.5px;
+    display: block;
+}
+.payment-method-card.active[data-method="Rocket"] .method-name-rocket {
+    text-shadow: 0 0 12px rgba(167, 139, 250, 0.85);
+}
+.payment-method-card .method-name-binance {
+    color: #fde047 !important;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1.15rem;
+    letter-spacing: 0.5px;
+    display: block;
+}
+.payment-method-card.active[data-method="Binance"] .method-name-binance {
+    text-shadow: 0 0 12px rgba(253, 224, 71, 0.85);
+}
+.payment-method-card .method-name-wallet {
+    color: #34d399 !important;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1.15rem;
+    letter-spacing: 0.5px;
+    display: block;
+}
+.payment-method-card.active[data-method="Wallet Balance"] .method-name-wallet {
+    text-shadow: 0 0 12px rgba(52, 211, 153, 0.85);
+}
+.payment-method-card.active[data-method="Wallet Balance"] .method-sub {
+    color: #a7f3d0 !important;
+}
+.payment-method-card .method-sub {
+    color: #cbd5e1 !important;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-top: 4px;
+    display: block;
+}
+.payment-method-card.active[data-method="bKash"] .method-sub {
+    color: #ffb3d9 !important;
+}
+.payment-method-card.active[data-method="Nagad"] .method-sub {
+    color: #ffd9b3 !important;
+}
+.payment-method-card.active[data-method="Rocket"] .method-sub {
+    color: #ddd6fe !important;
+}
+.payment-method-card.active[data-method="Binance"] .method-sub {
+    color: #fef08a !important;
+}
+
+/* Step Badges */
+.step-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-weight: 900;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #00f0ff 0%, #0080ff 100%) !important;
+    color: #050811 !important;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.7) !important;
+    font-family: 'Orbitron', sans-serif;
+    flex-shrink: 0;
+}
+.step-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #ffffff !important;
+    font-family: 'Orbitron', sans-serif;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+/* Dynamic Instructions Box */
+.payment-instructions-box {
+    background: #060a17 !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.3) !important;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+.payment-number-display {
+    background: #02040a !important;
+    border: 1.5px solid #00f0ff !important;
+    color: #00f0ff !important;
+    font-family: 'Orbitron', monospace !important;
+    font-weight: 900 !important;
+    font-size: 0.95rem !important;
+    padding: 4px 10px !important;
+    border-radius: 8px !important;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.6) !important;
+}
+.btn-copy-number {
+    background: rgba(0, 240, 255, 0.15) !important;
+    border: 1px solid #00f0ff !important;
+    color: #00f0ff !important;
+    font-weight: 800 !important;
+    font-size: 0.75rem !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-copy-number:hover {
+    background: #00f0ff !important;
+    color: #050811 !important;
+    box-shadow: 0 0 12px #00f0ff !important;
+}
+
+/* Final Price & Buttons */
+.final-price-value {
+    color: #00f0ff !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 2.1rem !important;
+    text-shadow: 0 0 15px rgba(0, 240, 255, 0.8) !important;
+}
+.btn-place-order {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #ff007f 0%, #a800ff 100%) !important;
+    color: #ffffff !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 0.95rem !important;
+    padding: 14px 28px !important;
+    border-radius: 12px !important;
+    border: 1px solid #ff4da6 !important;
+    box-shadow: 0 0 25px rgba(255, 0, 127, 0.6) !important;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+.btn-place-order:hover {
+    box-shadow: 0 0 35px rgba(255, 0, 127, 0.9) !important;
+    transform: translateY(-2px);
+    color: #ffffff !important;
+}
+.btn-whatsapp-buy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #00ff66 0%, #00b347 100%) !important;
+    color: #050811 !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 0.95rem !important;
+    padding: 14px 24px !important;
+    border-radius: 12px !important;
+    border: none !important;
+    box-shadow: 0 0 20px rgba(0, 255, 102, 0.45) !important;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+.btn-whatsapp-buy:hover {
+    box-shadow: 0 0 30px rgba(0, 255, 102, 0.75) !important;
+    transform: translateY(-2px);
+    color: #050811 !important;
+}
+
+/* Top Banner */
+.topup-product-banner {
+    background: linear-gradient(135deg, #070e24 0%, #051433 50%, #070e24 100%) !important;
+    border-bottom: 2px solid rgba(0, 240, 255, 0.35) !important;
+    box-shadow: 0 4px 25px rgba(0, 240, 255, 0.12) !important;
+}
+</style>
+
+<div class="container mx-auto px-3 py-6 max-w-4xl">
+    <div class="rounded-2xl shadow-2xl border border-cyan-500/30 overflow-hidden" style="background: #0a0f20;">
+        <!-- Top banner / header of product -->
+        <div class="p-6 text-white flex flex-col md:flex-row items-center gap-6 topup-product-banner">
+            <div class="w-28 h-28 md:w-36 md:h-36 rounded-xl overflow-hidden bg-white/10 shrink-0 border-2 border-cyan-500/40 shadow-lg shadow-cyan-500/20">
+                <img src="<%= (product.image && (product.image.startsWith('/') || product.image.startsWith('http'))) ? product.image : ('/' + (product.image || 'images/logo.jpg')) %>" alt="<%= product.title %>" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='/images/logo.jpg';">
+            </div>
+            <div class="flex-1 text-center md:text-left">
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
+                    <span class="text-xs font-bold px-2.5 py-1 rounded-full uppercase" style="background: rgba(0, 240, 255, 0.15); border: 1px solid #00f0ff; color: #00f0ff;"><%= product.category %></span>
+                    <% if (isRoot) { %>
+                    <span class="bg-[#00f0ff] text-black text-xs font-black px-2.5 py-1 rounded-full uppercase shadow-md shadow-cyan-400/50"><i class="fas fa-microchip me-1"></i> Root Section</span>
+                    <% } %>
+                    <% if (product.is_maintenance) { %>
+                    <span class="bg-[#ff007f] text-white text-xs font-bold px-2.5 py-1 rounded-full uppercase shadow-md shadow-pink-500/50">Under Maintenance</span>
+                    <% } else { %>
+                    <span class="bg-emerald-500 text-black text-xs font-black px-2.5 py-1 rounded-full uppercase shadow-md shadow-emerald-400/50">In Stock (Instant Setup)</span>
+                    <% } %>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-black mb-1.5 font-orbitron text-white"><%= product.title %></h1>
+                <p class="text-gray-300 text-xs md:text-sm max-w-xl"><%= product.description %></p>
+                <% if (isRoot) { %>
+                <div class="mt-2 text-xs font-semibold text-cyan-300 font-mono">
+                    <i class="fas fa-mobile-alt me-1 text-[#ff007f]"></i> Supported Phones: <%= product.supported_phones || 'Xiaomi • Poco • Samsung • OnePlus • Realme • Vivo • Tecno • Infinix' %>
+                </div>
+                <% } %>
+            </div>
+        </div>
+
+        <%
+        var hasUserDiscount = typeof userDiscount !== 'undefined' && userDiscount > 0;
+        var initialRawPrice = durationOptions[0].price;
+        var initialEffectivePrice = hasUserDiscount ? Math.round(initialRawPrice * (1 - (userDiscount / 100))) : initialRawPrice;
+        %>
+        <form action="/topup/buynow" method="POST" id="checkoutForm" class="p-5 md:p-8">
+            <input type="hidden" name="product_id" value="<%= product.id %>">
+            <input type="hidden" name="product_title" value="<%= product.title %>">
+            <input type="hidden" id="selectedVariantInput" name="variant" value="<%= durationOptions[0].label %>">
+            <input type="hidden" id="selectedPriceInput" name="price" value="<%= convertPrice(initialEffectivePrice) %>">
+            <input type="hidden" id="selectedPaymentMethodInput" name="payment_method" value="<%= initialGateway.id %>">
+
+            <!-- Reseller / Sub-Reseller VIP Discount Banner -->
+            <% if (hasUserDiscount) { %>
+            <div class="mb-6 p-3.5 rounded-2xl border <%= isReseller ? 'border-amber-500/50 bg-gradient-to-r from-amber-950/80 via-yellow-950/40 to-black' : (isSubReseller ? 'border-cyan-500/50 bg-gradient-to-r from-cyan-950/80 via-blue-950/40 to-black' : 'border-emerald-500/50 bg-gradient-to-r from-emerald-950/80 via-emerald-900/40 to-black') %> shadow-lg">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl <%= isReseller ? 'bg-amber-500/20 text-amber-400 border border-amber-400/40' : (isSubReseller ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/40' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-400/40') %> flex items-center justify-center text-xl shadow-inner">
+                            <i class="fas <%= isReseller ? 'fa-crown' : (isSubReseller ? 'fa-gem' : 'fa-tags') %>"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-black tracking-wider uppercase <%= isReseller ? 'text-amber-400' : (isSubReseller ? 'text-cyan-400' : 'text-emerald-400') %> flex items-center gap-1.5">
+                                <span><%= isReseller ? '👑 VIP RESELLER ACCOUNT ACTIVE' : (isSubReseller ? '💎 SUB-RESELLER ACCOUNT ACTIVE' : '✨ CUSTOM DISCOUNT ACTIVE') %></span>
+                            </div>
+                            <p class="text-xs text-gray-300 m-0">
+                                Special VIP Pricing: <strong><%= userDiscount %>% OFF</strong> automatically deducted from all packages!
+                            </p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 font-black text-xs rounded-xl shadow-md uppercase tracking-wider <%= isReseller ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-black' : (isSubReseller ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-black' : 'bg-emerald-500 text-black') %>">
+                        <%= userDiscount %>% OFF
+                    </span>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Step 1: Select Package / Service Variant -->
+            <div class="mb-8">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="step-badge">1</span>
+                    <h2 class="step-title">
+                        <%= isAccount ? 'Free Fire Account Selection' : (isRootService ? 'Select Rooting Package / Plan' : 'Select Package / Duration') %>
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="packageOptions">
+                    <% durationOptions.forEach(function(option, index) { 
+                        var rawPrice = option.price;
+                        var effectiveCardPrice = hasUserDiscount ? Math.round(rawPrice * (1 - (userDiscount / 100))) : rawPrice;
+                    %>
+                    <div class="package-card <%= index === 0 ? 'active' : '' %>" data-variant="<%= option.label %>" data-price="<%= effectiveCardPrice %>" data-original-price="<%= rawPrice %>">
+                        <div class="check-indicator"><i class="fas fa-check"></i></div>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="package-title"><%= option.label %></span>
+                            <div class="flex items-center gap-1">
+                                <% if (hasUserDiscount) { %>
+                                <span class="text-[9px] bg-emerald-950 text-emerald-400 border border-emerald-500/50 font-bold px-1.5 py-0.5 rounded animate-pulse">
+                                    -<%= userDiscount %>%
+                                </span>
+                                <% } %>
+                                <span class="text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-bold px-2 py-0.5 rounded">
+                                    <%= isAccount ? 'Verified Account' : (index === 0 ? (isRootService ? 'Standard' : 'Best') : (index === 1 ? 'Popular' : 'Value')) %>
+                                </span>
+                            </div>
+                        </div>
+                        <% if (isAccount) { %>
+                        <p class="text-xs text-gray-300 mb-2">100% Safe &amp; Verified Account. Login credentials delivered directly via WhatsApp upon TrxID confirmation.</p>
+                        <% } else if (isRootService && option.label.includes('Gaming Kernel')) { %>
+                        <p class="text-xs text-gray-400 mb-2">Custom Gaming Kernel + Thermal Mod + Touch Booster.</p>
+                        <% } else if (isRootService && option.label.includes('VIP')) { %>
+                        <p class="text-xs text-gray-400 mb-2">Hidden KernelSU + Shamiko + G-Tools Gaming Modules.</p>
+                        <% } else if (isRootService) { %>
+                        <p class="text-xs text-gray-400 mb-2">Bootloader Unlock + KernelSU / Magisk + SafetyNet Pass.</p>
+                        <% } %>
+                        <div class="package-price flex items-baseline gap-2">
+                            <% if (hasUserDiscount) { %>
+                            <span class="text-xs text-gray-400 line-through font-normal"><%= formatPrice(rawPrice) %></span>
+                            <span class="text-emerald-400 font-extrabold"><%= formatPrice(effectiveCardPrice) %></span>
+                            <% } else { %>
+                            <span><%= formatPrice(rawPrice) %></span>
+                            <% } %>
+                        </div>
+                    </div>
+                    <% }); %>
+                </div>
+            </div>
+
+            <!-- Step 2: Device Variant Information for Rooting (Root Section) -->
+            <% if (isRoot) { %>
+            <div class="mb-8 p-4 md:p-6 rounded-2xl border-2 border-cyan-500/40 bg-[#070d1d] shadow-lg shadow-cyan-900/20">
+                <div class="flex items-center gap-3 mb-4 pb-3 border-b border-cyan-500/30">
+                    <span class="w-8 h-8 rounded-lg font-black text-sm flex items-center justify-center text-black bg-[#00f0ff] shadow-md shadow-cyan-400/50">
+                        <i class="fas fa-mobile-alt"></i>
+                    </span>
+                    <div>
+                        <h2 class="text-base md:text-lg font-black text-[#00f0ff] uppercase tracking-wider m-0">
+                            2. Phone Variant To Be Rooted (Device Specifications)
+                        </h2>
+                        <p class="text-xs text-gray-300 m-0">
+                            Select your phone brand and enter the exact model variant so our technicians prepare the exact root boot image and KernelSU firmware for your device.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 1. Select Phone Brand -->
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-[#00f0ff] uppercase tracking-wider mb-2">
+                        Select Phone Brand Variant <span class="text-[#ff007f]">*</span>
+                    </label>
+                    <div class="phone-brand-grid" id="phoneBrandGrid">
+                        <button type="button" class="phone-brand-btn active" data-brand="Xiaomi / Redmi">
+                            <i class="fas fa-check-circle check-icon"></i>
+                            <span class="brand-name">Xiaomi / Redmi</span>
+                        </button>
+                        <button type="button" class="phone-brand-btn" data-brand="Poco">
+                            <i class="fas fa-check-circle check-icon"></i>
+                            <span class="brand-name">Poco (All Series)</span>
+                        </button>
+                        <button type="button" class="phone-brand-btn" data-brand="Samsung Galaxy">
+                            <i class="fas fa-check-circle check-icon"></i>
+                            <span class="brand-name">Samsung Galaxy</span>
+                        </button>
+                        <button type="button" class="phone-brand-btn" data-brand="OnePlus">
+                            <i class="fas fa-check-circle check-icon"></i>
+                            <span class="brand-name">OnePlus</span>
+                        </button>
+                        <button type="button" class="phone-brand-btn" data-brand="Realme / Oppo">
+                            <i class="fas fa-check-circle check-icon"></i>
+                            <span class="brand-name">Realme / Oppo</span>
+                        </button>
+                        <button type="button" class="phone-brand-btn" data-brand="Vivo / iQOO">
+                            <i class="fas fa-check-circle check-icon"></i>
+                            <span class="brand-name">Vivo / iQOO</span>
+                        </button>
+                        <button type="button" class="phone-brand-btn" data-brand="Infinix / Tecno">
+                            <i class="fas fa-check-circle check-icon"></i>
+                            <span class="brand-name">Infinix / Tecno</span>
+                        </button>
+                        <button type="button" class="phone-brand-btn" data-brand="Other Phone">
+                            <i class="fas fa-check-circle check-icon"></i>
+                            <span class="brand-name">Other Android</span>
+                        </button>
+                    </div>
+                    <input type="hidden" name="phone_brand" id="selectedPhoneBrandInput" value="Xiaomi / Redmi">
+                </div>
+
+                <!-- 2. Exact Phone Model & Android Version -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-200 uppercase mb-1.5">
+                            Exact Phone Model &amp; Variant Name <span class="text-[#ff007f]">*</span>
+                        </label>
+                        <input type="text" id="inputPhoneModel" name="phone_model" required
+                               placeholder="e.g. Poco X3 Pro / Redmi Note 12 Pro / Galaxy A52s"
+                               class="w-full px-4 py-2.5 bg-[#0b1224] border border-cyan-500/40 rounded-xl text-sm font-semibold text-white focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff]">
+                        <small class="text-[11px] text-gray-400 mt-1 block">Check Settings &gt; About Phone for your exact device model code.</small>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-200 uppercase mb-1.5">
+                            Android OS Version <span class="text-[#ff007f]">*</span>
+                        </label>
+                        <select id="selectAndroidVersion" name="android_version" class="w-full px-4 py-2.5 bg-[#0b1224] border border-cyan-500/40 rounded-xl text-sm font-semibold text-white focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff]">
+                            <option value="Android 14 (HyperOS / OneUI 6)">Android 14 (HyperOS / OneUI 6 / OxygenOS 14)</option>
+                            <option value="Android 13 (MIUI 14 / OneUI 5)" selected>Android 13 (MIUI 14 / OneUI 5 / RealmeUI 4)</option>
+                            <option value="Android 12 (MIUI 13 / OneUI 4)">Android 12 (MIUI 13 / OneUI 4)</option>
+                            <option value="Android 11 (MIUI 12)">Android 11 (MIUI 12 / Android 11)</option>
+                            <option value="Android 10 or Older">Android 10 or Older</option>
+                        </select>
+                        <small class="text-[11px] text-gray-400 mt-1 block">Needed for the matching stock kernel &amp; patch.</small>
+                    </div>
+                </div>
+
+                <!-- 3. Bootloader Status & Preferred Root Architecture -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-200 uppercase mb-1.5">
+                            Bootloader Status <span class="text-[#ff007f]">*</span>
+                        </label>
+                        <select id="selectBootloaderStatus" name="bootloader_status" class="w-full px-4 py-2.5 bg-[#0b1224] border border-cyan-500/40 rounded-xl text-sm font-semibold text-white focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff]">
+                            <option value="Unlocked (Ready to Root)" selected>Unlocked (Ready to Root immediately)</option>
+                            <option value="Locked (Need Unlock Help)">Locked (Need Assistance to Unlock)</option>
+                            <option value="Not Sure">Not Sure / Check for Me</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-200 uppercase mb-1.5">
+                            Preferred Root Solution <span class="text-[#ff007f]">*</span>
+                        </label>
+                        <select id="selectRootSolution" name="root_solution" class="w-full px-4 py-2.5 bg-[#0b1224] border border-cyan-500/40 rounded-xl text-sm font-semibold text-white focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff]">
+                            <option value="KernelSU (Invisible & Safe)" selected>KernelSU (Recommended - 100% Kernel-level Safe)</option>
+                            <option value="Magisk (Standard Root + Zygisk)">Magisk (Standard Root + Zygisk Modules)</option>
+                            <option value="APatch (Kernel Patch)">APatch (Superkey + Kernel Patch)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Step 2 or 3: Account & Contact Information -->
+            <div class="mb-8">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="step-badge">
+                        <%= isRoot ? '3' : '2' %>
+                    </span>
+                    <h2 class="step-title">Customer &amp; Contact Details</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-cyan-400 uppercase mb-1.5">
+                            <%= isAccount ? 'Buyer UID / Reference (Optional)' : 'In-Game Player ID / UID' %> <% if (!isRootService && !isAccount) { %><span class="text-[#ff007f]">*</span><% } else { %><span class="text-gray-400 font-normal">(Optional)</span><% } %>
+                        </label>
+                        <input type="text" id="inputPlayerId" name="player_id" <%= (!isRootService && !isAccount) ? 'required' : '' %> placeholder="<%= isAccount ? 'Optional reference or note' : 'e.g. 1928394810' %>" class="w-full px-4 py-2.5 bg-[#080d1c] border border-cyan-500/40 rounded-xl text-white text-sm font-semibold focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff]">
+                        <small class="text-[12px] mt-1 block" style="color: #cbd5e1 !important; font-weight: 500;"><%= isAccount ? 'Optional buyer note or reference.' : 'Your numeric Free Fire / Game UID.' %></small>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-cyan-400 uppercase mb-1.5">
+                            WhatsApp / Phone Number <span class="text-[#ff007f]">*</span>
+                        </label>
+                        <input type="text" id="inputWhatsApp" name="whatsapp" value="<%= (currentUser && currentUser.phone) ? currentUser.phone : '' %>" required placeholder="e.g. <%= whatsAppNumber %>" class="w-full px-4 py-2.5 bg-[#080d1c] border border-cyan-500/40 rounded-xl text-white text-sm font-semibold focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff]">
+                        <small class="text-[12px] mt-1 block" style="color: #cbd5e1 !important; font-weight: 500;"><%= isAccount ? 'Account login credentials will be delivered to this WhatsApp number.' : 'Technician coordinates with you on WhatsApp for file setup / remote rooting.' %></small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Promo Code / Coupon Voucher Box -->
+            <div class="mb-8 p-4 rounded-2xl bg-[#080d1c] border border-cyan-500/30">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                    <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fas fa-ticket-alt text-[#00f0ff]"></i> Have a Promo Code / Coupon?
+                    </span>
+                    <span class="text-[11px] font-mono font-bold" style="color: #38bdf8 !important;">Discounts &amp; Vouchers</span>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="inputCouponCode" placeholder="Enter coupon code (e.g. SPECIAL10, ZERO20)" class="flex-1 px-4 py-2.5 bg-black/60 border border-cyan-500/40 rounded-xl text-white text-xs font-mono font-bold uppercase placeholder-gray-500 focus:outline-none focus:border-cyan-400">
+                    <button type="button" id="btnApplyCoupon" style="background: linear-gradient(135deg, #00f0ff 0%, #10b981 100%) !important; color: #050b17 !important; font-weight: 900 !important; font-size: 13px !important; border-radius: 12px !important; padding: 12px 24px !important; border: none !important; box-shadow: 0 4px 20px rgba(0, 240, 255, 0.45) !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; text-transform: uppercase !important; font-family: 'Orbitron', monospace !important; letter-spacing: 0.5px !important;" class="transition transform hover:scale-105 shrink-0">
+                        <i class="fas fa-check"></i> Apply Code
+                    </button>
+                    <button type="button" id="btnRemoveCoupon" style="display:none;" class="px-3 py-2.5 bg-red-600/30 hover:bg-red-600/50 text-red-300 rounded-xl text-xs font-bold transition">
+                        Remove
+                    </button>
+                </div>
+                <input type="hidden" name="coupon_code" id="appliedCouponHidden" value="">
+                <div id="couponMessage" class="mt-2 text-xs" style="display:none;"></div>
+            </div>
+
+            <!-- Step 3 or 4: Payment Gateway -->
+            <div class="mb-8">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="step-badge">
+                        <%= isRoot ? '4' : '3' %>
+                    </span>
+                    <h2 class="step-title">Choose Payment Method</h2>
+                </div>
+
+                <div class="grid grid-cols-2 <%= availablePaymentGateways.length > 2 ? (availablePaymentGateways.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-4') : 'sm:grid-cols-2' %> gap-3 mb-4" id="paymentGrid">
+                    <% availablePaymentGateways.forEach(function(gw, idx) { %>
+                    <div class="payment-method-card <%= idx === 0 ? 'active' : '' %>" 
+                         data-method="<%= gw.id %>" 
+                         data-number="<%= gw.number %>" 
+                         data-note="<%= gw.note %>"
+                         data-color="<%= gw.color %>"
+                         data-placeholder="<%= gw.placeholder %>"
+                         data-help="<%= gw.help %>">
+                        <div class="payment-check"><i class="fas fa-check"></i></div>
+                        <span class="<%= gw.cssClass %>"><%= gw.name %></span>
+                        <span class="method-sub"><%= gw.sub %></span>
+                    </div>
+                    <% }); %>
+                </div>
+
+                <!-- Dynamic Payment Instructions Box -->
+                <div class="payment-instructions-box">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 mb-3 border-b border-cyan-500/20">
+                        <div>
+                            <span class="text-xs font-bold uppercase" style="color: #38bdf8 !important;">Selected Gateway:</span>
+                            <span class="font-black text-sm text-[#00f0ff] ml-1 font-orbitron" id="displayPaymentMethodName"><%= initialGateway.id %></span>
+                            <span class="text-xs font-bold ml-1" id="displayPaymentNote" style="color: <%= initialGateway.color %>;">(<%= initialGateway.note %>)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold uppercase" style="color: #38bdf8 !important;">Number / ID:</span>
+                            <span class="payment-number-display" id="displayPaymentNumber"><%= initialGateway.number %></span>
+                            <button type="button" id="btnCopyNumber" class="btn-copy-number" title="Copy Number">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-cyan-400 uppercase mb-1.5">
+                            Transaction ID (TrxID) / Order ID <span class="text-[#ff007f]">*</span>
+                        </label>
+                        <input type="text" id="inputTrxId" name="transaction_id" required placeholder="<%= initialGateway.placeholder %>" class="w-full px-4 py-2.5 bg-[#080d1c] border border-cyan-500/40 rounded-xl text-white text-sm font-mono font-semibold focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff]">
+                        <small id="displayPaymentHelp" class="text-[12px] mt-1 block" style="color: #cbd5e1 !important; font-weight: 500;"><%= initialGateway.help %></small>
+                    </div>
+                </div>
+            </div>
+
+            <% if (!currentUser) { %>
+            <!-- Login Requirement Notice -->
+            <div class="mb-5 p-4 rounded-2xl border-2 border-cyan-400/60 bg-gradient-to-r from-cyan-950/90 via-[#0a1226] to-cyan-950/90 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-lg shrink-0 border border-cyan-500/40">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-black text-white m-0">অর্ডার করার পূর্বে লগইন করা আবশ্যক</h4>
+                        <p class="text-xs text-gray-300 m-0 mt-0.5">অর্ডার স্ট্যাটাস ট্র্যাক ও অ্যাক্টিভেশন কী পাওয়ার জন্য আপনার একাউন্টে লগইন করুন।</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                    <a href="/login?returnUrl=<%= encodeURIComponent(path) %>" style="background: linear-gradient(135deg, #0284c7 0%, #059669 100%) !important; color: #ffffff !important; border: 1.5px solid #38bdf8 !important; font-weight: 900 !important; font-size: 13px !important; text-transform: uppercase; font-family: 'Orbitron', monospace; letter-spacing: 0.5px; border-radius: 12px; padding: 12px 24px; box-shadow: 0 4px 20px rgba(2, 132, 199, 0.5); display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;" class="transition transform hover:scale-105 w-full sm:w-auto no-underline shrink-0">
+                        <i class="fas fa-sign-in-alt" style="color: #6ee7b7; font-size: 14px;"></i> Login to Buy
+                    </a>
+                    <a href="/auth/google" class="px-3.5 py-2.5 bg-white hover:bg-gray-100 text-gray-800 font-bold text-xs rounded-xl transition shadow-lg flex items-center justify-center gap-1.5 shrink-0 no-underline">
+                        <img src="https://www.google.com/favicon.ico" class="w-3.5 h-3.5" alt="Google">
+                        <span class="hidden sm:inline">Google</span>
+                    </a>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Submit Section -->
+            <div class="pt-5 border-t border-cyan-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-center sm:text-left">
+                    <span class="text-xs text-gray-400 block uppercase font-bold tracking-wider">Total Amount to Pay:</span>
+                    <div class="flex items-baseline gap-2">
+                        <% if (hasUserDiscount) { %>
+                        <span class="text-sm text-gray-400 line-through"><%= formatPrice(initialRawPrice) %></span>
+                        <span class="final-price-value text-emerald-400" id="finalPriceDisplay"><%= formatPrice(initialEffectivePrice) %></span>
+                        <span class="text-xs font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-500/40">-<%= userDiscount %>% VIP</span>
+                        <% } else { %>
+                        <span class="final-price-value" id="finalPriceDisplay"><%= formatPrice(durationOptions[0].price) %></span>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                    <% if (product.is_maintenance) { %>
+                    <button type="button" disabled class="w-full sm:w-auto px-8 py-3.5 bg-gray-700 text-gray-400 font-bold rounded-xl cursor-not-allowed border border-gray-600">
+                        Product Under Maintenance
+                    </button>
+                    <% } else { %>
+                    <a id="btnWhatsAppDirect" href="#" target="_blank" class="btn-whatsapp-buy w-full sm:w-auto">
+                        <i class="fab fa-whatsapp text-lg"></i>
+                        <span>Buy on WhatsApp</span>
+                    </a>
+
+                    <button type="submit" id="btnPlaceOrder" class="btn-place-order w-full sm:w-auto">
+                        <i class="fas fa-shield-alt"></i>
+                        <span><%= isAccount ? 'Confirm & Buy Account' : 'Confirm & Place Order' %></span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <% } %>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var isUserLoggedIn = <%= currentUser ? 'true' : 'false' %>;
+    var currentCurrencyCode = "<%= currentCurrencyCode %>";
+    var currSymbol = "<%= currentCurrency.symbol %>";
+    var productTitle = "<%= product.title %>";
+    var isRoot = <%= isRoot ? 'true' : 'false' %>;
+    var isRootService = <%= isRootService ? 'true' : 'false' %>;
+    var storeWhatsNumber = "<%= whatsAppNumber %>";
+    var storeWhatsIntl = "<%= whatsAppIntl %>".replace(/[^0-9]/g, '');
+    if (storeWhatsIntl.startsWith('0')) {
+        storeWhatsIntl = '88' + storeWhatsIntl;
+    } else if (storeWhatsIntl.length === 10 && storeWhatsIntl.startsWith('1')) {
+        storeWhatsIntl = '880' + storeWhatsIntl;
+    }
+    var storePaymentNumber = "<%= paymentNumber %>";
+
+    var selectedVariantInput = document.getElementById('selectedVariantInput');
+    var selectedPriceInput = document.getElementById('selectedPriceInput');
+    var selectedPaymentMethodInput = document.getElementById('selectedPaymentMethodInput');
+    var finalPriceDisplay = document.getElementById('finalPriceDisplay');
+    var btnWhatsAppDirect = document.getElementById('btnWhatsAppDirect');
+
+    var selectedPhoneBrandInput = document.getElementById('selectedPhoneBrandInput');
+    var inputPhoneModel = document.getElementById('inputPhoneModel');
+    var selectAndroidVersion = document.getElementById('selectAndroidVersion');
+    var selectBootloaderStatus = document.getElementById('selectBootloaderStatus');
+    var selectRootSolution = document.getElementById('selectRootSolution');
+    var inputPlayerId = document.getElementById('inputPlayerId');
+    var inputWhatsApp = document.getElementById('inputWhatsApp');
+
+    // Dynamic price formatting
+    var dynamicUsdtRate = <%= (settings.currency_rates && settings.currency_rates.USDT && Number(settings.currency_rates.USDT.rate)) || 0.008 %>;
+    var dynamicInrRate = <%= (settings.currency_rates && settings.currency_rates.INR && Number(settings.currency_rates.INR.rate)) || 1 %>;
+
+    function formatCurr(priceVal) {
+        if (currentCurrencyCode === 'USDT') {
+            return '$' + (priceVal * dynamicUsdtRate).toFixed(2);
+        } else if (currentCurrencyCode === 'INR') {
+            return '₹' + Math.round(priceVal * dynamicInrRate);
+        } else {
+            return Math.round(priceVal) + '৳';
+        }
+    }
+
+    function getConvertedNum(priceVal) {
+        if (currentCurrencyCode === 'USDT') {
+            return parseFloat((priceVal * dynamicUsdtRate).toFixed(2));
+        } else if (currentCurrencyCode === 'INR') {
+            return Math.round(priceVal * dynamicInrRate);
+        }
+        return Math.round(priceVal);
+    }
+
+    // Dynamic WhatsApp Link Updater
+    function updateWhatsAppUrl() {
+        if (!btnWhatsAppDirect) return;
+        var variant = selectedVariantInput ? selectedVariantInput.value : '';
+        var priceFormatted = finalPriceDisplay ? finalPriceDisplay.textContent.trim() : '';
+
+        var waMsg = "Hello Panel Sell, I want to order " + productTitle + " (" + variant + ") for " + priceFormatted + ".\n";
+
+        if (isRoot) {
+            var brand = selectedPhoneBrandInput ? selectedPhoneBrandInput.value : 'Xiaomi / Redmi';
+            var model = inputPhoneModel ? inputPhoneModel.value.trim() : '';
+            var androidVer = selectAndroidVersion ? selectAndroidVersion.value : 'Android 13';
+            var bootloader = selectBootloaderStatus ? selectBootloaderStatus.value : 'Unlocked';
+            var rootSol = selectRootSolution ? selectRootSolution.value : 'KernelSU';
+
+            waMsg += "\n📱 Device Variant To Root:\n";
+            waMsg += "- Phone Brand: " + brand + "\n";
+            waMsg += "- Phone Model: " + (model || 'Need to Root') + "\n";
+            waMsg += "- Android Version: " + androidVer + "\n";
+            waMsg += "- Bootloader: " + bootloader + "\n";
+            waMsg += "- Preferred Root: " + rootSol + "\n";
+        }
+
+        if (inputPlayerId && inputPlayerId.value.trim()) {
+            waMsg += "- UID / Player ID: " + inputPlayerId.value.trim() + "\n";
+        }
+
+        var method = selectedPaymentMethodInput ? selectedPaymentMethodInput.value : 'bKash';
+        waMsg += "- Payment Gateway: " + method + "\n";
+
+        btnWhatsAppDirect.href = "https://wa.me/" + storeWhatsIntl + "?text=" + encodeURIComponent(waMsg);
+    }
+
+    // 1. Phone Brand Pill Click Handler
+    var brandBtns = document.querySelectorAll('.phone-brand-btn');
+    brandBtns.forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            brandBtns.forEach(function(b) { b.classList.remove('active'); });
+            this.classList.add('active');
+
+            var brandName = this.getAttribute('data-brand') || 'Xiaomi / Redmi';
+            if (selectedPhoneBrandInput) {
+                selectedPhoneBrandInput.value = brandName;
+            }
+            updateWhatsAppUrl();
+        });
+    });
+
+    // Coupon State & Recalculation
+    var inputCoupon = document.getElementById('inputCouponCode');
+    var btnApplyCoupon = document.getElementById('btnApplyCoupon');
+    var btnRemoveCoupon = document.getElementById('btnRemoveCoupon');
+    var couponMsg = document.getElementById('couponMessage');
+    var appliedCouponHidden = document.getElementById('appliedCouponHidden');
+    var couponDiscountAmt = 0;
+
+    function recalculateTotal() {
+        var activeCard = document.querySelector('.package-card.active');
+        var basePrice = activeCard ? parseFloat(activeCard.getAttribute('data-price') || '0') : 0;
+        var finalPrice = Math.max(0, basePrice - couponDiscountAmt);
+
+        if (selectedPriceInput) selectedPriceInput.value = getConvertedNum(finalPrice);
+        if (finalPriceDisplay) {
+            if (couponDiscountAmt > 0) {
+                finalPriceDisplay.innerHTML = formatCurr(finalPrice) + ' <small class="text-xs text-emerald-400 font-bold">(' + formatCurr(couponDiscountAmt) + ' OFF)</small>';
+            } else {
+                finalPriceDisplay.textContent = formatCurr(finalPrice);
+            }
+        }
+        updateWhatsAppUrl();
+    }
+
+    if (btnApplyCoupon && inputCoupon) {
+        btnApplyCoupon.addEventListener('click', function() {
+            var code = inputCoupon.value.trim();
+            if (!code) return;
+
+            var activeCard = document.querySelector('.package-card.active');
+            var basePrice = activeCard ? parseFloat(activeCard.getAttribute('data-price') || '0') : 50;
+
+            btnApplyCoupon.disabled = true;
+            btnApplyCoupon.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+
+            fetch('/api/coupon/validate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: code, price: basePrice })
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                btnApplyCoupon.disabled = false;
+                btnApplyCoupon.innerHTML = '<i class="fas fa-check"></i> Apply Code';
+
+                if (data.valid) {
+                    couponDiscountAmt = data.discount_amount || 0;
+                    appliedCouponHidden.value = data.code;
+                    inputCoupon.disabled = true;
+                    btnApplyCoupon.style.display = 'none';
+                    if (btnRemoveCoupon) btnRemoveCoupon.style.display = 'inline-flex';
+                    couponMsg.style.display = 'block';
+                    couponMsg.innerHTML = '<span class="text-emerald-400 font-bold"><i class="fas fa-check-circle mr-1"></i> ' + data.message + '</span>';
+                    recalculateTotal();
+                } else {
+                    couponMsg.style.display = 'block';
+                    couponMsg.innerHTML = '<span class="text-red-400 font-bold"><i class="fas fa-times-circle mr-1"></i> ' + (data.message || 'Invalid coupon') + '</span>';
+                }
+            })
+            .catch(function() {
+                btnApplyCoupon.disabled = false;
+                btnApplyCoupon.innerHTML = '<i class="fas fa-check"></i> Apply Code';
+                couponMsg.style.display = 'block';
+                couponMsg.innerHTML = '<span class="text-red-400">Failed to validate coupon.</span>';
+            });
+        });
+    }
+
+    if (btnRemoveCoupon) {
+        btnRemoveCoupon.addEventListener('click', function() {
+            couponDiscountAmt = 0;
+            appliedCouponHidden.value = '';
+            inputCoupon.disabled = false;
+            inputCoupon.value = '';
+            btnApplyCoupon.style.display = 'inline-flex';
+            btnRemoveCoupon.style.display = 'none';
+            couponMsg.style.display = 'none';
+            recalculateTotal();
+        });
+    }
+
+    // 2. Package Card Click Handler
+    var packageCards = document.querySelectorAll('.package-card');
+    packageCards.forEach(function(card) {
+        card.addEventListener('click', function() {
+            packageCards.forEach(function(c) { c.classList.remove('active'); });
+            this.classList.add('active');
+
+            var variant = this.getAttribute('data-variant') || (isRootService ? 'Standard Device Rooting' : '1 Day Key');
+            selectedVariantInput.value = variant;
+
+            recalculateTotal();
+        });
+    });
+
+    // 3. Payment Method Card Click Handler
+    var paymentCards = document.querySelectorAll('.payment-method-card');
+    var displayPaymentName = document.getElementById('displayPaymentMethodName');
+    var displayPaymentNumber = document.getElementById('displayPaymentNumber');
+    var displayPaymentNote = document.getElementById('displayPaymentNote');
+
+    paymentCards.forEach(function(card) {
+        card.addEventListener('click', function() {
+            paymentCards.forEach(function(c) { c.classList.remove('active'); });
+            this.classList.add('active');
+
+            var method = this.getAttribute('data-method') || 'bKash';
+            var number = this.getAttribute('data-number') || storePaymentNumber;
+            var note = this.getAttribute('data-note') || '';
+            var color = this.getAttribute('data-color') || '#00f0ff';
+            var placeholder = this.getAttribute('data-placeholder') || 'Enter Transaction ID';
+            var help = this.getAttribute('data-help') || 'Copy the TrxID and paste it here.';
+
+            if (selectedPaymentMethodInput) selectedPaymentMethodInput.value = method;
+            if (displayPaymentName) displayPaymentName.textContent = method;
+            if (displayPaymentNumber) displayPaymentNumber.textContent = number;
+            if (displayPaymentNote) {
+                displayPaymentNote.textContent = '(' + note + ')';
+                displayPaymentNote.style.color = color;
+            }
+            var inputTrx = document.getElementById('inputTrxId');
+            if (inputTrx) {
+                inputTrx.placeholder = placeholder;
+                if (method === 'Wallet Balance') {
+                    inputTrx.value = 'WALLET-AUTO-DEBIT';
+                    inputTrx.readOnly = true;
+                } else {
+                    if (inputTrx.value === 'WALLET-AUTO-DEBIT') inputTrx.value = '';
+                    inputTrx.readOnly = false;
+                }
+            }
+            var displayHelp = document.getElementById('displayPaymentHelp');
+            if (displayHelp) displayHelp.textContent = help;
+
+            updateWhatsAppUrl();
+        });
+    });
+
+    // 4. Copy payment number button
+    var btnCopy = document.getElementById('btnCopyNumber');
+    if (btnCopy && displayPaymentNumber) {
+        btnCopy.addEventListener('click', function() {
+            var text = displayPaymentNumber.textContent.trim();
+            navigator.clipboard.writeText(text).then(function() {
+                btnCopy.innerHTML = '<i class="fas fa-check text-green-600"></i> Copied!';
+                setTimeout(function() {
+                    btnCopy.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                }, 2000);
+            });
+        });
+    }
+
+    // 5. Watch Device Inputs for dynamic WhatsApp update
+    if (inputPhoneModel) inputPhoneModel.addEventListener('input', updateWhatsAppUrl);
+    if (selectAndroidVersion) selectAndroidVersion.addEventListener('change', updateWhatsAppUrl);
+    if (selectBootloaderStatus) selectBootloaderStatus.addEventListener('change', updateWhatsAppUrl);
+    if (selectRootSolution) selectRootSolution.addEventListener('change', updateWhatsAppUrl);
+    if (inputPlayerId) inputPlayerId.addEventListener('input', updateWhatsAppUrl);
+
+    // Initial WhatsApp message trigger
+    updateWhatsAppUrl();
+
+    // WhatsApp Buy click handler with Login check
+    if (btnWhatsAppDirect) {
+        btnWhatsAppDirect.addEventListener('click', function(e) {
+            if (!isUserLoggedIn) {
+                e.preventDefault();
+                alert('অর্ডার করার পূর্বে অনুগ্রহ করে আপনার অ্যাকাউন্টে লগইন করুন।');
+                window.location.href = '/login?returnUrl=' + encodeURIComponent(window.location.pathname);
+                return false;
+            }
+        });
+    }
+
+    // 6. Client-side form validation before submit
+    var checkoutForm = document.getElementById('checkoutForm');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', function(e) {
+            if (!isUserLoggedIn) {
+                e.preventDefault();
+                alert('প্রোডাক্ট কিনতে হলে অনুগ্রহ করে প্রথমে আপনার অ্যাকাউন্টে লগইন করুন।');
+                window.location.href = '/login?returnUrl=' + encodeURIComponent(window.location.pathname);
+                return false;
+            }
+
+            var whatsapp = document.getElementById('inputWhatsApp').value.trim();
+            var trxId = document.getElementById('inputTrxId').value.trim();
+
+            if (isRoot) {
+                var phoneModel = inputPhoneModel ? inputPhoneModel.value.trim() : '';
+                if (!phoneModel) {
+                    e.preventDefault();
+                    alert('Please enter your exact Phone Model Variant (e.g. Poco X3 Pro / Galaxy A52s) so we can prepare your root files.');
+                    if (inputPhoneModel) inputPhoneModel.focus();
+                    return;
+                }
+            } else {
+                var playerId = inputPlayerId ? inputPlayerId.value.trim() : '';
+                if (!playerId && !isRootService) {
+                    e.preventDefault();
+                    alert('Please fill in your In-Game Player ID / UID to proceed.');
+                    inputPlayerId.focus();
+                    return;
+                }
+            }
+
+            if (!whatsapp || !trxId) {
+                e.preventDefault();
+                alert('Please fill in your WhatsApp Number and Payment Transaction ID (TrxID) to proceed.');
+                if (!whatsapp) document.getElementById('inputWhatsApp').focus();
+                else if (!trxId) document.getElementById('inputTrxId').focus();
+            }
+        });
+    }
+});
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,24 @@
+{
+  "name": "ZERO EXCEPTION",
+  "short_name": "ZERO EXCEPTION",
+  "description": "Fast, Trusted 24/7 Digital Game Key Store",
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "background_color": "#070e1c",
+  "theme_color": "#00f0ff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/uploads/settings/01KQFM748K0Y2NRR56VXKVZGNP.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/uploads/settings/01KQFM748K0Y2NRR56VXKVZGNP.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

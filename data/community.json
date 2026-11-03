@@ -1,0 +1,25 @@
+{
+  "top_buyers": [
+    {
+      "name": "Misbah",
+      "amount": "42233৳",
+      "rank": "🥇",
+      "tag": "Top Member",
+      "avatar": "https://panelsell.store/uploads/avatar/1.jpg?v=1791657603"
+    },
+    {
+      "name": "Hacker 1971",
+      "amount": "36750৳",
+      "rank": "",
+      "tag": "Top Member",
+      "avatar": ""
+    },
+    {
+      "name": "AdminRakib",
+      "amount": "27218৳",
+      "rank": "",
+      "tag": "Top Member",
+      "avatar": ""
+    }
+  ]
+}

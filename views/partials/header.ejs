@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title><%= title ? title + ' - ' + settings.site_name : settings.site_name %></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="<%= settings.site_tagline %>" />
+    <meta name="theme-color" content="<%= settings.theme_color %>">
+    <link rel="shortcut icon" type="image/png" href="<%= settings.favicon %>">
+
+    <!-- PWA & Mobile Web App Meta -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ZERO EXCEPTION">
+    <link rel="apple-touch-icon" href="<%= settings.favicon %>">
+
+    <!-- CSS Assets -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/toastr.min.css">
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/tailwindcss.css">
+    <link rel="stylesheet" href="/assets/css/custom-styles.css">
+    <link rel="stylesheet" href="/assets/css/panelsell-extracted.css">
+    <link rel="stylesheet" href="/assets/css/cyberpunk.css">
+    <script src="/assets/js/cyber-audio-theme.js"></script>
+
+    <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+    :root {
+        --theme-color: <%= settings.theme_color %>;
+        --logo-color: #00f0ff;
+        --background-color: #070e1c;
+        --primary-font-color: #cbd5e1;
+        --navigation-font-color: #ffffff;
+        --footer-color: #050d1a;
+        --footer-font-color: #cbd5e1;
+        --content-box-color: #0a1329;
+        --main-accent: #00f0ff;
+        --main-pink: #ec4899;
+        --nav-height: 72px;
+    }
+
+    /* Product card and scroll reveal overrides: ensure 100% visible */
+    .reveal-on-scroll {
+        opacity: 1 !important;
+        transform: none !important;
+        visibility: visible !important;
+    }
+    .product-grid-equal > .product-item {
+        display: flex;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    .product-item.is-hidden {
+        display: none !important;
+    }
+
+    .site-name-stylish {
+        font-family: 'Arial Black', Impact, sans-serif;
+        font-size: 1.45rem;
+        font-weight: 900;
+        letter-spacing: 1px;
+        background: linear-gradient(135deg, #008c09 0%, #00b30c 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-transform: uppercase;
+        display: inline-block;
+    }
+    @media (max-width: 480px) {
+        .site-name-stylish {
+            font-size: 1.12rem;
+            letter-spacing: 0.5px;
+        }
+        .home-icon-btn {
+            width: 32px;
+            height: 32px;
+            font-size: 0.85rem;
+        }
+    }
+
+    .home-icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: #008c09;
+        color: #ffffff !important;
+        font-size: 1rem;
+        box-shadow: 0 2px 6px rgba(0, 140, 9, 0.35);
+        transition: transform 0.2s, background-color 0.2s;
+        text-decoration: none !important;
+    }
+    .home-icon-btn:hover {
+        transform: scale(1.05);
+        background: #007307;
+        color: #ffffff !important;
+    }
+
+    .btn-glass-login {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 16px;
+        border-radius: 9999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        background: #008c09;
+        color: #ffffff !important;
+        box-shadow: 0 2px 8px rgba(0, 140, 9, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.2s ease;
+        text-decoration: none !important;
+    }
+    .btn-glass-login:hover {
+        background: #006e00;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 140, 9, 0.5);
+    }
+
+    .header-wallet-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(6, 78, 59, 0.9) 100%) !important;
+        border: 1.5px solid #10b981 !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.35) !important;
+        text-decoration: none !important;
+        transition: all 0.25s ease;
+        cursor: pointer;
+        font-size: 0.78rem;
+    }
+    .header-wallet-btn:hover {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.45) 0%, rgba(6, 95, 70, 0.95) 100%) !important;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.6) !important;
+        transform: translateY(-1px);
+        color: #ffffff !important;
+    }
+
+    .btn-nav-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .btn-nav-action:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-glass-logout {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #ef4444;
+        color: #ffffff !important;
+        box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+        border: 1.5px solid rgba(255, 255, 255, 0.6);
+        transition: all 0.2s;
+        text-decoration: none !important;
+    }
+    .btn-glass-logout:hover {
+        background: #dc2626;
+        transform: scale(1.08);
+        color: #ffffff !important;
+    }
+
+    /* Currency switch dropdown */
+    .currency-switch {
+        position: relative !important;
+        display: inline-block !important;
+        z-index: 10000 !important;
+    }
+    .currency-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 9999px;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        font-size: 0.8rem;
+        font-weight: 800 !important;
+        letter-spacing: 0.5px !important;
+        cursor: pointer;
+    }
+    .currency-pill-code {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        font-weight: 900 !important;
+        letter-spacing: 1px !important;
+    }
+    .currency-menu {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        position: absolute !important;
+        right: 0 !important;
+        top: calc(100% + 8px) !important;
+        min-width: 220px !important;
+        background: #080d1e !important;
+        border-radius: 14px !important;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.85) !important;
+        border: 1px solid rgba(0, 240, 255, 0.4) !important;
+        z-index: 99999 !important;
+        padding: 6px !important;
+    }
+    .currency-menu.show,
+    .currency-switch.is-open .currency-menu {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+    .currency-menu-head {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #64748b;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .currency-option {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: #1e293b;
+        text-decoration: none !important;
+        gap: 10px;
+        transition: background 0.15s;
+    }
+    .currency-option:hover, .currency-option.is-active {
+        background: #f0fdf4;
+        color: #008c09;
+    }
+    .currency-option-flag {
+        font-size: 1.1rem;
+    }
+    .currency-option-text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+    }
+    .currency-option-rate {
+        font-size: 0.7rem;
+        color: #94a3b8;
+        font-style: normal;
+    }
+
+    /* User Profile Dropdown */
+    .user-dropdown-wrap {
+        position: relative;
+    }
+    .user-dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 115%;
+        min-width: 250px;
+        max-width: 320px;
+        max-height: 400px;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        -webkit-overflow-scrolling: touch;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        border: 1px solid #e2e8f0;
+        z-index: 1050;
+        padding: 6px;
+        scrollbar-width: thin;
+        scrollbar-color: #00f0ff rgba(15, 23, 42, 0.8);
+    }
+    .user-dropdown-menu::-webkit-scrollbar {
+        width: 5px;
+    }
+    .user-dropdown-menu::-webkit-scrollbar-track {
+        background: rgba(15, 23, 42, 0.8);
+        border-radius: 10px;
+    }
+    .user-dropdown-menu::-webkit-scrollbar-thumb {
+        background: #00f0ff;
+        border-radius: 10px;
+    }
+    .user-dropdown-menu.show {
+        display: block;
+    }
+    .user-dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #1e293b;
+        text-decoration: none !important;
+        transition: background 0.15s, color 0.15s;
+    }
+    .user-dropdown-item:hover {
+        background: #f0fdf4;
+        color: #008c09;
+    }
+    .user-dropdown-item.text-red-600:hover {
+        background: #fef2f2;
+        color: #dc2626 !important;
+    }
+
+    /* Notice Marquee Bar */
+    .announcement-bar {
+        background: linear-gradient(90deg, #008c09, #02ab0d);
+        color: #ffffff;
+        font-size: 0.82rem;
+        font-weight: 700;
+        padding: 6px 12px;
+        overflow: hidden;
+        white-space: nowrap;
+        position: relative;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .announcement-badge {
+        background: #ffffff;
+        color: #008c09;
+        font-size: 0.7rem;
+        font-weight: 900;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        margin-right: 10px;
+        shrink: 0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .announcement-marquee {
+        display: inline-block;
+        padding-left: 100%;
+        animation: marquee 25s linear infinite;
+    }
+    @keyframes marquee {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(-100%, 0); }
+    }
+    .announcement-bar:hover .announcement-marquee {
+        animation-play-state: paused;
+    }
+
+    /* Horizontal Overflow Prevention across whole document */
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+    }
+    .body-bg {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+    }
+
+    /* Header & Mobile Container Overflow Fixes */
+    .header {
+        width: 100% !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+        position: relative !important;
+        z-index: 1000 !important;
+        overflow: visible !important;
+    }
+    .glass-safe {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        position: relative !important;
+        overflow: visible !important;
+    }
+    .nav-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        flex-wrap: nowrap !important;
+        position: relative !important;
+        overflow: visible !important;
+    }
+    @media (max-width: 767px) {
+        .header .container {
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+            max-width: 100% !important;
+        }
+        .glass-safe {
+            border-radius: 20px !important;
+            padding: 8px 10px !important;
+        }
+        .site-name-stylish {
+            font-size: 1.05rem !important;
+            max-width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .home-icon-btn {
+            width: 32px !important;
+            height: 32px !important;
+            font-size: 0.85rem !important;
+        }
+        .btn-glass-login {
+            padding: 4px 12px !important;
+            font-size: 0.75rem !important;
+        }
+        .header-wallet-btn {
+            padding: 4px 8px !important;
+            font-size: 0.75rem !important;
+        }
+    }
+
+    /* Single Unified Responsive Header */
+    .header-desktop-features {
+        display: none !important;
+    }
+    .mobile-quick-strip {
+        display: flex !important;
+        align-items: center;
+        gap: 8px;
+        overflow-x: auto;
+        padding-top: 8px;
+        margin-top: 8px;
+        border-top: 1px solid rgba(0, 240, 255, 0.2);
+        -webkit-overflow-scrolling: touch;
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+    }
+    .mobile-quick-strip::-webkit-scrollbar {
+        display: none;
+    }
+
+    @media (min-width: 768px) {
+        .header-desktop-features {
+            display: flex !important;
+            align-items: center;
+            gap: 6px;
+        }
+        .mobile-quick-strip {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 1280px) {
+        .header-desktop-features {
+            gap: 4px !important;
+        }
+        .btn-nav-action {
+            padding: 3px 7px !important;
+            font-size: 0.7rem !important;
+            gap: 3px !important;
+        }
+        .header-wallet-btn {
+            padding: 3px 8px !important;
+            font-size: 0.74rem !important;
+        }
+    }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="body-bg no-select min-h-screen flex flex-col justify-between">
+    <div>
+        <!-- Notice announcement bar -->
+        <% if (settings.notice_marquee) { %>
+        <div class="announcement-bar">
+            <span class="announcement-badge"><i class="fas fa-bullhorn me-1"></i> NOTICE</span>
+            <div class="announcement-marquee">
+                <%= settings.notice_marquee %>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="container m-auto p-2 py-3 md:py-4 md:px-0">
+                <div class="glass-safe">
+                    <div class="nav-container flex items-center justify-between">
+                        <!-- Brand (Home Icon + Logo) -->
+                        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                            <a href="/" class="home-icon-btn" title="Home">
+                                <i class="fas fa-home"></i>
+                            </a>
+                            <a href="/" class="no-underline flex items-center gap-2">
+                                <span class="site-name-stylish"><%= settings.site_name %></span>
+                            </a>
+                        </div>
+
+                        <!-- Desktop Gaming Feature Pills (Desktop Only) -->
+                        <div class="header-desktop-features hidden md:flex items-center gap-1.5 lg:gap-2">
+                            <!-- Lucky Spin Wheel Button -->
+                            <button type="button" onclick="openLuckySpinModal()" class="btn-nav-action bg-gradient-to-r from-amber-500/20 via-pink-500/15 to-purple-500/20 border border-amber-400/80 text-amber-300 hover:text-white hover:border-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.25)] cursor-pointer" title="Lucky Spin & Win Rewards Wheel">
+                                <i class="fas fa-dharmachakra text-amber-400 text-xs"></i>
+                                <span>Spin (<%= (currentUser && currentUser.spin_credits) ? currentUser.spin_credits : 0 %>)</span>
+                            </button>
+
+                            <!-- VIP Membership Pass Button -->
+                            <a href="/vip" class="btn-nav-action <%= isVip ? 'bg-gradient-to-r from-amber-500/25 to-yellow-600/30 border border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.3)]' : 'bg-slate-900/90 border border-amber-500/50 text-amber-300 hover:text-white hover:bg-amber-950/60' %>" title="<%= isVip ? 'Active VIP Member (10% Flat Discount)' : 'Upgrade to VIP Pass' %>">
+                                <i class="fas fa-crown text-amber-400 text-xs"></i>
+                                <span><%= isVip ? 'VIP' : 'VIP Pass' %></span>
+                            </a>
+
+                            <!-- Cyber Mystery Box Button -->
+                            <a href="/mystery-box" class="btn-nav-action bg-gradient-to-r from-cyan-950/80 to-pink-950/70 border border-cyan-500/50 text-cyan-300 hover:text-white hover:border-pink-500/60 shadow-[0_0_10px_rgba(6,182,212,0.2)]" title="Cyber Mystery Box (Unlock Rewards)">
+                                <i class="fas fa-cube text-cyan-400 text-xs"></i>
+                                <span>Mystery Box</span>
+                            </a>
+
+                            <!-- Leaderboard Button -->
+                            <a href="/leaderboard" class="btn-nav-action bg-amber-950/70 border border-amber-500/50 text-amber-300 hover:text-white hover:bg-amber-900/80 shadow-[0_0_8px_rgba(245,158,11,0.25)]" title="Monthly Top Spenders Leaderboard">
+                                <i class="fas fa-trophy text-amber-400 text-xs"></i>
+                                <span>Leaderboard</span>
+                            </a>
+
+                            <!-- Redeem Code Button -->
+                            <button type="button" onclick="openRedeemGiftCardModal()" class="btn-nav-action bg-emerald-950/80 border border-emerald-500/60 text-emerald-300 hover:text-white cursor-pointer shadow-[0_0_8px_rgba(16,185,129,0.3)]" title="Redeem Gift Card / Voucher">
+                                <i class="fas fa-gift text-emerald-400 text-xs"></i>
+                                <span>Redeem</span>
+                            </button>
+
+                            <!-- Track Order Button -->
+                            <a href="/track" class="btn-nav-action bg-cyan-950/70 border border-cyan-500/50 text-cyan-300 hover:text-white hover:bg-cyan-900/80" title="Live Order Tracker">
+                                <i class="fas fa-crosshairs text-cyan-400 text-xs"></i>
+                                <span>Track</span>
+                            </a>
+
+                            <!-- Install App Button (Desktop) -->
+                            <button type="button" class="btn-pwa-install btn-nav-action bg-emerald-950/80 border border-emerald-500/60 text-emerald-300 hover:text-white cursor-pointer shadow-[0_0_8px_rgba(16,185,129,0.3)]" title="Install Web App">
+                                <i class="fas fa-mobile-screen-button text-emerald-400 text-xs"></i>
+                                <span>Install</span>
+                            </button>
+                        </div>
+
+                        <!-- Right Side: Unified Wallet, Currency & User Controls (Single Instance!) -->
+                        <div class="header-user-controls flex items-center gap-1.5 sm:gap-2 shrink-0">
+                            <!-- Theme Color & Audio SFX Control (Desktop) -->
+                            <div class="relative hidden lg:inline-flex items-center gap-1.5 bg-[#0f172a] border border-slate-700 rounded-full px-2 py-1 shadow-sm" title="Cyberpunk Audio & Theme Color Switcher">
+                                <button type="button" onclick="toggleCyberSfx()" class="text-slate-400 hover:text-white text-[11px] cursor-pointer p-0.5" title="Toggle Sound FX">
+                                    <i class="fas fa-volume-high cyber-sfx-icon text-cyan-400"></i>
+                                </button>
+                                <div class="w-px h-3 bg-slate-700"></div>
+                                <div class="flex items-center gap-1">
+                                    <button type="button" onclick="setCyberTheme('cyan')" class="w-2.5 h-2.5 rounded-full bg-[#00f0ff] theme-dot hover:scale-125 transition" data-theme="cyan" title="Neon Cyan"></button>
+                                    <button type="button" onclick="setCyberTheme('green')" class="w-2.5 h-2.5 rounded-full bg-[#00ff66] theme-dot hover:scale-125 transition" data-theme="green" title="Toxic Green"></button>
+                                    <button type="button" onclick="setCyberTheme('pink')" class="w-2.5 h-2.5 rounded-full bg-[#ff007f] theme-dot hover:scale-125 transition" data-theme="pink" title="Cyber Pink"></button>
+                                    <button type="button" onclick="setCyberTheme('gold')" class="w-2.5 h-2.5 rounded-full bg-[#f59e0b] theme-dot hover:scale-125 transition" data-theme="gold" title="Royal Gold"></button>
+                                </div>
+                            </div>
+
+                            <!-- Fixed Currency Badge (Pure Display Only - No Dropdown / Non-clickable) -->
+                            <div class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#070d1d] border border-cyan-400/80 text-cyan-300 shadow-[0_0_10px_rgba(0,240,255,0.25)] select-none cursor-default font-bold text-xs" title="Store Currency: <%= currentCurrencyCode %>">
+                                <span class="text-sm"><%= currentCurrency.flag %></span>
+                                <span class="font-black text-cyan-200 tracking-wider" style="font-family: 'Inter', system-ui, -apple-system, sans-serif !important;"><%= currentCurrencyCode %></span>
+                            </div>
+
+                            <!-- Wallet Button (Single instance!) -->
+                            <% if (currentUser) { %>
+                            <a href="/add-funds" class="header-wallet-btn" title="My Wallet Balance: <%= (currentUser.wallet_balance || 0) %>৳ (Click to Add Money)">
+                                <i class="fas fa-wallet text-emerald-400"></i>
+                                <b class="font-orbitron text-emerald-300 font-black"><%= (currentUser.wallet_balance || 0) %>৳</b>
+                            </a>
+                            <% } else { %>
+                            <a href="/login?returnUrl=/add-funds" class="header-wallet-btn" title="Store Wallet (Click to Login & Add Money)">
+                                <i class="fas fa-wallet text-emerald-400"></i>
+                                <b class="font-orbitron text-emerald-300 font-black">0৳</b>
+                            </a>
+                            <% } %>
+
+                            <!-- Login / Profile Button with Dropdown (Single instance!) -->
+                            <% if (isAdmin) { %>
+                                <div class="relative user-dropdown-wrap">
+                                    <button type="button" class="btn-glass-login flex items-center gap-1.5 cursor-pointer user-menu-toggle" style="background:#016e00;">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <span class="hidden sm:inline">ADMIN</span>
+                                        <i class="fas fa-chevron-down text-[10px] ml-1"></i>
+                                    </button>
+                                    <div class="user-dropdown-menu">
+                                        <div class="px-3 py-2 border-b border-gray-100 text-xs">
+                                            <div class="font-bold text-gray-800">Administrator</div>
+                                            <div class="text-gray-500 text-[11px] font-mono truncate">tgsgaming2024@gmail.com</div>
+                                        </div>
+                                        <a href="/admin" class="user-dropdown-item">
+                                            <i class="fas fa-chart-pie text-emerald-600"></i>
+                                            <span>Admin Dashboard</span>
+                                        </a>
+                                        <a href="/logout" class="user-dropdown-item text-red-600">
+                                            <i class="fas fa-power-off text-red-500"></i>
+                                            <span>Log Out</span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <a href="/logout" class="btn-glass-logout" title="Sign Out / Logout">
+                                    <i class="fas fa-power-off text-xs"></i>
+                                </a>
+                            <% } else if (currentUser) { %>
+                                <div class="relative user-dropdown-wrap">
+                                    <button type="button" class="btn-glass-login flex items-center gap-1.5 cursor-pointer user-menu-toggle" style="<%= (currentUser.role === 'reseller') ? 'background: linear-gradient(135deg, #d97706, #b45309); border: 1px solid #f59e0b;' : ((currentUser.role === 'sub_reseller' || currentUser.role === 'sub-reseller') ? 'background: linear-gradient(135deg, #0284c7, #0369a1); border: 1px solid #38bdf8;' : '') %>">
+                                        <% if (currentUser.avatar) { %>
+                                            <img src="<%= currentUser.avatar %>" alt="Avatar" class="w-5 h-5 rounded-full object-cover border border-cyan-300 user-nav-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
+                                            <i class="fas <%= (currentUser.role === 'reseller') ? 'fa-crown text-yellow-300' : ((currentUser.role === 'sub_reseller' || currentUser.role === 'sub-reseller') ? 'fa-gem text-cyan-200' : 'fa-user-circle') %>" style="display: none;"></i>
+                                        <% } else { %>
+                                            <i class="fas <%= (currentUser.role === 'reseller') ? 'fa-crown text-yellow-300' : ((currentUser.role === 'sub_reseller' || currentUser.role === 'sub-reseller') ? 'fa-gem text-cyan-200' : 'fa-user-circle') %>"></i>
+                                        <% } %>
+                                        <span class="user-display-name-nav hidden sm:inline"><%= currentUser.name || 'Account' %></span>
+                                        <% if (isVip) { %>
+                                        <span class="text-[11px] text-amber-300 font-black drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]" title="VIP Member">👑</span>
+                                        <% } %>
+                                        <i class="fas fa-chevron-down text-[10px] ml-1"></i>
+                                    </button>
+                                    <div class="user-dropdown-menu">
+                                        <div class="px-3.5 py-2.5 border-b border-gray-100 text-xs">
+                                            <div class="flex items-center gap-2.5 mb-1.5">
+                                                <% if (currentUser.avatar) { %>
+                                                    <img src="<%= currentUser.avatar %>" alt="" class="w-9 h-9 rounded-xl object-cover border border-cyan-400 shrink-0 shadow-sm user-nav-avatar-img" onerror="this.style.display='none';" />
+                                                <% } %>
+                                                <div class="min-w-0 flex-1">
+                                                    <div class="font-bold text-gray-900 flex items-center justify-between gap-1">
+                                                        <span class="truncate max-w-[120px] user-display-name-nav"><%= currentUser.name %></span>
+                                                        <span class="text-[9px] px-1.5 py-0.5 rounded font-black uppercase shrink-0 <%= (currentUser.role === 'reseller') ? 'bg-amber-100 text-amber-800' : ((currentUser.role === 'sub_reseller' || currentUser.role === 'sub-reseller') ? 'bg-cyan-100 text-cyan-800' : 'bg-emerald-100 text-emerald-800') %>">
+                                                            <%= (currentUser.role === 'reseller') ? 'RESELLER' : ((currentUser.role === 'sub_reseller' || currentUser.role === 'sub-reseller') ? 'SUB-RESELLER' : 'CUSTOMER') %>
+                                                        </span>
+                                                    </div>
+                                                    <div class="text-gray-500 text-[11px] truncate"><%= currentUser.email %></div>
+                                                </div>
+                                            </div>
+                                            <div class="pt-1.5 border-t border-gray-100 flex items-center justify-between">
+                                                <span class="text-[10px] text-gray-500 font-bold uppercase">Wallet Balance:</span>
+                                                <span class="font-orbitron font-black text-emerald-600 text-xs"><%= (currentUser.wallet_balance || 0) %>৳</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- VIP Pass -->
+                                        <a href="/vip" class="user-dropdown-item <%= isVip ? 'bg-amber-500/10 text-amber-600 font-bold' : '' %>">
+                                            <i class="fas fa-crown text-amber-500"></i>
+                                            <span>ZERO VIP Pass (<%= isVip ? 'সক্রিয় 👑' : 'আপগ্রেড' %>)</span>
+                                        </a>
+
+                                        <!-- Cyber Mystery Box -->
+                                        <a href="/mystery-box" class="user-dropdown-item bg-cyan-50/50 hover:bg-cyan-100/70">
+                                            <i class="fas fa-cube text-cyan-500"></i>
+                                            <span class="font-bold text-cyan-700">Cyber Mystery Box</span>
+                                        </a>
+
+                                        <!-- Lucky Spin & Win -->
+                                        <% if (currentUser.spin_credits && currentUser.spin_credits > 0) { %>
+                                        <a href="javascript:void(0)" onclick="openLuckySpinModal()" class="user-dropdown-item bg-amber-500/10 hover:bg-amber-500/20">
+                                            <i class="fas fa-dharmachakra text-amber-500"></i>
+                                            <span class="font-bold text-amber-600">Lucky Spin (<%= currentUser.spin_credits %> টি স্পিন প্রস্তুত)</span>
+                                        </a>
+                                        <% } %>
+
+                                        <!-- Order History -->
+                                        <a href="/account?tab=orders" class="user-dropdown-item">
+                                            <i class="fas fa-shopping-bag text-indigo-500"></i>
+                                            <span>Order History (অর্ডার হিস্ট্রি)</span>
+                                        </a>
+
+                                        <!-- Key History -->
+                                        <a href="/account?tab=keys" class="user-dropdown-item">
+                                            <i class="fas fa-key text-amber-500"></i>
+                                            <span>Key History (কী হিস্ট্রি)</span>
+                                        </a>
+
+                                        <!-- Deposit / Payment History -->
+                                        <a href="/account?tab=deposits" class="user-dropdown-item">
+                                            <i class="fas fa-money-check-alt text-emerald-500"></i>
+                                            <span>Deposit History (টাকা লোড হিস্ট্রি)</span>
+                                        </a>
+
+                                        <!-- HWID / Device Resets -->
+                                        <a href="/account?tab=hwid" class="user-dropdown-item">
+                                            <i class="fas fa-microchip text-rose-500"></i>
+                                            <span>HWID / Device Resets</span>
+                                        </a>
+
+                                        <!-- Discord Refer & Earn -->
+                                        <a href="/account?tab=referrals" class="user-dropdown-item bg-indigo-50/60 hover:bg-indigo-100/80">
+                                            <i class="fab fa-discord text-indigo-500"></i>
+                                            <span class="font-bold text-indigo-600">Refer &amp; Earn (১০ রেফারে ১০৳)</span>
+                                        </a>
+
+                                        <!-- Add Funds Shortcut -->
+                                        <a href="/add-funds" class="user-dropdown-item">
+                                            <i class="fas fa-plus-circle text-cyan-500"></i>
+                                            <span>Add Funds / টাকা লোড</span>
+                                        </a>
+
+                                        <!-- Language Switcher Strip -->
+                                        <div class="px-3.5 py-2 border-t border-gray-100 flex items-center justify-between text-xs bg-slate-50/80">
+                                            <span class="text-gray-600 font-bold flex items-center gap-1.5">
+                                                <i class="fas fa-globe text-cyan-600"></i> ভাষা / Lang:
+                                            </span>
+                                            <div class="flex items-center gap-1">
+                                                <a href="/language/bn" class="px-2 py-0.5 rounded font-black text-[11px] no-underline <%= (currentLang === 'bn') ? 'bg-emerald-600 text-white shadow-sm' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' %>">বাংলা</a>
+                                                <a href="/language/en" class="px-2 py-0.5 rounded font-black text-[11px] no-underline <%= (currentLang === 'en') ? 'bg-cyan-600 text-white shadow-sm' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' %>">English</a>
+                                            </div>
+                                        </div>
+
+                                        <!-- Profile Info -->
+                                        <a href="/account?tab=profile" class="user-dropdown-item border-t border-gray-50">
+                                            <i class="fas fa-user-circle text-gray-600"></i>
+                                            <span>My Account / প্রোফাইল</span>
+                                        </a>
+
+                                        <!-- Logout -->
+                                        <a href="/logout" class="user-dropdown-item text-red-600 border-t border-gray-100">
+                                            <i class="fas fa-power-off text-red-500"></i>
+                                            <span>Log Out (লগআউট)</span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <a href="/logout" class="btn-glass-logout" title="Sign Out / Logout">
+                                    <i class="fas fa-power-off text-xs"></i>
+                                </a>
+                            <% } else { %>
+                                <a href="/login" class="btn-glass-login text-xs py-1.5 px-3 sm:px-4">
+                                    LOGIN
+                                </a>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Quick-Actions Horizontal Scrollable Strip (Mobile Only) -->
+                    <div class="mobile-quick-strip md:hidden flex items-center gap-2 overflow-x-auto scrollbar-none pt-2 mt-2 border-t border-cyan-500/20 text-xs">
+                        <!-- Lucky Spin Button -->
+                        <button type="button" onclick="openLuckySpinModal()" class="btn-nav-action shrink-0 bg-gradient-to-r from-amber-500/25 via-pink-500/20 to-purple-500/25 border border-amber-400 text-amber-300 font-bold text-[11px] py-1 px-2.5 cursor-pointer shadow-[0_0_8px_rgba(245,158,11,0.3)]">
+                            <i class="fas fa-dharmachakra text-amber-400 text-xs"></i>
+                            <span>Spin (<%= (currentUser && currentUser.spin_credits) ? currentUser.spin_credits : 0 %>)</span>
+                        </button>
+
+                        <!-- VIP Membership Pass -->
+                        <a href="/vip" class="btn-nav-action shrink-0 <%= isVip ? 'bg-amber-500/30 border border-amber-400 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.3)]' : 'bg-slate-900/90 border border-amber-500/50 text-amber-300' %> font-bold text-[11px] py-1 px-2.5">
+                            <i class="fas fa-crown text-amber-400 text-xs"></i>
+                            <span><%= isVip ? 'VIP' : 'VIP Pass' %></span>
+                        </a>
+
+                        <!-- Cyber Mystery Box -->
+                        <a href="/mystery-box" class="btn-nav-action shrink-0 bg-cyan-950/90 border border-cyan-500/60 text-cyan-300 font-bold text-[11px] py-1 px-2.5 shadow-[0_0_8px_rgba(0,240,255,0.2)]">
+                            <i class="fas fa-cube text-cyan-400 text-xs"></i>
+                            <span>Mystery Box</span>
+                        </a>
+
+                        <!-- Track Order -->
+                        <a href="/track" class="btn-nav-action shrink-0 bg-cyan-950/70 border border-cyan-500/40 text-cyan-300 font-bold text-[11px] py-1 px-2.5">
+                            <i class="fas fa-crosshairs text-cyan-400 text-xs"></i>
+                            <span>Track</span>
+                        </a>
+
+                        <!-- Leaderboard -->
+                        <a href="/leaderboard" class="btn-nav-action shrink-0 bg-amber-950/80 border border-amber-500/50 text-amber-300 font-bold text-[11px] py-1 px-2.5 shadow-[0_0_8px_rgba(245,158,11,0.25)]">
+                            <i class="fas fa-trophy text-amber-400 text-xs"></i>
+                            <span>Top 10</span>
+                        </a>
+
+                        <!-- Redeem Code Mobile Pill -->
+                        <button type="button" onclick="openRedeemGiftCardModal()" class="btn-nav-action shrink-0 bg-emerald-950/80 border border-emerald-500/70 text-emerald-300 font-bold text-[11px] py-1 px-2.5 cursor-pointer shadow-[0_0_8px_rgba(16,185,129,0.3)]">
+                            <i class="fas fa-gift text-emerald-400 text-xs"></i>
+                            <span>Redeem</span>
+                        </button>
+
+                        <!-- Install App Mobile Pill -->
+                        <button type="button" class="btn-pwa-install btn-nav-action shrink-0 bg-emerald-950/80 border border-emerald-500/70 text-emerald-300 font-bold text-[11px] py-1 px-2.5 cursor-pointer shadow-[0_0_8px_rgba(16,185,129,0.3)]">
+                            <i class="fas fa-mobile-screen-button text-emerald-400 text-xs"></i>
+                            <span>Install App</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>

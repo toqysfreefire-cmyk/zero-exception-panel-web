@@ -1,0 +1,820 @@
+/* =========================================================
+   CYBERPUNK 2077 / EDGERUNNERS THEME OVERRIDES
+   Colors:
+     Neon Cyan:    #00f0ff (Glow: rgba(0, 240, 255, 0.5))
+     Neon Magenta: #ff007f (Glow: rgba(255, 0, 127, 0.5))
+     Neon Yellow:  #ffe600 (Glow: rgba(255, 230, 0, 0.5))
+     Neon Green:   #00ff66
+     Dark Cyber:   #060810 / #0a0e1c / #10162a
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@600;700&display=swap');
+
+:root {
+    --cp-bg: #060811;
+    --cp-card: #0a0f1f;
+    --cp-card-border: rgba(0, 240, 255, 0.22);
+    --cp-cyan: #00f0ff;
+    --cp-cyan-glow: rgba(0, 240, 255, 0.45);
+    --cp-pink: #ff007f;
+    --cp-pink-glow: rgba(255, 0, 127, 0.45);
+    --cp-yellow: #ffe600;
+    --cp-purple: #9d00ff;
+    --cp-text: #e2e8f0;
+    --cp-muted: #64748b;
+    --main-pink: #ff007f;
+    --theme-color: #00f0ff;
+}
+
+/* Global Background */
+body, .body-bg {
+    background-color: var(--cp-bg) !important;
+    background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 100% 50%, rgba(255, 0, 127, 0.08) 0%, transparent 50%),
+        linear-gradient(rgba(0, 240, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.035) 1px, transparent 1px) !important;
+    background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px !important;
+    color: var(--cp-text) !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Rajdhani", sans-serif !important;
+}
+
+/* Ticker Announcement Bar */
+.announcement-bar {
+    background: linear-gradient(90deg, #050711 0%, #0d162d 50%, #050711 100%) !important;
+    border-bottom: 1.5px solid var(--cp-cyan) !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3) !important;
+    color: var(--cp-cyan) !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.8px !important;
+}
+.announcement-badge {
+    background: var(--cp-cyan) !important;
+    color: #050811 !important;
+    font-weight: 900 !important;
+    box-shadow: 0 0 10px var(--cp-cyan-glow) !important;
+    text-transform: uppercase !important;
+}
+
+/* Header Glass */
+.header .glass-safe {
+    background: rgba(10, 15, 30, 0.85) !important;
+    backdrop-filter: blur(14px) !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.35) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 18px rgba(0, 240, 255, 0.2) !important;
+}
+
+.site-name-stylish {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 1.45rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 2px !important;
+    background: linear-gradient(135deg, #00f0ff 0%, #ff007f 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.6)) !important;
+}
+
+.home-icon-btn {
+    background: linear-gradient(135deg, #00f0ff 0%, #0088ff 100%) !important;
+    color: #050811 !important;
+    box-shadow: 0 0 12px var(--cp-cyan-glow) !important;
+    border: 1px solid #80f7ff !important;
+}
+.home-icon-btn:hover {
+    background: #00f0ff !important;
+    color: #000 !important;
+    box-shadow: 0 0 20px var(--cp-cyan) !important;
+}
+
+/* =========================================================
+   CURRENCY SWITCHER (BDT / USDT / INR) FULL CYBER OVERRIDE
+   ========================================================= */
+.currency-switch {
+    position: relative !important;
+    display: inline-block !important;
+    z-index: 10000 !important;
+}
+
+.currency-pill {
+    background: #070d1d !important;
+    border: 1.5px solid #00f0ff !important;
+    color: #00f0ff !important;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.35) !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    padding: 6px 14px !important;
+    border-radius: 9999px !important;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-size: 0.82rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.5px !important;
+    transition: all 0.2s ease !important;
+    text-shadow: 0 0 6px rgba(0, 240, 255, 0.5) !important;
+}
+
+.currency-pill-code {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-weight: 900 !important;
+    letter-spacing: 1px !important;
+}
+
+.currency-pill:hover,
+.currency-switch.is-open .currency-pill {
+    background: rgba(0, 240, 255, 0.18) !important;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.7) !important;
+    transform: translateY(-1px) !important;
+}
+
+.currency-menu {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    right: 0 !important;
+    min-width: 230px !important;
+    background: #080d1e !important;
+    border: 1.5px solid #00f0ff !important;
+    border-radius: 14px !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.95), 0 0 25px rgba(0, 240, 255, 0.35) !important;
+    z-index: 99999 !important;
+    padding: 8px !important;
+    transform: translateY(-6px) !important;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease !important;
+}
+
+.currency-switch.is-open .currency-menu,
+.currency-menu.show {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translateY(0) !important;
+}
+
+.currency-menu-head {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    color: #00f0ff !important;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.25) !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    padding: 6px 10px 8px !important;
+    letter-spacing: 1px !important;
+}
+
+.currency-option {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 9px 12px !important;
+    border-radius: 10px !important;
+    text-decoration: none !important;
+    color: #e2e8f0 !important;
+    font-family: 'Rajdhani', sans-serif !important;
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    transition: all 0.15s ease !important;
+    margin-top: 3px !important;
+}
+
+.currency-option:hover {
+    background: rgba(0, 240, 255, 0.2) !important;
+    color: #00f0ff !important;
+    transform: translateX(3px) !important;
+}
+
+.currency-option.is-active {
+    background: rgba(0, 240, 255, 0.25) !important;
+    border: 1px solid rgba(0, 240, 255, 0.6) !important;
+    color: #00f0ff !important;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.3) !important;
+}
+
+.currency-option-rate {
+    font-size: 0.7rem !important;
+    color: #ffe600 !important;
+    font-family: 'Orbitron', monospace !important;
+}
+
+/* User & Login Buttons */
+.btn-glass-login {
+    background: linear-gradient(135deg, #ff007f 0%, #a800ff 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid #ff4da6 !important;
+    box-shadow: 0 0 14px var(--cp-pink-glow) !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px !important;
+}
+.btn-glass-login:hover {
+    box-shadow: 0 0 24px rgba(255, 0, 127, 0.7) !important;
+    transform: translateY(-1px) !important;
+}
+.btn-glass-logout {
+    background: #ff0055 !important;
+    box-shadow: 0 0 12px rgba(255, 0, 85, 0.5) !important;
+    border: 1px solid #ff4d80 !important;
+}
+
+.user-dropdown-menu {
+    background: #0c1224 !important;
+    border: 1.5px solid var(--cp-cyan) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 240, 255, 0.3) !important;
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--cp-cyan) #0c1224 !important;
+}
+.user-dropdown-menu::-webkit-scrollbar {
+    width: 5px !important;
+}
+.user-dropdown-menu::-webkit-scrollbar-track {
+    background: #0c1224 !important;
+}
+.user-dropdown-menu::-webkit-scrollbar-thumb {
+    background: var(--cp-cyan) !important;
+    border-radius: 4px !important;
+}
+.user-dropdown-menu .border-b {
+    border-color: rgba(0, 240, 255, 0.2) !important;
+}
+.user-dropdown-menu .font-bold {
+    color: var(--cp-cyan) !important;
+}
+.user-dropdown-item {
+    color: var(--cp-text) !important;
+}
+.user-dropdown-item:hover {
+    background: rgba(0, 240, 255, 0.12) !important;
+    color: var(--cp-cyan) !important;
+}
+
+/* Slider Hero */
+.slider-viewport-wrap {
+    border: 1.5px solid rgba(0, 240, 255, 0.35) !important;
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.25) !important;
+    background: #0a0f1f !important;
+}
+.carousel__prev, .carousel__next {
+    background: rgba(10, 15, 30, 0.8) !important;
+    color: var(--cp-cyan) !important;
+    border: 1px solid rgba(0, 240, 255, 0.4) !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3) !important;
+}
+.carousel__pagination-button--active:after {
+    background-color: var(--cp-cyan) !important;
+    box-shadow: 0 0 8px var(--cp-cyan) !important;
+}
+
+/* Cyberpunk Search Bar */
+#productSearchInput {
+    padding-left: 46px !important;
+    padding-right: 44px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    background: rgba(12, 18, 36, 0.9) !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.4) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.15) !important;
+    font-family: 'Rajdhani', sans-serif !important;
+    font-size: 0.95rem !important;
+    letter-spacing: 0.5px !important;
+}
+#productSearchInput:focus {
+    border-color: var(--cp-cyan) !important;
+    box-shadow: 0 0 20px var(--cp-cyan-glow) !important;
+}
+#productSearchInput::placeholder {
+    color: #475569 !important;
+}
+
+/* Category Filter Pills */
+.filter-btn, #toggle-filters-btn {
+    background: #0c1224 !important;
+    color: #94a3b8 !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.25) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+    transition: all 0.25s ease !important;
+}
+.filter-btn:hover, #toggle-filters-btn:hover {
+    color: var(--cp-cyan) !important;
+    border-color: var(--cp-cyan) !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.35) !important;
+    transform: translateY(-2px) !important;
+}
+.filter-btn.active-filter {
+    background: linear-gradient(135deg, #00f0ff 0%, #0077ff 100%) !important;
+    color: #050811 !important;
+    font-weight: 900 !important;
+    border-color: #80f7ff !important;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.6) !important;
+}
+
+/* =========================================================
+   PRODUCT CARDS (CYBERPUNK HUD)
+   ========================================================= */
+.product-card {
+    background: #0b1021 !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.25) !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7) !important;
+    transition: all 0.25s ease !important;
+    position: relative !important;
+}
+.product-card:hover {
+    border-color: var(--cp-cyan) !important;
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.4), inset 0 0 15px rgba(0, 240, 255, 0.08) !important;
+    transform: translateY(-4px) !important;
+}
+
+.product-card.is-maintenance {
+    border-color: rgba(239, 68, 68, 0.45) !important;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.2) !important;
+}
+.product-card.is-maintenance:hover {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.5) !important;
+}
+
+.product-card .discount-badge-left {
+    background: #ff0055 !important;
+    color: #ffffff !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 0.68rem !important;
+    box-shadow: 0 0 10px rgba(255, 0, 85, 0.7) !important;
+}
+
+.product-info {
+    background: #090e1c !important;
+    padding: 10px 8px !important;
+    border-top: 1px solid rgba(0, 240, 255, 0.15) !important;
+}
+
+/* Ultra-clear Cyberpunk Title Badge */
+.product-badge-title {
+    background: #040711 !important;
+    background-image: none !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2), inset 0 0 8px rgba(0, 240, 255, 0.1) !important;
+    border-radius: 8px !important;
+    padding: 7px 10px !important;
+    min-height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+
+.product-card.is-maintenance .product-badge-title {
+    background: #140509 !important;
+    background-image: none !important;
+    border: 1.5px solid rgba(255, 0, 85, 0.55) !important;
+    box-shadow: 0 0 12px rgba(255, 0, 85, 0.25), inset 0 0 8px rgba(255, 0, 85, 0.1) !important;
+}
+
+.product-title-full {
+    color: #ffffff !important;
+    font-family: 'Orbitron', 'Rajdhani', sans-serif !important;
+    font-size: 0.82rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+    margin: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.9), 0 0 14px rgba(0, 240, 255, 0.4) !important;
+}
+
+.product-card.is-maintenance .product-title-full {
+    color: #ff3366 !important;
+    text-shadow: 0 0 8px rgba(255, 51, 102, 0.9), 0 0 14px rgba(255, 51, 102, 0.4) !important;
+}
+
+/* =========================================================
+   ROOT SECTION: PHONE VARIANT BADGES & SPECIFICATIONS
+   ========================================================= */
+.root-device-support-box {
+    margin: 6px 4px 6px 4px;
+    padding: 6px 8px;
+    background: rgba(0, 240, 255, 0.06);
+    border: 1px dashed rgba(0, 240, 255, 0.5);
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: inset 0 0 8px rgba(0, 240, 255, 0.08);
+}
+
+.root-device-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 900;
+    color: #ffe600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-shadow: 0 0 6px rgba(255, 230, 0, 0.5);
+}
+
+.root-device-list {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #67e8f9;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+/* Interactive Phone Brand Selector Pills in Checkout */
+.phone-brand-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+@media (min-width: 640px) {
+    .phone-brand-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.phone-brand-btn {
+    background: #090e1f !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.3) !important;
+    border-radius: 10px !important;
+    padding: 10px 8px !important;
+    color: #cbd5e1 !important;
+    font-family: 'Rajdhani', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    user-select: none !important;
+}
+
+.phone-brand-btn:hover {
+    border-color: #00f0ff !important;
+    color: #00f0ff !important;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.3) !important;
+    transform: translateY(-1px) !important;
+}
+
+.phone-brand-btn.active {
+    background: rgba(0, 240, 255, 0.18) !important;
+    border-color: #00f0ff !important;
+    color: #00f0ff !important;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.5), inset 0 0 10px rgba(0, 240, 255, 0.15) !important;
+}
+
+.phone-brand-btn .check-icon {
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.phone-brand-btn.active .check-icon {
+    opacity: 1;
+    color: #00f0ff;
+}
+
+/* Root Device Specs Container in Topup */
+.root-specs-card {
+    background: #070d1e !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.15), inset 0 0 15px rgba(0, 240, 255, 0.05) !important;
+    border-radius: 16px !important;
+}
+
+/* Ultra-clear Cyberpunk Price Badge */
+.product-price-custom {
+    display: inline-block !important;
+    padding: 3px 14px !important;
+    border-radius: 9999px !important;
+    background: #030712 !important;
+    background-image: none !important;
+    border: 1.5px solid #ffe600 !important;
+    color: #ffe600 !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 0.95rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 0 12px rgba(255, 230, 0, 0.45), inset 0 0 6px rgba(255, 230, 0, 0.15) !important;
+    text-shadow: 0 0 8px rgba(255, 230, 0, 0.8) !important;
+}
+
+/* Product Action Buttons */
+.product-actions {
+    padding: 8px !important;
+    background: #070b16 !important;
+    gap: 6px !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.info-download-btn {
+    background: linear-gradient(135deg, #00f0ff 0%, #0088ff 100%) !important;
+    color: #050811 !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.5px !important;
+    border: 1px solid #80f7ff !important;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.35) !important;
+    border-radius: 8px !important;
+    padding: 7px 0 !important;
+    transition: all 0.2s !important;
+}
+.info-download-btn:hover {
+    box-shadow: 0 0 20px var(--cp-cyan) !important;
+    color: #000 !important;
+}
+
+.buy-now-btn-premium {
+    background: linear-gradient(135deg, #ff007f 0%, #a800ff 100%) !important;
+    color: #ffffff !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 0.78rem !important;
+    letter-spacing: 0.8px !important;
+    border: 1px solid #ff4da6 !important;
+    box-shadow: 0 0 15px rgba(255, 0, 127, 0.45) !important;
+    border-radius: 8px !important;
+    padding: 7px 0 !important;
+    text-transform: uppercase !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    transition: all 0.2s !important;
+}
+.buy-now-btn-premium:hover {
+    box-shadow: 0 0 25px rgba(255, 0, 127, 0.8) !important;
+    transform: translateY(-1px) !important;
+    color: #ffffff !important;
+}
+
+.maintenance-btn-red {
+    background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%) !important;
+    color: #ffffff !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 0.72rem !important;
+    border: 1px solid #ef4444 !important;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.4) !important;
+    border-radius: 8px !important;
+    padding: 7px 0 !important;
+    text-transform: uppercase !important;
+}
+
+/* =========================================================
+   COMMUNITY ACTIVITY TABS (CYBER TERMINAL)
+   ========================================================= */
+.max-w-3xl .bg-white {
+    background: #0a0f20 !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.3) !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(0, 240, 255, 0.15) !important;
+    border-radius: 18px !important;
+}
+.tab-header {
+    border-bottom: 1.5px solid rgba(0, 240, 255, 0.25) !important;
+    background: #080c1a !important;
+}
+.tab-button {
+    font-family: 'Orbitron', sans-serif !important;
+    color: #94a3b8 !important;
+    letter-spacing: 0.5px !important;
+}
+.tab-button.active-tab {
+    color: var(--cp-cyan) !important;
+    border-bottom: 2.5px solid var(--cp-cyan) !important;
+    background: rgba(0, 240, 255, 0.08) !important;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5) !important;
+}
+.tab-content .p-3, .tab-content .p-md-5, .tab-header + div {
+    background: #0a0f20 !important;
+}
+
+.activity-item {
+    background: #0d1428 !important;
+    border: 1px solid rgba(0, 240, 255, 0.2) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.4) !important;
+}
+.activity-item h4, .activity-item h5 {
+    color: #ffffff !important;
+}
+.activity-item p, .activity-item span {
+    color: #cbd5e1 !important;
+}
+
+/* Footer & Mobile Nav */
+footer.footer-bg {
+    background: #050811 !important;
+    border-top: 1.5px solid rgba(0, 240, 255, 0.3) !important;
+    box-shadow: 0 -4px 20px rgba(0, 240, 255, 0.1) !important;
+}
+footer .text-white {
+    font-family: 'Orbitron', sans-serif !important;
+    color: var(--cp-cyan) !important;
+    text-shadow: 0 0 10px var(--cp-cyan-glow) !important;
+}
+.mobile-bottom-nav {
+    background: rgba(8, 12, 24, 0.95) !important;
+    backdrop-filter: blur(14px) !important;
+    border-top: 1.5px solid rgba(0, 240, 255, 0.3) !important;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.8) !important;
+}
+.mobile-nav-item.active {
+    color: var(--cp-cyan) !important;
+    text-shadow: 0 0 10px var(--cp-cyan-glow) !important;
+}
+
+/* Modals */
+.modal-content {
+    background: #0b1022 !important;
+    border: 1.5px solid var(--cp-cyan) !important;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.35) !important;
+    color: #ffffff !important;
+}
+.modal-header {
+    border-bottom: 1px solid rgba(0, 240, 255, 0.2) !important;
+}
+.modal-footer {
+    border-top: 1px solid rgba(0, 240, 255, 0.2) !important;
+    background: #080c1a !important;
+}
+
+/* =========================================================
+   CHECKOUT, LOGIN, REGISTER & FORMS CYBERPUNK STYLING
+   ========================================================= */
+
+/* Topup Checkout Card */
+.max-w-4xl .bg-white {
+    background: #0a0f20 !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.35) !important;
+    box-shadow: 0 0 35px rgba(0,0,0,0.9), 0 0 20px rgba(0, 240, 255, 0.2) !important;
+    border-radius: 20px !important;
+    color: #ffffff !important;
+}
+
+.package-card {
+    background: #0d1428 !important;
+    border: 2px solid rgba(0, 240, 255, 0.25) !important;
+    color: #ffffff !important;
+}
+.package-card:hover {
+    border-color: var(--cp-cyan) !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3) !important;
+}
+.package-card.active {
+    border-color: var(--cp-cyan) !important;
+    background: rgba(0, 240, 255, 0.12) !important;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.45) !important;
+}
+.package-card .text-gray-900 {
+    color: #ffffff !important;
+    font-family: 'Orbitron', sans-serif !important;
+}
+.package-card .check-indicator {
+    background: var(--cp-cyan) !important;
+    color: #050811 !important;
+    box-shadow: 0 0 10px var(--cp-cyan) !important;
+}
+
+.payment-method-card {
+    background: #0d1428 !important;
+    border: 2px solid rgba(0, 240, 255, 0.25) !important;
+}
+.payment-method-card:hover {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.25) !important;
+}
+.payment-method-card.active[data-method="bKash"] {
+    border-color: #ff007f !important;
+    background: rgba(255, 0, 127, 0.12) !important;
+    box-shadow: 0 0 20px rgba(255, 0, 127, 0.45) !important;
+}
+.payment-method-card.active[data-method="Nagad"] {
+    border-color: #ff7700 !important;
+    background: rgba(255, 119, 0, 0.12) !important;
+    box-shadow: 0 0 20px rgba(255, 119, 0, 0.45) !important;
+}
+.payment-method-card.active[data-method="Rocket"] {
+    border-color: #a855f7 !important;
+    background: rgba(168, 85, 247, 0.12) !important;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.45) !important;
+}
+.payment-method-card.active[data-method="Binance USDT"] {
+    border-color: #eab308 !important;
+    background: rgba(234, 179, 8, 0.12) !important;
+    box-shadow: 0 0 20px rgba(234, 179, 8, 0.45) !important;
+}
+
+/* Form Inputs inside Checkout & Login */
+input[type="text"], input[type="password"], input[type="email"], select, textarea {
+    background: #080d1c !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.3) !important;
+    color: #ffffff !important;
+}
+input:focus, select:focus, textarea:focus {
+    border-color: var(--cp-cyan) !important;
+    box-shadow: 0 0 15px var(--cp-cyan-glow) !important;
+}
+label, .text-gray-700 {
+    color: #94a3b8 !important;
+}
+h1, h2, h3, h4, .text-gray-900 {
+    color: #ffffff !important;
+}
+
+.bg-gray-50 {
+    background: #080d1a !important;
+    border-color: rgba(0, 240, 255, 0.25) !important;
+}
+
+.btn-place-order {
+    background: linear-gradient(135deg, #ff007f 0%, #a800ff 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid #ff4da6 !important;
+    box-shadow: 0 0 25px rgba(255, 0, 127, 0.6) !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+}
+.btn-place-order:hover {
+    box-shadow: 0 0 35px rgba(255, 0, 127, 0.85) !important;
+}
+
+.btn-whatsapp-buy {
+    background: linear-gradient(135deg, #00ff66 0%, #00b347 100%) !important;
+    color: #050811 !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+    box-shadow: 0 0 20px rgba(0, 255, 102, 0.45) !important;
+}
+
+/* Login & Register Card Cyberpunk */
+.login-form {
+    background: #0a0f20 !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.4) !important;
+    box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 240, 255, 0.25) !important;
+    border-radius: 18px !important;
+    color: #ffffff !important;
+}
+.login-form h1 {
+    font-family: 'Orbitron', sans-serif !important;
+    color: var(--cp-cyan) !important;
+    text-shadow: 0 0 10px var(--cp-cyan-glow) !important;
+}
+.login-form hr {
+    border-color: rgba(0, 240, 255, 0.2) !important;
+}
+.login-form a[href*="google"] {
+    background: #0c1224 !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.3) !important;
+    color: #ffffff !important;
+}
+.login-form a[href*="google"]:hover {
+    border-color: var(--cp-cyan) !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3) !important;
+}
+.login-form button[type="submit"] {
+    background: linear-gradient(135deg, #00f0ff 0%, #0088ff 100%) !important;
+    color: #050811 !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+    letter-spacing: 1px !important;
+    border: 1px solid #80f7ff !important;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.5) !important;
+}
+.login-form button[type="submit"]:hover {
+    box-shadow: 0 0 30px var(--cp-cyan) !important;
+}
+
+/* User Account Page */
+.max-w-3xl .bg-white {
+    background: #0a0f20 !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.35) !important;
+}

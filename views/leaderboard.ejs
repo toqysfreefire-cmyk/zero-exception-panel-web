@@ -1,0 +1,225 @@
+<%- include('partials/header') %>
+
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Header -->
+    <div class="text-center relative mb-10">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-400/40 text-amber-300 text-xs font-black uppercase tracking-widest mb-3 shadow-[0_0_20px_rgba(245,158,11,0.25)]">
+            <i class="fas fa-crown text-amber-400 animate-bounce"></i> Monthly Hall of Fame
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-black text-white tracking-wider uppercase font-primary mb-2">
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500" id="lbMainTitle"><%= typeof leaderboardSettings !== 'undefined' && leaderboardSettings.title ? leaderboardSettings.title : '🏆 TOP SPENDERS LEADERBOARD' %></span>
+        </h1>
+        <p class="text-slate-400 text-xs sm:text-sm max-w-lg mx-auto" id="leaderboardMonthSubtitle">
+            <%= typeof leaderboardSettings !== 'undefined' && leaderboardSettings.subtitle ? leaderboardSettings.subtitle : 'চলতি মাসের সেরা ১০ ক্রেতা! প্রতি মাসের শেষে শীর্ষ ৩ জনকে আকর্ষণীয় ক্যাশ বোনাস ও রিওয়ার্ড দেওয়া হয়।' %>
+        </p>
+    </div>
+
+    <!-- Monthly Prizes Banner -->
+    <div class="mb-10 bg-gradient-to-r from-[#0b1329] via-[#111c38] to-[#0b1329] border border-amber-500/40 rounded-3xl p-5 sm:p-6 shadow-[0_0_30px_rgba(245,158,11,0.15)] relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-44 h-44 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <h4 class="text-amber-400 font-black text-sm uppercase tracking-wider m-0 flex items-center gap-2">
+                <i class="fas fa-gift"></i> এই মাসের বিশেষ রিওয়ার্ড পুল:
+            </h4>
+            <span class="text-[11px] font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 rounded-full" id="lbOtherPrizesBadge">
+                ৪র্থ-১০ম স্থান: <%= typeof leaderboardSettings !== 'undefined' && leaderboardSettings.rank_other_reward ? leaderboardSettings.rank_other_reward : '৫০৳ ভাউচার কোড' %>
+            </span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+            <div class="bg-[#070d1e]/80 border border-amber-500/50 rounded-2xl p-3 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-xl shrink-0">
+                    👑
+                </div>
+                <div>
+                    <div class="text-[10px] font-bold text-amber-400 uppercase">১ম স্থান (1st Place)</div>
+                    <div class="text-xs font-black text-white" id="lbRewardRank1"><%= typeof leaderboardSettings !== 'undefined' && leaderboardSettings.rank1_reward ? leaderboardSettings.rank1_reward : '500৳ বোনাস + VIP Pass' %></div>
+                </div>
+            </div>
+            <div class="bg-[#070d1e]/80 border border-slate-400/40 rounded-2xl p-3 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-slate-400/20 text-slate-200 flex items-center justify-center text-xl shrink-0">
+                    🥈
+                </div>
+                <div>
+                    <div class="text-[10px] font-bold text-slate-300 uppercase">২য় স্থান (2nd Place)</div>
+                    <div class="text-xs font-black text-white" id="lbRewardRank2"><%= typeof leaderboardSettings !== 'undefined' && leaderboardSettings.rank2_reward ? leaderboardSettings.rank2_reward : '250৳ বোনাস + 10x Spin' %></div>
+                </div>
+            </div>
+            <div class="bg-[#070d1e]/80 border border-amber-700/50 rounded-2xl p-3 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-700/20 text-amber-500 flex items-center justify-center text-xl shrink-0">
+                    🥉
+                </div>
+                <div>
+                    <div class="text-[10px] font-bold text-amber-600 uppercase">৩য় স্থান (3rd Place)</div>
+                    <div class="text-xs font-black text-white" id="lbRewardRank3"><%= typeof leaderboardSettings !== 'undefined' && leaderboardSettings.rank3_reward ? leaderboardSettings.rank3_reward : '100৳ বোনাস + 5x Spin' %></div>
+                </div>
+            </div>
+        </div>
+        <p class="text-[11px] text-slate-400 mb-0 flex items-center gap-1.5" id="lbCustomNote">
+            <i class="fas fa-info-circle text-amber-400"></i> <%= typeof leaderboardSettings !== 'undefined' && leaderboardSettings.custom_note ? leaderboardSettings.custom_note : 'প্রতি মাসের ১ তারিখে স্বয়ংক্রিয়ভাবে রিওয়ার্ড প্রদান করা হয়।' %>
+        </p>
+    </div>
+
+    <!-- Podium: Top 3 Cards -->
+    <div id="podiumArea" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <!-- Rendered dynamically -->
+        <div class="col-span-full text-center py-10 text-cyan-400">
+            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+            <p class="text-xs font-bold">লিডারবোর্ড লোড হচ্ছে...</p>
+        </div>
+    </div>
+
+    <!-- Table: Ranks 4 - 10 -->
+    <div class="bg-[#0f172a] border border-cyan-500/30 rounded-3xl p-4 sm:p-6 shadow-2xl">
+        <h4 class="text-white font-black text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+            <i class="fas fa-list-ol text-cyan-400"></i> সেরা ১০ তালিকা (Top 4 - 10)
+        </h4>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-slate-800 text-[11px] font-black uppercase text-slate-400">
+                        <th class="py-2.5 px-3">Rank</th>
+                        <th class="py-2.5 px-3">Gamer</th>
+                        <th class="py-2.5 px-3 text-right">Orders</th>
+                        <th class="py-2.5 px-3 text-right">Total Spent</th>
+                        <th class="py-2.5 px-3 text-right">Reward</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardTableBody" class="text-xs divide-y divide-slate-800/60 font-medium">
+                    <tr><td colspan="5" class="text-center py-6 text-slate-500">Loading ranking...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="text-center mt-8">
+        <a href="/" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-400/50 text-cyan-300 font-bold text-xs uppercase tracking-wider transition no-underline shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+            <i class="fas fa-arrow-left"></i> Back to Store
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/leaderboard')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            const s = data.settings || {};
+            if (s.title) {
+                const titleEl = document.getElementById('lbMainTitle');
+                if (titleEl) titleEl.textContent = s.title;
+            }
+            if (s.subtitle) {
+                const subEl = document.getElementById('leaderboardMonthSubtitle');
+                if (subEl) subEl.textContent = s.subtitle;
+            }
+            if (s.rank1_reward) {
+                const r1 = document.getElementById('lbRewardRank1');
+                if (r1) r1.textContent = s.rank1_reward;
+            }
+            if (s.rank2_reward) {
+                const r2 = document.getElementById('lbRewardRank2');
+                if (r2) r2.textContent = s.rank2_reward;
+            }
+            if (s.rank3_reward) {
+                const r3 = document.getElementById('lbRewardRank3');
+                if (r3) r3.textContent = s.rank3_reward;
+            }
+            if (s.rank_other_reward) {
+                const ro = document.getElementById('lbOtherPrizesBadge');
+                if (ro) ro.textContent = '৪র্থ-১০ম স্থান: ' + s.rank_other_reward;
+            }
+            if (s.custom_note) {
+                const cn = document.getElementById('lbCustomNote');
+                if (cn) cn.innerHTML = '<i class="fas fa-info-circle text-amber-400"></i> ' + s.custom_note;
+            }
+
+            const list = data.leaderboard || [];
+            const podiumArea = document.getElementById('podiumArea');
+            const tbody = document.getElementById('leaderboardTableBody');
+
+            if (list.length >= 3 && podiumArea) {
+                const top1 = list[0];
+                const top2 = list[1];
+                const top3 = list[2];
+
+                // Render podium in order: Rank 2, Rank 1, Rank 3 for classic sports podium layout
+                podiumArea.innerHTML = `
+                    <!-- Rank 2 -->
+                    <div class="bg-[#111c38] border-2 border-slate-400/60 rounded-3xl p-5 text-center shadow-[0_0_25px_rgba(148,163,184,0.2)] order-2 sm:order-1 flex flex-col justify-between">
+                        <div>
+                            <div class="w-14 h-14 mx-auto rounded-2xl bg-slate-400/20 text-2xl flex items-center justify-center mb-2 border border-slate-300/40">
+                                🥈
+                            </div>
+                            <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-slate-400/20 text-slate-200 border border-slate-400/40">2nd Place</span>
+                            <h3 class="text-base font-black text-white mt-2">${top2.name}</h3>
+                            ${top2.is_vip ? '<span class="text-[10px] text-amber-300 font-bold">👑 VIP Member</span>' : ''}
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-700/60">
+                            <div class="text-xs text-slate-400">Total Spent</div>
+                            <div class="text-lg font-black font-orbitron text-cyan-400">${top2.total_spent}৳</div>
+                            <div class="text-[10px] text-emerald-400 font-bold mt-1">Reward: ${top2.prize}</div>
+                        </div>
+                    </div>
+
+                    <!-- Rank 1 (Champion) -->
+                    <div class="bg-[#131f42] border-2 border-amber-400 rounded-3xl p-6 text-center shadow-[0_0_35px_rgba(245,158,11,0.35)] order-1 sm:order-2 transform sm:-translate-y-2 flex flex-col justify-between">
+                        <div>
+                            <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-500/25 text-3xl flex items-center justify-center mb-2 border-2 border-amber-400 animate-pulse">
+                                👑
+                            </div>
+                            <span class="text-[10px] font-black uppercase px-3 py-1 rounded-full bg-amber-400 text-black font-extrabold shadow-sm">1st Champion</span>
+                            <h3 class="text-lg font-black text-amber-300 mt-2">${top1.name}</h3>
+                            ${top1.is_vip ? '<span class="text-[10px] text-amber-300 font-bold">👑 VIP Member</span>' : ''}
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-amber-500/40">
+                            <div class="text-xs text-amber-200/80">Total Spent</div>
+                            <div class="text-2xl font-black font-orbitron text-amber-400">${top1.total_spent}৳</div>
+                            <div class="text-xs text-emerald-300 font-extrabold mt-1">Reward: ${top1.prize}</div>
+                        </div>
+                    </div>
+
+                    <!-- Rank 3 -->
+                    <div class="bg-[#111c38] border-2 border-amber-700/60 rounded-3xl p-5 text-center shadow-[0_0_25px_rgba(180,83,9,0.2)] order-3 flex flex-col justify-between">
+                        <div>
+                            <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-700/20 text-2xl flex items-center justify-center mb-2 border border-amber-700/40">
+                                🥉
+                            </div>
+                            <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-700/30 text-amber-400 border border-amber-700/50">3rd Place</span>
+                            <h3 class="text-base font-black text-white mt-2">${top3.name}</h3>
+                            ${top3.is_vip ? '<span class="text-[10px] text-amber-300 font-bold">👑 VIP Member</span>' : ''}
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-700/60">
+                            <div class="text-xs text-slate-400">Total Spent</div>
+                            <div class="text-lg font-black font-orbitron text-cyan-400">${top3.total_spent}৳</div>
+                            <div class="text-[10px] text-emerald-400 font-bold mt-1">Reward: ${top3.prize}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (tbody) {
+                const rest = list.slice(3);
+                if (rest.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-500">No other ranks recorded yet.</td></tr>';
+                } else {
+                    tbody.innerHTML = rest.map(u => `
+                        <tr class="hover:bg-slate-800/40 transition">
+                            <td class="py-2.5 px-3 font-mono font-bold text-cyan-400">#${u.rank}</td>
+                            <td class="py-2.5 px-3 text-white font-bold flex items-center gap-2">
+                                <span>${u.name}</span>
+                                ${u.is_vip ? '<span class="text-[10px] text-amber-400">👑</span>' : ''}
+                            </td>
+                            <td class="py-2.5 px-3 text-right text-slate-400 font-mono">${u.orders_count}</td>
+                            <td class="py-2.5 px-3 text-right font-black font-orbitron text-cyan-300">${u.total_spent}৳</td>
+                            <td class="py-2.5 px-3 text-right font-bold text-emerald-400 text-[11px]">${u.prize}</td>
+                        </tr>
+                    `).join('');
+                }
+            }
+        })
+        .catch(console.error);
+});
+</script>
+
+<%- include('partials/footer') %>

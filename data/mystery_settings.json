@@ -1,0 +1,80 @@
+{
+  "enabled": true,
+  "box_cost": 50,
+  "title": "CYBER MYSTERY BOX",
+  "rewards": [
+    {
+      "id": "rew_1",
+      "name": "70৳ Wallet Cash",
+      "type": "wallet",
+      "amount": 120,
+      "product_name": "Free Fire Non-Root",
+      "duration": "1 Day",
+      "chance": 7,
+      "badge": "LEGENDARY",
+      "color": "#f59e0b",
+      "icon": "fa-sack-dollar"
+    },
+    {
+      "id": "rew_2",
+      "name": "Free Fire Non-Root (1 Day Key)",
+      "type": "key",
+      "amount": 1,
+      "product_name": "Free Fire Non-Root",
+      "duration": "1 Day",
+      "chance": 8,
+      "badge": "EPIC",
+      "color": "#a855f7",
+      "icon": "fa-key"
+    },
+    {
+      "id": "rew_3",
+      "name": "35৳ Wallet Cash",
+      "type": "wallet",
+      "amount": 35,
+      "product_name": "Free Fire Non-Root",
+      "duration": "1 Day",
+      "chance": 10,
+      "badge": "RARE",
+      "color": "#00f0ff",
+      "icon": "fa-coins"
+    },
+    {
+      "id": "rew_4",
+      "name": "5x Lucky Spin Tickets",
+      "type": "spin",
+      "amount": 2,
+      "product_name": "Free Fire Non-Root",
+      "duration": "1 Day",
+      "chance": 18,
+      "badge": "SPECIAL",
+      "color": "#ec4899",
+      "icon": "fa-dharmachakra"
+    },
+    {
+      "id": "rew_5",
+      "name": "20৳ Wallet Cash",
+      "type": "wallet",
+      "amount": 20,
+      "product_name": "Free Fire Non-Root",
+      "duration": "1 Day",
+      "chance": 25,
+      "badge": "UNCOMMON",
+      "color": "#10b981",
+      "icon": "fa-wallet"
+    },
+    {
+      "id": "rew_6",
+      "name": "10৳ Wallet Cash",
+      "type": "wallet",
+      "amount": 10,
+      "product_name": "Free Fire Non-Root",
+      "duration": "1 Day",
+      "chance": 32,
+      "badge": "COMMON",
+      "color": "#64748b",
+      "icon": "fa-money-bill-wave"
+    }
+  ],
+  "recent_drops": []
+}

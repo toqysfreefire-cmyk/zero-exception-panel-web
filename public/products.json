@@ -1,0 +1,528 @@
+[
+    {
+        "id": "drip-non-root",
+        "title": "DRIP CLIENT NON ROOT",
+        "category": "non-root",
+        "categoryName": "Free Fire NON ROOT",
+        "basePrice": 53,
+        "oldPrice": 112,
+        "discount": "52% OFF",
+        "status": "new",
+        "statusText": "Update Released",
+        "image": "images/drip_client_non_root.png",
+        "description": "DRIP CLIENT NON ROOT APK mod injector with direct ESP.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 53
+            },
+            {
+                "name": "3 Days",
+                "price": 140
+            },
+            {
+                "name": "7 Days",
+                "price": 224
+            },
+            {
+                "name": "15 Days",
+                "price": 413
+            },
+            {
+                "name": "30 Days",
+                "price": 700
+            }
+        ]
+    },
+    {
+        "id": "alpha-non-root",
+        "title": "ALPHA NON ROOT",
+        "category": "non-root",
+        "categoryName": "Free Fire NON ROOT",
+        "basePrice": 70,
+        "oldPrice": 140,
+        "discount": "50% OFF",
+        "status": "new",
+        "statusText": "New Version",
+        "image": "images/jitu.jpg",
+        "description": "ALPHA NON ROOT headshot scope and ESP locator.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 70
+            },
+            {
+                "name": "3 Days",
+                "price": 112
+            },
+            {
+                "name": "7 Days",
+                "price": 210
+            },
+            {
+                "name": "14 Days",
+                "price": 350
+            },
+            {
+                "name": "30 Days",
+                "price": 560
+            }
+        ]
+    },
+    {
+        "id": "aim-hack-ios",
+        "title": "AIM HACK NON ROOT + IOS",
+        "category": "non-root",
+        "categoryName": "Free Fire NON ROOT",
+        "basePrice": 231,
+        "oldPrice": 350,
+        "discount": "34% OFF",
+        "status": "online",
+        "statusText": "Online",
+        "image": "images/aim_hack_non_root_ios.png",
+        "description": "AIM HACK NON ROOT + IOS universal cross-platform key.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 231
+            },
+            {
+                "name": "3 Days",
+                "price": 420
+            },
+            {
+                "name": "7 Days",
+                "price": 910
+            },
+            {
+                "name": "30 Days",
+                "price": 1680
+            }
+        ]
+    },
+    {
+        "id": "xreg-non-root",
+        "title": "XREG NON ROOT",
+        "category": "non-root",
+        "categoryName": "Free Fire NON ROOT",
+        "basePrice": 210,
+        "oldPrice": 350,
+        "discount": "40% OFF",
+        "status": "online",
+        "statusText": "Online",
+        "image": "images/xreg_non_root.png",
+        "description": "XREG NON ROOT aim assistant and recoil reducer.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 210
+            },
+            {
+                "name": "3 Days",
+                "price": 490
+            },
+            {
+                "name": "7 Days",
+                "price": 980
+            }
+        ]
+    },
+    {
+        "id": "drip-wire-external",
+        "title": "DRIP WIRE EXTERNAL",
+        "category": "non-root",
+        "categoryName": "Free Fire NON ROOT",
+        "basePrice": 210,
+        "oldPrice": 350,
+        "discount": "40% OFF",
+        "status": "online",
+        "statusText": "External Wire",
+        "image": "images/drip_wire_external.png",
+        "description": "DRIP WIRE EXTERNAL aim assistant and ESP overlay.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 210
+            },
+            {
+                "name": "7 Days",
+                "price": 700
+            }
+        ]
+    },
+    {
+        "id": "pato-brutal",
+        "title": "PATOTEAM BRUTAL NON ROOT",
+        "category": "non-root",
+        "categoryName": "Free Fire NON ROOT",
+        "basePrice": 291,
+        "oldPrice": 364,
+        "discount": "20% OFF",
+        "status": "new",
+        "statusText": "Brutal Mode",
+        "image": "images/non_root_pato.png",
+        "description": "PATOTEAM BRUTAL NON ROOT VIP panel featuring instant aim assist.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 291
+            },
+            {
+                "name": "7 Days",
+                "price": 910
+            },
+            {
+                "name": "30 Days",
+                "price": 1680
+            }
+        ]
+    },
+    {
+        "id": "bala-mod",
+        "title": "BALA MOD NON ROOT",
+        "category": "non-root",
+        "categoryName": "Free Fire NON ROOT",
+        "basePrice": 420,
+        "oldPrice": 600,
+        "discount": "30% OFF",
+        "status": "online",
+        "statusText": "Online",
+        "image": "images/bala_mod_non_root.png",
+        "description": "BALA MOD NON ROOT lightweight key for Android.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 420
+            },
+            {
+                "name": "2 Days",
+                "price": 770
+            },
+            {
+                "name": "3 Days",
+                "price": 1050
+            },
+            {
+                "name": "7 Days",
+                "price": 3080
+            }
+        ]
+    },
+    {
+        "id": "abcd-mod",
+        "title": "ABCD MOD NON ROOT",
+        "category": "non-root",
+        "categoryName": "Free Fire NON ROOT",
+        "basePrice": 70,
+        "oldPrice": 140,
+        "discount": "50% OFF",
+        "status": "new",
+        "statusText": "Update Released",
+        "image": "images/abcd_mod_non_root.png",
+        "description": "ABCD MOD NON ROOT VIP edition panel.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 70
+            },
+            {
+                "name": "3 Days",
+                "price": 140
+            },
+            {
+                "name": "7 Days",
+                "price": 224
+            }
+        ]
+    },
+    {
+        "id": "crack-master",
+        "title": "CRACK MASTER ROOT",
+        "category": "root",
+        "categoryName": "FREE FIRE ROOT",
+        "basePrice": 70,
+        "oldPrice": 112,
+        "discount": "37% OFF",
+        "status": "online",
+        "statusText": "Online",
+        "image": "images/crack_master.png",
+        "description": "CRACK MASTER APK Mod Injector for Free Fire.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 70
+            },
+            {
+                "name": "3 Days",
+                "price": 140
+            },
+            {
+                "name": "7 Days",
+                "price": 280
+            },
+            {
+                "name": "15 Days",
+                "price": 420
+            },
+            {
+                "name": "30 Days",
+                "price": 560
+            }
+        ]
+    },
+    {
+        "id": "drip-proxy",
+        "title": "DRIP CLIENT FF PROXY",
+        "category": "non-root",
+        "categoryName": "Free Fire NON ROOT",
+        "basePrice": 98,
+        "oldPrice": 168,
+        "discount": "41% OFF",
+        "status": "new",
+        "statusText": "New Release",
+        "image": "images/drip_client_ff_proxy.png",
+        "description": "DRIP CLIENT FF PROXY version bypass key.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 98
+            },
+            {
+                "name": "3 Days",
+                "price": 224
+            },
+            {
+                "name": "7 Days",
+                "price": 406
+            },
+            {
+                "name": "30 Days",
+                "price": 812
+            }
+        ]
+    },
+    {
+        "id": "dolphin-root",
+        "title": "DHOLPHIN ROOT ONLY",
+        "category": "root",
+        "categoryName": "FREE FIRE ROOT",
+        "basePrice": 98,
+        "oldPrice": 140,
+        "discount": "30% OFF",
+        "status": "online",
+        "statusText": "Kernel Safe",
+        "image": "images/dolphin_root_only.png",
+        "description": "DHOLPHIN ROOT ONLY Magisk / KernelSU module root injector.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 98
+            },
+            {
+                "name": "7 Days",
+                "price": 532
+            },
+            {
+                "name": "30 Days",
+                "price": 1372
+            }
+        ]
+    },
+    {
+        "id": "angry-mod-root",
+        "title": "ANGRY MOD ROOT ONLY",
+        "category": "root",
+        "categoryName": "FREE FIRE ROOT",
+        "basePrice": 98,
+        "oldPrice": 140,
+        "discount": "30% OFF",
+        "status": "warning",
+        "statusText": "Kernel Only",
+        "image": "images/angry_mod_root_only.png",
+        "description": "ANGRY MOD ROOT ONLY kernel safe mod menu injector.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 98
+            },
+            {
+                "name": "7 Days",
+                "price": 420
+            },
+            {
+                "name": "30 Days",
+                "price": 1050
+            }
+        ]
+    },
+    {
+        "id": "migul-pro",
+        "title": "MIGUL PRO AIM KILL",
+        "category": "ios",
+        "categoryName": "FREE FIRE IOS",
+        "basePrice": 504,
+        "oldPrice": 700,
+        "discount": "28% OFF",
+        "status": "online",
+        "statusText": "VIP Pro",
+        "image": "images/migul_pro_aim_kill.png",
+        "description": "MIGUL PRO AIM KILL iOS / Android panel key.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 504
+            },
+            {
+                "name": "7 Days",
+                "price": 1330
+            },
+            {
+                "name": "31 Days",
+                "price": 2800
+            }
+        ]
+    },
+    {
+        "id": "gbox-esign",
+        "title": "GBOX & ESIGN",
+        "category": "ios",
+        "categoryName": "FREE FIRE IOS",
+        "basePrice": 980,
+        "oldPrice": 1260,
+        "discount": "22% OFF",
+        "status": "new",
+        "statusText": "iOS Cert",
+        "image": "images/gbox_esign.png",
+        "description": "GBOX & ESIGN iOS installation signature key.",
+        "packages": [
+            {
+                "name": "30 Days Warranty",
+                "price": 980
+            },
+            {
+                "name": "60 Days Warranty",
+                "price": 1190
+            },
+            {
+                "name": "90 Days Warranty",
+                "price": 1400
+            }
+        ]
+    },
+    {
+        "id": "drip-root-only",
+        "title": "DRIP CLIENT ROOT ONLY",
+        "category": "root",
+        "categoryName": "FREE FIRE ROOT",
+        "basePrice": 168,
+        "oldPrice": 252,
+        "discount": "33% OFF",
+        "status": "online",
+        "statusText": "Root Only",
+        "image": "images/drip_client_root_only.png",
+        "description": "DRIP CLIENT ROOT ONLY full featured menu.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 168
+            },
+            {
+                "name": "7 Days",
+                "price": 700
+            },
+            {
+                "name": "30 Days",
+                "price": 1680
+            }
+        ]
+    },
+    {
+        "id": "br-mods-pc",
+        "title": "BR MODS PC",
+        "category": "pc",
+        "categoryName": "FREE FIRE PC",
+        "basePrice": 210,
+        "oldPrice": 308,
+        "discount": "31% OFF",
+        "status": "online",
+        "statusText": "Windows 10/11",
+        "image": "images/br_mods_pc.png",
+        "description": "BR MODS PC Mod Menu for Free Fire BlueStacks emulator.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 210
+            },
+            {
+                "name": "10 Days",
+                "price": 700
+            },
+            {
+                "name": "30 Days",
+                "price": 980
+            }
+        ]
+    },
+    {
+        "id": "zolo-pubg",
+        "title": "ZOLO PUBG MOBILE CHEAT",
+        "category": "pubg",
+        "categoryName": "PUBG MOBILE",
+        "basePrice": 126,
+        "oldPrice": 210,
+        "discount": "40% OFF",
+        "status": "online",
+        "statusText": "Safe Mod",
+        "image": "images/zolo_pubg.png",
+        "description": "ZOLO PUBG Mobile Z Edition with Skeleton ESP.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 126
+            },
+            {
+                "name": "7 Days",
+                "price": 490
+            },
+            {
+                "name": "30 Days",
+                "price": 980
+            }
+        ]
+    },
+    {
+        "id": "carrom-auto",
+        "title": "CARROM Z TOOL AUTO PLAY",
+        "category": "demo",
+        "categoryName": "DEMO / TOOLS",
+        "basePrice": 112,
+        "oldPrice": 168,
+        "discount": "33% OFF",
+        "status": "online",
+        "statusText": "100% Aim Line",
+        "image": "images/carrom.png",
+        "description": "CARROM Z Tool Auto Play guideline predictor.",
+        "packages": [
+            {
+                "name": "1 Day",
+                "price": 112
+            },
+            {
+                "name": "3 Days",
+                "price": 280
+            },
+            {
+                "name": "7 Days",
+                "price": 490
+            },
+            {
+                "name": "15 Days",
+                "price": 700
+            },
+            {
+                "name": "30 Days",
+                "price": 980
+            }
+        ]
+    }
+]

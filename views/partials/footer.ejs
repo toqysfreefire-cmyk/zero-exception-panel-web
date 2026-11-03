@@ -1,0 +1,1296 @@
+    </div><!-- /main content wrapper -->
+
+    <!-- Footer -->
+    <footer class="mb-24 md:mb-0 text-gray-200 border-t-2 footer-bg mt-12 py-8 bg-emerald-900">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-xl font-black text-white"><%= settings.site_name %></span>
+                    <span class="text-xs bg-emerald-800 text-emerald-200 px-2 py-1 rounded-full">v2.0 Verified</span>
+                </div>
+                <div class="text-sm text-emerald-100">
+                    &copy; 2026 <%= settings.site_name %>. All rights reserved. Trusted Gaming Panels &amp; Mods.
+                </div>
+                <div class="flex items-center gap-4 text-lg">
+                    <% if (settings.telegram) { %>
+                    <a href="<%= settings.telegram %>" target="_blank" class="text-emerald-200 hover:text-white transition" title="Telegram Channel">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <% } %>
+                    <% if (settings.youtube) { %>
+                    <a href="<%= settings.youtube %>" target="_blank" class="text-emerald-200 hover:text-white transition" title="YouTube Channel">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <% } %>
+                    <% if (settings.whatsapp) { %>
+                    <a href="<%= settings.whatsapp %>" target="_blank" class="text-emerald-200 hover:text-white transition" title="WhatsApp Support">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <% } %>
+                    <a href="/admin/login" class="text-emerald-300 hover:text-white text-xs font-bold uppercase tracking-wider" title="Admin Portal">
+                        <i class="fas fa-lock me-1"></i> Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================================================
+         FEATURE 1: INTERACTIVE LIVE SUPPORT & WHATSAPP DRAWER
+         ============================================================ -->
+    <style>
+    /* Explicit Fixed Positioning for Support & Social Proof */
+    #liveSupportWrapper {
+        position: fixed !important;
+        bottom: 24px !important;
+        right: 24px !important;
+        z-index: 99999 !important;
+    }
+    #liveSupportCard {
+        position: absolute !important;
+        bottom: 65px !important;
+        right: 0 !important;
+        width: 320px !important;
+        max-width: 90vw !important;
+        z-index: 100000 !important;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(0, 240, 255, 0.3) !important;
+    }
+    #socialProofPopup {
+        position: fixed !important;
+        bottom: 24px !important;
+        left: 24px !important;
+        width: 330px !important;
+        max-width: calc(100vw - 48px) !important;
+        z-index: 99998 !important;
+        opacity: 0;
+        transform: translateY(15px);
+        transition: opacity 0.4s ease, transform 0.4s ease !important;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.25) !important;
+    }
+
+    @media (max-width: 768px) {
+        #liveSupportWrapper {
+            bottom: 78px !important;
+            right: 12px !important;
+        }
+        #socialProofPopup {
+            bottom: 78px !important;
+            left: 10px !important;
+            max-width: 250px !important;
+            padding: 8px 10px !important;
+        }
+    }
+    </style>
+
+    <div id="liveSupportWrapper">
+        <!-- Floating Launcher Trigger Button -->
+        <button type="button" id="liveSupportToggleBtn" class="flex items-center gap-2.5 bg-[#25D366] hover:bg-[#20ba59] text-white font-bold px-4 py-3 rounded-full shadow-[0_4px_25px_rgba(37,211,102,0.5)] transition-all duration-300 transform hover:scale-105 group border border-white/30 cursor-pointer" aria-label="Open Live Support">
+            <div class="relative">
+                <i class="fab fa-whatsapp text-2xl group-hover:rotate-12 transition-transform"></i>
+                <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 border-2 border-white rounded-full animate-ping"></span>
+                <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
+            </div>
+            <span class="hidden md:inline text-xs font-bold tracking-wide">Live Support</span>
+        </button>
+
+        <!-- Pop-out Interactive Chat Card -->
+        <div id="liveSupportCard" style="display:none;" class="bg-gradient-to-b from-[#0a1428] via-[#070d1c] to-[#040812] border border-cyan-500/40 rounded-2xl shadow-2xl overflow-hidden text-white">
+            <!-- Card Header -->
+            <div class="bg-gradient-to-r from-emerald-700 via-teal-800 to-cyan-900 p-4 flex items-center justify-between border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <div class="w-10 h-10 rounded-full bg-white/20 border border-white/40 flex items-center justify-center text-lg shadow-inner">
+                            <i class="fas fa-headset text-white"></i>
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-[#0a1428] rounded-full"></span>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-black uppercase tracking-wider text-white m-0"><%= settings.site_name %> Support</h4>
+                        <span class="text-[10px] text-emerald-200 font-bold flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Online • Typically replies in 2m
+                        </span>
+                    </div>
+                </div>
+                <button type="button" id="liveSupportCloseBtn" class="text-white/70 hover:text-white text-base transition p-1">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Card Body -->
+            <div class="p-4">
+                <div class="bg-cyan-950/40 p-3 rounded-xl border border-cyan-500/20 text-xs text-cyan-200 mb-3.5 leading-relaxed">
+                    👋 <b>Welcome!</b> কোনো প্যানেল কী, রুট সার্ভিস সেটআপ বা পেমেন্ট নিয়ে প্রশ্ন থাকলে আমাদের সাথে এখনই কথা বলুন।
+                </div>
+
+                <!-- Quick Action Buttons -->
+                <div class="grid grid-cols-2 gap-2 mb-3.5">
+                    <a href="https://wa.me/<%= settings.whatsapp_intl %>?text=Hello%20Admin,%20I%20need%20help%20with%20panel%20keys" target="_blank" class="p-2.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/40 text-emerald-300 font-bold text-xs flex items-center gap-2 no-underline transition">
+                        <i class="fab fa-whatsapp text-emerald-400 text-sm"></i>
+                        <span>WhatsApp</span>
+                    </a>
+                    <a href="/track" class="p-2.5 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center gap-2 no-underline transition">
+                        <i class="fas fa-crosshairs text-cyan-400 text-sm"></i>
+                        <span>Track Order</span>
+                    </a>
+                    <% if (settings.telegram) { %>
+                    <a href="<%= settings.telegram %>" target="_blank" class="p-2.5 rounded-xl bg-sky-950/80 hover:bg-sky-900 border border-sky-500/40 text-sky-300 font-bold text-xs flex items-center gap-2 no-underline transition">
+                        <i class="fab fa-telegram text-sky-400 text-sm"></i>
+                        <span>Telegram</span>
+                    </a>
+                    <% } %>
+                    <a href="/account#wallet" class="p-2.5 rounded-xl bg-purple-950/80 hover:bg-purple-900 border border-purple-500/40 text-purple-300 font-bold text-xs flex items-center gap-2 no-underline transition">
+                        <i class="fas fa-wallet text-purple-400 text-sm"></i>
+                        <span>Wallet</span>
+                    </a>
+                </div>
+
+                <!-- Instant Question Sender -->
+                <form id="liveSupportQuickForm" class="flex items-center gap-2">
+                    <input type="text" id="liveSupportInput" placeholder="Type message..." class="flex-1 px-3 py-2 bg-black/60 border border-cyan-500/30 rounded-xl text-white text-xs font-semibold focus:outline-none focus:border-cyan-400">
+                    <button type="submit" class="px-3 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs rounded-xl transition flex items-center justify-center shrink-0 cursor-pointer">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         FEATURE 5: SOCIAL PROOF / RECENT PURCHASE POP-UP
+         ============================================================ -->
+    <div id="socialProofPopup" style="display:none;" class="bg-gradient-to-r from-[#070f24] via-[#091530] to-[#070f24] border border-cyan-500/40 rounded-2xl p-3 text-white">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 text-lg shrink-0 shadow-inner">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-1">
+                    <span id="spBuyer" class="text-xs font-black text-white truncate">Rakib from Dhaka</span>
+                    <button type="button" id="spCloseBtn" class="text-gray-400 hover:text-white text-xs p-0.5 ml-1 transition" title="Dismiss">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="text-[11px] text-cyan-300 truncate font-semibold mt-0.5">
+                    Purchased <b id="spProduct" class="text-emerald-400">Alpha Non-Root</b>
+                </div>
+                <div class="flex items-center gap-2 mt-0.5 text-[10px] text-gray-400 font-mono">
+                    <span class="text-emerald-400 font-bold"><i class="fas fa-check-circle"></i> Verified</span>
+                    <span>•</span>
+                    <span id="spTime">2 mins ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-bottom-nav-wrap">
+        <nav class="mobile-bottom-nav" id="mobileBottomNav" role="navigation" aria-label="Mobile bottom navigation">
+            <span class="mobile-nav-indicator" id="navIndicator" aria-hidden="true"></span>
+
+            <a href="/" class="mobile-nav-item <%= path === '/' ? 'active' : '' %>" data-nav="home" aria-label="Home">
+                <i class="fas fa-home" aria-hidden="true"></i>
+                <span>Home</span>
+            </a>
+
+            <a href="/mystery-box" class="mobile-nav-item <%= path === '/mystery-box' ? 'active' : '' %>" data-nav="mystery" aria-label="Mystery Box">
+                <i class="fas fa-cube text-cyan-400" aria-hidden="true"></i>
+                <span>Mystery</span>
+            </a>
+
+            <button type="button" onclick="openLuckySpinModal()" class="mobile-nav-item" data-nav="spin" aria-label="Lucky Spin" style="border: none; background: transparent; cursor: pointer;">
+                <i class="fas fa-dharmachakra text-amber-400" aria-hidden="true"></i>
+                <span>Spin</span>
+            </button>
+
+            <a href="/vip" class="mobile-nav-item <%= path === '/vip' ? 'active' : '' %>" data-nav="vip" aria-label="VIP Pass">
+                <i class="fas fa-crown text-amber-400" aria-hidden="true"></i>
+                <span>VIP</span>
+            </a>
+
+            <% if (isAdmin) { %>
+            <a href="/admin" class="mobile-nav-item <%= path.startsWith('/admin') ? 'active' : '' %>" data-nav="admin" aria-label="Admin">
+                <i class="fas fa-shield-alt text-emerald-400" aria-hidden="true"></i>
+                <span>Admin</span>
+            </a>
+            <% } else if (currentUser) { %>
+            <a href="/account" class="mobile-nav-item <%= path === '/account' ? 'active' : '' %>" data-nav="account" aria-label="Account">
+                <i class="fas fa-user-circle text-cyan-400" aria-hidden="true"></i>
+                <span>Account</span>
+            </a>
+            <% } else { %>
+            <a href="/login" class="mobile-nav-item <%= path === '/login' ? 'active' : '' %>" data-nav="account" aria-label="Account">
+                <i class="fas fa-user-circle text-cyan-400" aria-hidden="true"></i>
+                <span>Account</span>
+            </a>
+            <% } %>
+        </nav>
+    </div>
+
+    <!-- PWA Install Modal -->
+    <div class="modal fade" id="pwaInstallModal" tabindex="-1" aria-labelledby="pwaModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-3xl border border-cyan-400/40 bg-gradient-to-b from-[#0b1329] via-[#0d1730] to-[#070b18] text-white shadow-[0_0_50px_rgba(0,240,255,0.35)] overflow-hidden">
+                <div class="modal-header border-b border-cyan-500/20 py-3.5 px-4 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center text-cyan-400 text-sm">
+                            <i class="fas fa-mobile-screen"></i>
+                        </div>
+                        <h5 class="modal-title font-black text-sm uppercase tracking-wider text-white m-0" id="pwaModalTitle">
+                            Install ZERO EXCEPTION App
+                        </h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white text-xs" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-5 text-center">
+                    <div class="w-20 h-20 mx-auto mb-3.5 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border-2 border-cyan-400 p-2 shadow-[0_0_25px_rgba(0,240,255,0.4)] flex items-center justify-center">
+                        <img src="/uploads/settings/01KQFM748K0Y2NRR56VXKVZGNP.png" alt="App Icon" class="w-full h-full object-contain rounded-xl">
+                    </div>
+                    <h4 class="font-black text-white text-base mb-1">ZERO EXCEPTION</h4>
+                    <p class="text-xs text-cyan-300 font-bold mb-4">Fast, 24/7 Digital Game Keys & Panels</p>
+
+                    <!-- Install Action for Android / Chrome / Windows -->
+                    <div id="pwaNativeInstallArea">
+                        <button type="button" id="btnPwaPrompt" class="w-full py-3 px-4 rounded-xl font-black text-sm text-black bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 shadow-[0_0_20px_rgba(0,240,255,0.4)] transition transform active:scale-95 flex items-center justify-center gap-2 mb-3">
+                            <i class="fas fa-download"></i>
+                            <span>ইনস্টল করুন (Install Web App)</span>
+                        </button>
+                        <p class="text-[11px] text-slate-400 mb-3">ফোনের হোম স্ক্রিনে অ্যাপ আকারে ডাউনলোড করে ১-ক্লিকে ব্যবহার করুন।</p>
+                    </div>
+
+                    <!-- Guide for iOS / Safari / Manual Add -->
+                    <div id="pwaIosGuideArea" class="text-left bg-slate-900/80 border border-slate-700/80 rounded-2xl p-3.5 text-xs text-slate-300 space-y-2">
+                        <div class="font-bold text-amber-300 text-xs flex items-center gap-1.5 mb-1">
+                            <i class="fab fa-apple text-sm"></i> iPhone / Safari অথবা ম্যানুয়াল ইনস্টল:
+                        </div>
+                        <div class="flex items-start gap-2 text-[11px]">
+                            <span class="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center shrink-0">১</span>
+                            <span>ব্রাউজারের নিচে <strong>Share বাটনে (⎋)</strong> চাপুন।</span>
+                        </div>
+                        <div class="flex items-start gap-2 text-[11px]">
+                            <span class="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center shrink-0">২</span>
+                            <span>মেনু থেকে <strong>"Add to Home Screen"</strong> (বা 'হোম স্ক্রিনে যোগ করুন') অপশন বেছে নিন।</span>
+                        </div>
+                        <div class="flex items-start gap-2 text-[11px]">
+                            <span class="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center shrink-0">৩</span>
+                            <span>উপরে <strong>"Add"</strong> বাটনে ক্লিক করলেই ফোনের হোম স্ক্রিনে অ্যাপ আইকন তৈরি হয়ে যাবে!</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-t border-cyan-500/20 py-2.5 px-4 bg-slate-950/60">
+                    <button type="button" class="btn btn-secondary w-full rounded-xl py-2 font-bold text-xs" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Redeem Gift Card & Voucher Modal -->
+    <div class="modal fade" id="redeemGiftCardModal" tabindex="-1" aria-labelledby="redeemModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-3xl border border-emerald-400/50 bg-gradient-to-b from-[#06171a] via-[#091f24] to-[#040e12] text-white shadow-[0_0_50px_rgba(16,185,129,0.35)] overflow-hidden">
+                <div class="modal-header border-b border-emerald-500/20 py-3.5 px-4 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center text-emerald-400 text-sm">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <h5 class="modal-title font-black text-sm uppercase tracking-wider text-white m-0" id="redeemModalTitle">
+                            Redeem Gift Card / Voucher
+                        </h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white text-xs" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-5 text-center">
+                    <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 text-3xl flex items-center justify-center text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+                        🎁
+                    </div>
+                    <h4 class="font-black text-white text-base mb-1">রিডিম করুন গিফট ভাউচার</h4>
+                    <p class="text-xs text-gray-300 mb-4">আপনার কাছে থাকা গিফট কার্ড বা প্রোমো ভাউচার কোডটি নিচে লিখে সরাসরি ওয়ালেটে টাকা যুক্ত করে নিন।</p>
+
+                    <form id="formRedeemGiftCard" onsubmit="handleRedeemGiftCard(event)" class="space-y-3">
+                        <div>
+                            <input type="text" id="inputGiftCardCode" required placeholder="উদাহরণ: CYBER50 বা WELCOME20" class="w-full text-center uppercase tracking-widest font-mono font-black text-base py-3 px-4 rounded-xl bg-black/70 border-2 border-emerald-400/60 text-emerald-300 placeholder:text-gray-500 focus:outline-none focus:border-emerald-300 shadow-inner">
+                        </div>
+                        <button type="submit" id="btnSubmitRedeem" class="w-full py-3 px-4 rounded-xl font-black text-sm text-black bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 hover:to-teal-200 shadow-[0_0_20px_rgba(16,185,129,0.4)] transition transform active:scale-95 flex items-center justify-center gap-2">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="btnRedeemText">টাকা যোগ করুন (Claim Code)</span>
+                        </button>
+                    </form>
+                </div>
+                <div class="modal-footer border-t border-emerald-500/20 py-2.5 px-4 bg-slate-950/60">
+                    <button type="button" class="btn btn-secondary w-full rounded-xl py-2 font-bold text-xs" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup & Download Modal -->
+    <div class="modal fade" id="setupDownloadModal" tabindex="-1" aria-labelledby="modalProductTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-2xl border-0 overflow-hidden shadow-2xl">
+                <div class="modal-header bg-emerald-700 text-white border-0 py-3 px-4">
+                    <h5 class="modal-title font-extrabold text-white text-md uppercase text-start truncate-single-line" id="modalProductTitle">
+                        Product Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <div class="mb-4">
+                        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800 text-lg mb-1" id="modalProductTitleBody">Product Files &amp; Tutorial</h4>
+                        <p class="text-xs text-gray-500">Download the required application and watch the complete installation tutorial.</p>
+                    </div>
+
+                    <div class="d-grid gap-3">
+                        <a id="modalSetupVideoBtn" href="#" target="_blank" rel="noopener" class="btn btn-danger py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm">
+                            <i class="fab fa-youtube text-lg"></i>
+                            <span>Watch Setup Video</span>
+                        </a>
+
+                        <a id="modalApkDownloadBtn" href="#" target="_blank" rel="noopener" class="btn btn-success py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm" style="background-color: #008c09; border-color: #008c09;">
+                            <i class="fas fa-file-arrow-down text-lg"></i>
+                            <span>Download APK / File</span>
+                        </a>
+
+                        <a id="modalFeedbackBtn" href="#" target="_blank" rel="noopener" class="btn btn-primary py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm" style="background-color: #0284c7; border-color: #0284c7;">
+                            <i class="fab fa-telegram text-lg"></i>
+                            <span>Join Discussion &amp; Feedback</span>
+                        </a>
+
+                        <div id="modalEmptyNotice" style="display: none;" class="p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 text-xs text-center font-medium">
+                            <i class="fas fa-info-circle text-cyan-600 mr-1.5"></i> এই প্রোডাক্টের জন্য কোনো লিংক বা ফাইল প্রয়োজন নেই।
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-gray-50 px-4 py-3">
+                    <button type="button" class="btn btn-secondary w-full rounded-xl py-2 font-bold text-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Notice Modal -->
+    <div class="modal fade" id="maintenanceNoticeModal" tabindex="-1" aria-labelledby="maintenanceNoticeTitleText" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-2xl border-0 overflow-hidden shadow-2xl">
+                <div class="modal-header bg-amber-500 text-white border-0 py-3 px-4">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-triangle-exclamation text-xl"></i>
+                        <h5 class="modal-title font-bold text-white text-md uppercase" id="maintenanceNoticeTitleText">
+                            Under Maintenance
+                        </h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 text-base" id="maintenanceProductSubTitle">Product Offline</h4>
+                    </div>
+
+                    <div id="maintenanceMessageContainer" class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs md:text-sm text-gray-800 leading-relaxed whitespace-pre-line max-h-64 overflow-y-auto font-medium">
+                        This panel is currently offline for updating.
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-gray-50 px-4 py-3">
+                    <button type="button" class="btn btn-warning w-full rounded-xl py-2 font-bold text-sm text-white" style="background: #f59e0b;" data-bs-dismiss="modal">
+                        Understood
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reseller Tutorial Modal -->
+    <div class="modal fade" id="resellerTutorialModal" tabindex="-1" aria-labelledby="tutorialModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content rounded-2xl border-0 overflow-hidden shadow-2xl bg-gray-900 text-white">
+                <div class="modal-header border-b border-gray-800 py-3 px-4">
+                    <h5 class="modal-title font-extrabold text-white text-md uppercase m-0 flex items-center gap-2" id="tutorialModalTitle">
+                        <i class="fab fa-youtube text-red-500"></i>
+                        <span id="tutorialModalTitleText">Video Tutorial</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0 bg-black">
+                    <div class="ratio ratio-16x9" id="tutorialEmbedWrap">
+                        <iframe id="tutorialVideoFrame" src="" title="Video Player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="modal-footer border-t border-gray-800 py-2 px-4 flex justify-between items-center text-xs text-gray-400">
+                    <span id="tutorialVideoHintText">High definition streaming player</span>
+                    <button type="button" class="btn btn-secondary btn-sm rounded-lg" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /body-bg -->
+
+<!-- JavaScript Assets -->
+<script src="/assets/js/jquery-3.7.1.min.js"></script>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/toastr.min.js"></script>
+<script src="/assets/js/slider.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Force reveal all products immediately
+    document.querySelectorAll('.reveal-on-scroll').forEach(function(el) {
+        el.classList.add('is-visible');
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+        el.style.visibility = 'visible';
+    });
+
+    // 2. Currency dropdown toggle (Robust)
+    var currSwitch = document.getElementById('currencySwitch');
+    var pillBtn = document.getElementById('currencyPillBtn');
+    var menu = document.getElementById('currencyMenu');
+
+    if (pillBtn && menu) {
+        pillBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var isOpen = menu.classList.contains('show') || (currSwitch && currSwitch.classList.contains('is-open'));
+            if (isOpen) {
+                menu.classList.remove('show');
+                if (currSwitch) currSwitch.classList.remove('is-open');
+            } else {
+                menu.classList.add('show');
+                if (currSwitch) currSwitch.classList.add('is-open');
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!menu.contains(e.target) && !pillBtn.contains(e.target)) {
+                menu.classList.remove('show');
+                if (currSwitch) currSwitch.classList.remove('is-open');
+            }
+        });
+    }
+
+    // 3. User account dropdown toggle
+    var userToggles = document.querySelectorAll('.user-menu-toggle');
+    userToggles.forEach(function(btn) {
+        var wrap = btn.closest('.user-dropdown-wrap');
+        var userMenu = wrap ? wrap.querySelector('.user-dropdown-menu') : null;
+        if (userMenu) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userMenu.classList.toggle('show');
+            });
+            document.addEventListener('click', function(e) {
+                if (!wrap.contains(e.target)) {
+                    userMenu.classList.remove('show');
+                }
+            });
+        }
+    });
+
+    // 4. Setup & Download Modal Handler
+    document.querySelectorAll('.info-download-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var title = this.getAttribute('data-title') || 'Product Details';
+            var setup = (this.getAttribute('data-setup') || '').trim();
+            var apk = (this.getAttribute('data-apk') || '').trim();
+            var feedback = (this.getAttribute('data-feedback') || '').trim();
+
+            document.getElementById('modalProductTitle').textContent = title;
+            document.getElementById('modalProductTitleBody').textContent = title;
+
+            var isValid = function(val) {
+                return val && val !== '#' && val !== 'null' && val !== 'undefined' && val !== '""' && val !== "''";
+            };
+
+            var setupBtn = document.getElementById('modalSetupVideoBtn');
+            var apkBtn = document.getElementById('modalApkDownloadBtn');
+            var feedbackBtn = document.getElementById('modalFeedbackBtn');
+            var emptyNotice = document.getElementById('modalEmptyNotice');
+
+            var hasAny = false;
+
+            if (setupBtn) {
+                if (isValid(setup)) {
+                    setupBtn.href = setup;
+                    setupBtn.style.display = 'flex';
+                    hasAny = true;
+                } else {
+                    setupBtn.style.display = 'none';
+                }
+            }
+
+            if (apkBtn) {
+                if (isValid(apk)) {
+                    apkBtn.href = apk;
+                    apkBtn.style.display = 'flex';
+                    hasAny = true;
+                } else {
+                    apkBtn.style.display = 'none';
+                }
+            }
+
+            if (feedbackBtn) {
+                if (isValid(feedback)) {
+                    feedbackBtn.href = feedback;
+                    feedbackBtn.style.display = 'flex';
+                    hasAny = true;
+                } else {
+                    feedbackBtn.style.display = 'none';
+                }
+            }
+
+            if (emptyNotice) {
+                emptyNotice.style.display = hasAny ? 'none' : 'block';
+            }
+
+            var modal = new bootstrap.Modal(document.getElementById('setupDownloadModal'));
+            modal.show();
+        });
+    });
+
+    // 5. Maintenance Notice Modal Handler
+    document.querySelectorAll('.js-maintenance-notice').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var title = this.getAttribute('data-notice-title') || 'Notice';
+            var msg = this.getAttribute('data-notice-message') || 'This product is currently offline for updating.';
+
+            document.getElementById('maintenanceProductSubTitle').textContent = title;
+            document.getElementById('maintenanceMessageContainer').textContent = msg;
+
+            var modal = new bootstrap.Modal(document.getElementById('maintenanceNoticeModal'));
+            modal.show();
+        });
+    });
+
+    // 6. Category filter and Search interactions (Unified Engine)
+    var filterBtns = document.querySelectorAll('.filter-btn');
+    var extraFilters = document.getElementById('extra-filters');
+    var toggleBtn = document.getElementById('toggle-filters-btn');
+    var toggleText = document.getElementById('toggle-text');
+    var toggleIcon = document.getElementById('toggle-icon');
+    var searchInput = document.getElementById('productSearchInput');
+    var clearSearchBtn = document.getElementById('clearSearchBtn');
+    var resetFiltersBtn = document.getElementById('resetFiltersBtn');
+    var noProductsFound = document.getElementById('noProductsFound');
+
+    var currentCategoryFilter = 'all';
+    var currentSearchTerm = '';
+
+    function filterProducts() {
+        var items = document.querySelectorAll('.product-item');
+        var visibleCount = 0;
+
+        items.forEach(function(item) {
+            var itemCategory = item.getAttribute('data-category') || '';
+            var itemTitle = item.getAttribute('data-title') || '';
+            if (!itemTitle) {
+                var titleEl = item.querySelector('.product-title-full');
+                itemTitle = titleEl ? titleEl.textContent.toLowerCase() : '';
+            }
+
+            var matchesCategory = (currentCategoryFilter === 'all') ||
+                                  (itemCategory === currentCategoryFilter) ||
+                                  item.classList.contains(currentCategoryFilter);
+
+            var matchesSearch = !currentSearchTerm || itemTitle.includes(currentSearchTerm);
+
+            if (matchesCategory && matchesSearch) {
+                item.classList.remove('is-hidden');
+                item.style.display = 'flex';
+                item.style.opacity = '1';
+                item.style.visibility = 'visible';
+                visibleCount++;
+            } else {
+                item.classList.add('is-hidden');
+                item.style.display = 'none';
+            }
+        });
+
+        if (noProductsFound) {
+            noProductsFound.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+    }
+
+    // Category button clicks
+    filterBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            filterBtns.forEach(function(b) { b.classList.remove('active-filter'); });
+            this.classList.add('active-filter');
+
+            currentCategoryFilter = this.getAttribute('data-filter') || 'all';
+            filterProducts();
+        });
+    });
+
+    // More / Less Toggle
+    if (toggleBtn && extraFilters) {
+        toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var isOpen = extraFilters.classList.toggle('is-open');
+            if (isOpen) {
+                extraFilters.style.display = 'grid';
+                if (toggleText) toggleText.textContent = 'Less';
+                if (toggleIcon) toggleIcon.style.transform = 'rotate(180deg)';
+                toggleBtn.setAttribute('aria-expanded', 'true');
+            } else {
+                extraFilters.style.display = 'none';
+                if (toggleText) toggleText.textContent = 'More';
+                if (toggleIcon) toggleIcon.style.transform = 'rotate(0deg)';
+                toggleBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    // Search input typing
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            currentSearchTerm = this.value.toLowerCase().trim();
+            if (clearSearchBtn) {
+                clearSearchBtn.style.display = currentSearchTerm ? 'flex' : 'none';
+            }
+            filterProducts();
+        });
+    }
+
+    // Clear search button
+    if (clearSearchBtn && searchInput) {
+        clearSearchBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            currentSearchTerm = '';
+            clearSearchBtn.style.display = 'none';
+            searchInput.focus();
+            filterProducts();
+        });
+    }
+
+    // Reset all filters button
+    if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', function() {
+            if (searchInput) {
+                searchInput.value = '';
+                currentSearchTerm = '';
+            }
+            if (clearSearchBtn) clearSearchBtn.style.display = 'none';
+
+            currentCategoryFilter = 'all';
+            filterBtns.forEach(function(b) {
+                if (b.getAttribute('data-filter') === 'all') {
+                    b.classList.add('active-filter');
+                } else {
+                    b.classList.remove('active-filter');
+                }
+            });
+
+            filterProducts();
+        });
+    }
+
+    // 8. Community tabs
+    var tabBtns = document.querySelectorAll('.tab-button');
+    var tabPanes = document.querySelectorAll('.tab-content');
+    tabBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            tabBtns.forEach(function(b) { b.classList.remove('active-tab'); });
+            tabPanes.forEach(function(p) { p.classList.remove('active'); p.style.display = 'none'; });
+
+            this.classList.add('active-tab');
+            var tabId = 'list-' + this.getAttribute('data-tab');
+            if (this.getAttribute('data-tab') === 'top') tabId = 'list-top-buyers';
+            if (this.getAttribute('data-tab') === 'recent') tabId = 'list-recent-orders';
+            if (this.getAttribute('data-tab') === 'feedbacks') tabId = 'list-feedbacks';
+
+            var activePane = document.getElementById(tabId);
+            if (activePane) {
+                activePane.classList.add('active');
+                activePane.style.display = 'block';
+            }
+        });
+    });
+
+    // ============================================================
+    // FEATURE 1: LIVE SUPPORT DRAWER TOGGLE & SENDER
+    // ============================================================
+    var supportToggleBtn = document.getElementById('liveSupportToggleBtn');
+    var supportCard = document.getElementById('liveSupportCard');
+    var supportCloseBtn = document.getElementById('liveSupportCloseBtn');
+    var supportForm = document.getElementById('liveSupportQuickForm');
+    var supportInput = document.getElementById('liveSupportInput');
+
+    if (supportToggleBtn && supportCard) {
+        supportToggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var isOpen = supportCard.style.display === 'block';
+            supportCard.style.display = isOpen ? 'none' : 'block';
+        });
+    }
+    if (supportCloseBtn && supportCard) {
+        supportCloseBtn.addEventListener('click', function() {
+            supportCard.style.display = 'none';
+        });
+    }
+    document.addEventListener('click', function(e) {
+        if (supportCard && supportCard.style.display === 'block') {
+            if (!supportCard.contains(e.target) && (!supportToggleBtn || !supportToggleBtn.contains(e.target))) {
+                supportCard.style.display = 'none';
+            }
+        }
+    });
+    if (supportForm && supportInput) {
+        supportForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var msg = supportInput.value.trim();
+            if (!msg) return;
+            var waIntl = '<%= settings.whatsapp_intl %>';
+            window.open('https://wa.me/' + waIntl + '?text=' + encodeURIComponent(msg), '_blank');
+            supportInput.value = '';
+            if (supportCard) supportCard.style.display = 'none';
+        });
+    }
+
+    // ============================================================
+    // FEATURE 5: SOCIAL PROOF RECENT PURCHASE POP-UP
+    // ============================================================
+    var spPopup = document.getElementById('socialProofPopup');
+    var spBuyer = document.getElementById('spBuyer');
+    var spProduct = document.getElementById('spProduct');
+    var spTime = document.getElementById('spTime');
+    var spClose = document.getElementById('spCloseBtn');
+
+    var buyersList = [
+        { name: 'Rakib from Dhaka', product: 'Alpha Non-Root (7 Days)', time: '2 mins ago' },
+        { name: 'Tanvir from Chittagong', product: 'VIP Root Service', time: '5 mins ago' },
+        { name: 'Siam from Sylhet', product: 'Zero Mod VIP (30 Days)', time: '8 mins ago' },
+        { name: 'Fahim from Rajshahi', product: 'Alpha Non-Root (30 Days)', time: '11 mins ago' },
+        { name: 'Nabil from Gazipur', product: 'KernelSU Root Setup', time: '14 mins ago' },
+        { name: 'Tamim from Khulna', product: 'Free Fire Diamond Key', time: '17 mins ago' },
+        { name: 'Emon from Cumilla', product: 'Zero Cheat APK Mod', time: '22 mins ago' }
+    ];
+
+    var spDismissed = false;
+    if (spClose && spPopup) {
+        spClose.addEventListener('click', function() {
+            spDismissed = true;
+            hideSocialProof();
+            setTimeout(function() { spDismissed = false; }, 60000);
+        });
+    }
+
+    function showSocialProof(item) {
+        if (!spPopup || spDismissed) return;
+        if (spBuyer) spBuyer.textContent = item.name;
+        if (spProduct) spProduct.textContent = item.product;
+        if (spTime) spTime.textContent = item.time;
+
+        spPopup.style.display = 'block';
+        setTimeout(function() {
+            spPopup.style.opacity = '1';
+            spPopup.style.transform = 'translateY(0)';
+        }, 30);
+
+        setTimeout(hideSocialProof, 6500);
+    }
+
+    function hideSocialProof() {
+        if (!spPopup) return;
+        spPopup.style.opacity = '0';
+        spPopup.style.transform = 'translateY(15px)';
+        setTimeout(function() {
+            if (spPopup.style.opacity === '0') {
+                spPopup.style.display = 'none';
+            }
+        }, 450);
+    }
+
+    // Launch social proof cycle
+    setTimeout(function() {
+        var idx = Math.floor(Math.random() * buyersList.length);
+        showSocialProof(buyersList[idx]);
+
+        setInterval(function() {
+            var nextIdx = Math.floor(Math.random() * buyersList.length);
+            showSocialProof(buyersList[nextIdx]);
+        }, 22000);
+    }, 4000);
+});
+</script>
+
+<!-- ============================================================
+     FEATURE 8: LUCKY SPIN & WIN MODAL (500৳ Deposit/Spend Reward)
+     ============================================================ -->
+<style>
+.spin-wheel-canvas {
+    filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.4));
+    transition: transform 5s cubic-bezier(0.12, 0.8, 0.2, 1);
+}
+.wheel-pointer {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 24px solid #f59e0b;
+    filter: drop-shadow(0 4px 10px rgba(245, 158, 11, 0.9));
+    z-index: 25;
+}
+</style>
+
+<!-- Lucky Spin & Win Modal Dialog (100% Solid Dark Opaque Background & Centered) -->
+<div id="modalLuckySpin" style="display: none; position: fixed; inset: 0; z-index: 999999; background: rgba(0, 0, 0, 0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); align-items: center; justify-content: center; padding: 14px; overflow-y: auto;">
+    <div style="background: #080e1b !important; border: 2.5px solid #f59e0b; border-radius: 28px; max-width: 410px; width: 100%; padding: 22px 20px; color: #ffffff; box-shadow: 0 25px 70px rgba(0,0,0,0.98), 0 0 40px rgba(245, 158, 11, 0.5); position: relative; text-align: center; margin: auto; max-height: 94vh; overflow-y: auto;">
+        <!-- Close Button -->
+        <button type="button" onclick="closeLuckySpinModal()" style="position: absolute; top: 12px; right: 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); width: 32px; height: 32px; border-radius: 50%; color: #fff; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='#ef4444'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">&times;</button>
+        
+        <!-- Header -->
+        <div style="margin-bottom: 12px; padding-top: 4px;">
+            <span style="display: inline-block; padding: 3px 12px; border-radius: 9999px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; font-family: monospace; margin-bottom: 4px;">
+                🎁 500৳ DEPOSIT &amp; SPEND REWARD
+            </span>
+            <h3 id="spinDisplayTitle" style="font-size: 19px; font-weight: 900; font-family: 'Orbitron', monospace; text-transform: uppercase; margin: 4px 0 0 0; color: #f59e0b; text-shadow: 0 0 15px rgba(245,158,11,0.5);">
+                LUCKY SPIN &amp; WIN
+            </h3>
+            <p id="spinDisplaySubtitle" style="font-size: 11.5px; color: #94a3b8; margin: 4px 0 0 0; line-height: 1.4;">প্রতি ৫০০৳ ডিপোজিট বা ৫০০৳ খরচ করলে পাবেন ১টি লাকি স্পিন!</p>
+        </div>
+
+        <!-- Wheel Container -->
+        <div style="position: relative; width: 280px; height: 280px; margin: 8px auto; display: flex; align-items: center; justify-content: center;">
+            <!-- Center Indicator Needle -->
+            <div class="wheel-pointer"></div>
+
+            <!-- Canvas Element -->
+            <canvas id="luckyWheelCanvas" width="280" height="280" class="spin-wheel-canvas" style="width: 280px; height: 280px; border-radius: 50%;"></canvas>
+
+            <!-- Center Hub Button / Pin -->
+            <div style="position: absolute; width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #d97706); border: 2.5px solid #ffffff; box-shadow: 0 0 20px rgba(245,158,11,0.9); display: flex; align-items: center; justify-content: center; z-index: 10; pointer-events: none;">
+                <i class="fas fa-star" style="color: #ffffff; font-size: 14px;"></i>
+            </div>
+        </div>
+
+        <!-- Timer / Eligibility Status -->
+        <div id="spinTimerWrapper" style="margin: 10px 0; padding: 8px 12px; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); font-size: 11.5px; font-family: monospace;">
+            <span id="spinStatusText" style="color: #cbd5e1;">চেকিং স্ট্যাটাস...</span>
+        </div>
+
+        <!-- Spin Action Button -->
+        <button type="button" id="btnDoSpin" onclick="triggerLuckySpin()" style="width: 100%; padding: 12px 20px; border-radius: 16px; background: linear-gradient(135deg, #f59e0b, #ec4899, #8b5cf6); border: none; color: #ffffff; font-weight: 900; font-size: 13px; text-transform: uppercase; font-family: 'Orbitron', monospace; letter-spacing: 1px; box-shadow: 0 4px 20px rgba(245, 158, 11, 0.45); cursor: pointer; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+            <i class="fas fa-play" style="margin-right: 6px;"></i> SPIN THE WHEEL NOW
+        </button>
+
+        <!-- Prize Announcement Card (Hidden initially) -->
+        <div id="spinPrizeResult" style="display: none; margin-top: 14px; padding: 14px; border-radius: 16px; background: rgba(245, 158, 11, 0.15); border: 1.5px solid #f59e0b; text-align: center;">
+            <div style="font-size: 26px; margin-bottom: 2px;">🎉</div>
+            <h4 id="prizeResultTitle" style="font-size: 15px; font-weight: 900; color: #fbbf24; margin: 0; text-transform: uppercase; font-family: 'Orbitron', monospace;"></h4>
+            <p id="prizeResultMessage" style="font-size: 11.5px; color: #e2e8f0; margin: 4px 0 8px 0; line-height: 1.4;"></p>
+            <div id="prizeCouponBox" style="display: none; padding: 8px 12px; border-radius: 10px; background: rgba(0,0,0,0.7); border: 1px solid #fbbf24; font-family: monospace; color: #fef08a; font-weight: bold; font-size: 12px; align-items: center; justify-content: space-between;">
+                <span id="prizeCouponCode"></span>
+                <button type="button" onclick="copySpinCoupon()" style="padding: 4px 10px; border-radius: 6px; background: #f59e0b; color: #000; font-weight: 900; font-size: 10px; border: none; text-transform: uppercase; cursor: pointer;">Copy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var spinSegments = [
+    { index: 0, label: 'Try Tomorrow', type: 'none', color: '#475569' },
+    { index: 1, label: '৳1 Balance', type: 'balance', color: '#06b6d4' },
+    { index: 2, label: 'Better Luck', type: 'none', color: '#334155' },
+    { index: 3, label: '2% Promo Code', type: 'coupon', color: '#a855f7' },
+    { index: 4, label: '৳2 Balance', type: 'balance', color: '#00f0ff' },
+    { index: 5, label: '5% VIP Promo', type: 'coupon', color: '#f59e0b' },
+    { index: 6, label: '৳5 Balance', type: 'balance', color: '#10b981' },
+    { index: 7, label: '৳10 Grand Prize', type: 'balance', color: '#ec4899' }
+];
+
+var isSpinning = false;
+var currentWheelRotation = 0;
+var spinTimerInterval = null;
+
+function drawLuckyWheel() {
+    var canvas = document.getElementById('luckyWheelCanvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var w = canvas.width;
+    var h = canvas.height;
+    var cx = w / 2;
+    var cy = h / 2;
+    var radius = cx - 6;
+    var numSlices = spinSegments.length || 8;
+    var sliceAngle = (2 * Math.PI) / numSlices;
+
+    ctx.clearRect(0, 0, w, h);
+
+    // Draw Outer Glow Ring
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius + 3, 0, 2 * Math.PI);
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = '#f59e0b';
+    ctx.stroke();
+
+    for (var i = 0; i < numSlices; i++) {
+        var startAngle = i * sliceAngle;
+        var endAngle = startAngle + sliceAngle;
+        var midAngle = startAngle + sliceAngle / 2;
+        var seg = spinSegments[i] || { label: 'Prize ' + (i+1), color: '#38bdf8' };
+
+        // Draw Slice
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = seg.color || '#38bdf8';
+        ctx.fill();
+
+        // Slice Border
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.stroke();
+
+        // Draw Text radially and cleanly
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(midAngle);
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 11.5px "Orbitron", -apple-system, sans-serif';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
+        ctx.shadowBlur = 4;
+        ctx.shadowOffsetX = 1;
+        ctx.shadowOffsetY = 1;
+        ctx.fillText(seg.label, radius - 16, 0);
+        ctx.restore();
+    }
+}
+
+function openLuckySpinModal() {
+    var modal = document.getElementById('modalLuckySpin');
+    if (modal) {
+        modal.style.display = 'flex';
+        checkSpinStatus();
+    }
+}
+
+function closeLuckySpinModal() {
+    var modal = document.getElementById('modalLuckySpin');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    if (spinTimerInterval) {
+        clearInterval(spinTimerInterval);
+        spinTimerInterval = null;
+    }
+}
+
+function checkSpinStatus() {
+    var statusText = document.getElementById('spinStatusText');
+    var btn = document.getElementById('btnDoSpin');
+    var titleElem = document.getElementById('spinDisplayTitle');
+    var subElem = document.getElementById('spinDisplaySubtitle');
+
+    fetch('/api/spin/status')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.segments && data.segments.length) {
+                spinSegments = data.segments;
+                drawLuckyWheel();
+            }
+
+            if (data.title && titleElem) titleElem.innerText = data.title;
+            if (data.subtitle && subElem) subElem.innerText = data.subtitle;
+
+            if (data.enabled === false) {
+                if (statusText) statusText.innerHTML = '<span style="color: #f87171;">⚠️ ফ্রি স্পিন সিস্টেম বর্তমানে বন্ধ রয়েছে।</span>';
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-pause me-2"></i> SYSTEM PAUSED';
+                }
+                return;
+            }
+
+            if (!data.loggedIn) {
+                if (statusText) statusText.innerHTML = '<span style="color: #fbbf24;">⚠️ ফ্রি স্পিন পেতে অনুগ্রহ করে <b>লগইন</b> করুন।</span>';
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-sign-in-alt" style="margin-right: 6px;"></i> LOGIN TO SPIN';
+                    btn.onclick = function() { window.location.href = '/login?returnUrl=' + encodeURIComponent(window.location.pathname); };
+                }
+                return;
+            }
+
+            if (btn) {
+                btn.onclick = triggerLuckySpin;
+            }
+
+            if (data.canSpin) {
+                var spinCount = data.spinCredits || 0;
+                if (statusText) {
+                    statusText.innerHTML = '<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;"><span>🎟️ এভেইলেবল স্পিন:</span><b style="color: #34d399; font-size: 13px;">' + spinCount + ' টি প্রস্তুত</b></div><div style="font-size: 10.5px; color: #94a3b8;">ডিপোজিট প্রগ্রেস: ' + (data.depositedProgress || 0) + '/' + (data.depositThreshold || 500) + '৳ • খরচ প্রগ্রেস: ' + (data.spentProgress || 0) + '/' + (data.spendThreshold || 500) + '৳</div>';
+                }
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                    btn.innerHTML = '<i class="fas fa-play" style="margin-right: 6px;"></i> SPIN NOW (' + spinCount + ' Available)';
+                }
+            } else {
+                var depRem = data.depositRemaining !== undefined ? data.depositRemaining : 500;
+                var spdRem = data.spendRemaining !== undefined ? data.spendRemaining : 500;
+                if (statusText) {
+                    statusText.innerHTML = '<div style="color: #f59e0b; font-weight: bold; margin-bottom: 4px;"><i class="fas fa-ticket-alt"></i> আপনার কোনো স্পিন নেই (০ টি)</div><div style="font-size: 10.5px; color: #cbd5e1; line-height: 1.4;">🎁 প্রতি <b>৫০০৳ ডিপোজিট</b> বা <b>৫০০৳ খরচে</b> ১টি ফ্রি স্পিন পাবেন!<br><span style="color: #38bdf8;">ডিপোজিট বাকি: ' + depRem + '৳</span> | <span style="color: #a855f7;">খরচ বাকি: ' + spdRem + '৳</span></div>';
+                }
+                if (btn) {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                    btn.innerHTML = '<i class="fas fa-lock" style="margin-right: 6px;"></i> LOCKED (Deposit/Spend 500৳ to Earn)';
+                }
+            }
+        })
+        .catch(function(err) {
+            console.error('Spin status check failed:', err);
+            drawLuckyWheel();
+        });
+}
+
+function startSpinCountdown(seconds) {
+    if (spinTimerInterval) clearInterval(spinTimerInterval);
+    var statusText = document.getElementById('spinStatusText');
+    var btn = document.getElementById('btnDoSpin');
+
+    function updateTimer() {
+        if (seconds <= 0) {
+            clearInterval(spinTimerInterval);
+            checkSpinStatus();
+            return;
+        }
+        var h = Math.floor(seconds / 3600);
+        var m = Math.floor((seconds % 3600) / 60);
+        var s = seconds % 60;
+        var formatted = (h < 10 ? '0' + h : h) + 'h ' + (m < 10 ? '0' + m : m) + 'm ' + (s < 10 ? '0' + s : s) + 's';
+        if (statusText) {
+            statusText.innerHTML = '⏳ পরবর্তী ফ্রি স্পিন এভেইলেবল হবে: <b style="color: #fbbf24; font-family: monospace;">' + formatted + '</b>';
+        }
+        seconds--;
+    }
+
+    updateTimer();
+    spinTimerInterval = setInterval(updateTimer, 1000);
+}
+
+function triggerLuckySpin() {
+    if (isSpinning) return;
+    var btn = document.getElementById('btnDoSpin');
+    var canvas = document.getElementById('luckyWheelCanvas');
+    var prizeCard = document.getElementById('spinPrizeResult');
+    if (prizeCard) prizeCard.style.display = 'none';
+
+    isSpinning = true;
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 6px;"></i> SPINNING...';
+    }
+
+    fetch('/api/spin/play', { method: 'POST' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data.success) {
+                alert(data.message || 'Error occurred while spinning.');
+                isSpinning = false;
+                checkSpinStatus();
+                return;
+            }
+
+            var winningIndex = data.prizeIndex;
+            var numSlices = spinSegments.length || 8;
+            var sliceDeg = 360 / numSlices;
+
+            // Target alignment with top needle (270 deg)
+            var targetAngle = 270 - (winningIndex * sliceDeg + sliceDeg / 2);
+            if (targetAngle < 0) targetAngle += 360;
+
+            var totalSpin = 1800 + targetAngle;
+            currentWheelRotation = totalSpin;
+
+            canvas.style.transform = 'rotate(' + currentWheelRotation + 'deg)';
+
+            setTimeout(function() {
+                isSpinning = false;
+                showSpinWinner(data);
+                checkSpinStatus();
+            }, 5200);
+        })
+        .catch(function(err) {
+            isSpinning = false;
+            alert('Spin network error: ' + err.message);
+            if (btn) btn.disabled = false;
+        });
+}
+
+function showSpinWinner(data) {
+    var prizeCard = document.getElementById('spinPrizeResult');
+    var prizeTitle = document.getElementById('prizeResultTitle');
+    var prizeMsg = document.getElementById('prizeResultMessage');
+    var couponBox = document.getElementById('prizeCouponBox');
+    var couponCodeElem = document.getElementById('prizeCouponCode');
+
+    if (!prizeCard) return;
+
+    prizeCard.style.display = 'block';
+    if (prizeTitle) prizeTitle.innerText = data.prize.label;
+    if (prizeMsg) prizeMsg.innerText = data.message;
+
+    if (data.couponCode) {
+        if (couponBox) couponBox.style.display = 'flex';
+        if (couponCodeElem) couponCodeElem.innerText = data.couponCode;
+    } else {
+        if (couponBox) couponBox.style.display = 'none';
+    }
+
+    // Update wallet balance in header if present
+    var walletHeaders = document.querySelectorAll('.header-wallet-btn b');
+    walletHeaders.forEach(function(el) {
+        el.innerText = data.newBalance + '৳';
+    });
+}
+
+function copySpinCoupon() {
+    var codeElem = document.getElementById('prizeCouponCode');
+    if (!codeElem) return;
+    navigator.clipboard.writeText(codeElem.innerText).then(function() {
+        alert('🎉 Promo Code Copied: ' + codeElem.innerText);
+    });
+}
+
+// Initial draw when DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+    drawLuckyWheel();
+});
+
+// PWA Service Worker & Install Handler
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').catch(function(err) {
+            console.log('SW registration error:', err);
+        });
+    });
+}
+
+var deferredPwaPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPwaPrompt = e;
+});
+
+function triggerPwaInstall() {
+    if (deferredPwaPrompt) {
+        deferredPwaPrompt.prompt();
+        deferredPwaPrompt.userChoice.then(function(choice) {
+            if (choice.outcome === 'accepted') {
+                if (typeof toastr !== 'undefined') toastr.success('Thank you for installing ZERO EXCEPTION!');
+            }
+            deferredPwaPrompt = null;
+        });
+    } else {
+        var modalEl = document.getElementById('pwaInstallModal');
+        if (modalEl) {
+            var modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        }
+    }
+}
+
+document.querySelectorAll('.btn-pwa-install').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        triggerPwaInstall();
+    });
+});
+
+var btnPwaPrompt = document.getElementById('btnPwaPrompt');
+if (btnPwaPrompt) {
+    btnPwaPrompt.addEventListener('click', function() {
+        if (deferredPwaPrompt) {
+            deferredPwaPrompt.prompt();
+            deferredPwaPrompt = null;
+            var modalInst = bootstrap.Modal.getInstance(document.getElementById('pwaInstallModal'));
+            if (modalInst) modalInst.hide();
+        } else {
+            if (typeof toastr !== 'undefined') toastr.info('নিচের নির্দেশনা অনুযায়ী হোম স্ক্রিনে যুক্ত করুন।');
+        }
+    });
+}
+
+// Gift Card & Voucher Handler
+function openRedeemGiftCardModal() {
+    var modalEl = document.getElementById('redeemGiftCardModal');
+    if (modalEl) {
+        var modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+}
+
+async function handleRedeemGiftCard(e) {
+    e.preventDefault();
+    var input = document.getElementById('inputGiftCardCode');
+    var btn = document.getElementById('btnSubmitRedeem');
+    var btnText = document.getElementById('btnRedeemText');
+    if (!input || !input.value.trim()) return;
+
+    var code = input.value.trim().toUpperCase();
+    var origHtml = btnText ? btnText.innerText : 'Claim';
+
+    if (btn) btn.disabled = true;
+    if (btnText) btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking code...';
+
+    try {
+        var res = await fetch('/api/gift-cards/redeem', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: code })
+        });
+        var data = await res.json();
+
+        if (data.success) {
+            if (typeof toastr !== 'undefined') {
+                toastr.success(data.message);
+            } else {
+                alert(data.message);
+            }
+            input.value = '';
+            var modalInst = bootstrap.Modal.getInstance(document.getElementById('redeemGiftCardModal'));
+            if (modalInst) modalInst.hide();
+
+            // Update wallet in header
+            if (data.newBalance !== undefined) {
+                document.querySelectorAll('.header-wallet-btn b').forEach(function(b) {
+                    b.innerText = data.newBalance + '৳';
+                });
+            }
+        } else {
+            if (typeof toastr !== 'undefined') {
+                toastr.error(data.message || 'Failed to claim code');
+            } else {
+                alert(data.message || 'Failed to claim code');
+            }
+        }
+    } catch (err) {
+        if (typeof toastr !== 'undefined') {
+            toastr.error('Network error: ' + err.message);
+        } else {
+            alert('Error: ' + err.message);
+        }
+    } finally {
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.innerText = origHtml;
+    }
+}
+</script>
+</body>
+</html>

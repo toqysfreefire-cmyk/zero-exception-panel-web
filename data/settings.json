@@ -1,0 +1,103 @@
+{
+  "site_name": "ZERO EXCEPTION",
+  "site_tagline": "Discover the ultimate destination for game panel at panelsell the latest apk mod and panel online.",
+  "site_logo": "/uploads/settings/01KQFM748K0Y2NRR56VXKVZGNP.png",
+  "favicon": "/uploads/settings/01KQFM748K0Y2NRR56VXKVZGNP.png",
+  "theme_color": "#00f0ff",
+  "currency": "BDT",
+  "currency_symbol": "৳",
+  "currency_rates": {
+    "BDT": {
+      "rate": 1,
+      "symbol": "৳",
+      "name": "Bangladeshi Taka",
+      "flag": "🇧🇩"
+    },
+    "USDT": {
+      "rate": 0.007874,
+      "symbol": "$",
+      "name": "US Dollar",
+      "flag": "🇺🇸",
+      "display_rate": "1 USDT = 127৳"
+    },
+    "INR": {
+      "rate": 0.8,
+      "symbol": "₹",
+      "name": "Indian Rupee",
+      "flag": "🇮🇳",
+      "display_rate": "1 INR = 0.8৳"
+    }
+  },
+  "whatsapp": "https://wa.me/8801727400370",
+  "whatsapp_number": "01727400370",
+  "whatsapp_intl": "8801727400370",
+  "google_client_id": "",
+  "google_client_secret": "",
+  "payment_number": "01700878400",
+  "payment_methods": {
+    "bkash": {
+      "name": "bKash Personal",
+      "number": "01700878400",
+      "active": true,
+      "type": "Personal"
+    },
+    "nagad": {
+      "name": "Nagad Personal",
+      "number": "01700878400",
+      "active": true,
+      "type": "Personal"
+    },
+    "rocket": {
+      "name": "Rocket Personal",
+      "number": "00000000000",
+      "active": true,
+      "type": "Personal"
+    },
+    "binance": {
+      "name": "Binance USDT",
+      "number": "1290554507",
+      "active": true,
+      "type": "Crypto"
+    }
+  },
+  "admin_email": "tgsgaming2024@gmail.com",
+  "smtp_host": "smtp.gmail.com",
+  "smtp_port": 465,
+  "smtp_secure": true,
+  "smtp_user": "tgsgaming2024@gmail.com",
+  "smtp_pass": "fitgmtksdixnjzgf",
+  "whatsapp_auto_redirect": false,
+  "telegram": "https://t.me/+nE1pT80-i6oyOGU1/",
+  "telegram_feedback": "https://t.me/+ebEro1TUvgszMDQ9",
+  "youtube": "https://www.youtube.com/@g_tools_official",
+  "notice_marquee": "⚡ 24/7 AUTOMATED DELIVERY: Instant License Delivery via WhatsApp & Telegram within 30 Seconds. Safe, Verified, Anti-Ban!",
+  "reseller_tutorial_video": "https://youtu.be/ije_9IXcTEo?si=X0z4fhnoJmxq3ohZ",
+  "reseller_default_discount": 15,
+  "sub_reseller_default_discount": 10,
+  "discord_bot_token": "",
+  "discord_channel_id": "1566503959336718367",
+  "discord_bot_name": "ZE PRODUCT",
+  "discord_notifications_enabled": true,
+  "admins": [
+    {
+      "id": "super-admin",
+      "name": "Main Server Admin",
+      "email": "tgsgaming2024@gmail.com",
+      "password": "Sweet+candy2026",
+      "role": "Super Admin",
+      "isSuperAdmin": true,
+      "status": "active",
+      "permissions": {
+        "products_manage": true,
+        "products_delete": true,
+        "payments_manage": true,
+        "notices_manage": true,
+        "currencies_manage": true,
+        "sync_manage": true,
+        "backup_manage": true,
+        "admins_manage": true
+      },
+      "createdAt": "2026-10-16T00:00:00.000Z"
+    }
+  ]
+}

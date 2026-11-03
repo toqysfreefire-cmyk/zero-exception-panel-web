@@ -1,0 +1,69 @@
+<%- include('partials/header') %>
+
+<div class="container mx-auto px-4 py-12 max-w-2xl text-center">
+    <div class="p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-[#0e172e] via-[#091024] to-[#050b18] border-2 border-[#5865F2]/50 shadow-[0_0_50px_rgba(88,101,242,0.3)] text-white relative overflow-hidden">
+        
+        <!-- Glowing background decorations -->
+        <div class="absolute -top-20 -left-20 w-44 h-44 bg-[#5865F2]/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-20 -right-20 w-44 h-44 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Discord Icon Badge -->
+        <div class="w-20 h-20 mx-auto rounded-3xl bg-[#5865F2] text-white flex items-center justify-center text-4xl shadow-[0_0_30px_rgba(88,101,242,0.8)] border-2 border-white/40 mb-6 transform hover:rotate-6 transition-transform">
+            <i class="fab fa-discord"></i>
+        </div>
+
+        <span class="px-3.5 py-1 rounded-full text-[11px] font-black uppercase font-mono tracking-wider bg-[#5865F2]/20 text-[#a5b4fc] border border-[#5865F2]/40 inline-block mb-3">
+            OFFICIAL DISCORD COMMUNITY
+        </span>
+
+        <h1 class="text-2xl sm:text-3xl font-black font-orbitron tracking-wide text-white m-0 uppercase">
+            YOU ARE INVITED!
+        </h1>
+
+        <p class="text-sm text-cyan-200 mt-2 font-medium">
+            You were invited by <b class="text-emerald-400 font-bold"><%= referrerName || 'A Member' %></b> to join the ZERO EXCEPTION Discord Server &amp; Store Community!
+        </p>
+
+        <!-- Discord Perks Box -->
+        <div class="my-6 p-4 rounded-2xl bg-black/50 border border-white/10 text-left text-xs space-y-2.5 max-w-md mx-auto">
+            <div class="flex items-center gap-2.5 text-gray-200">
+                <i class="fas fa-check-circle text-emerald-400 text-sm"></i>
+                <span>Get 24/7 Live Customer Support &amp; Ticket assistance</span>
+            </div>
+            <div class="flex items-center gap-2.5 text-gray-200">
+                <i class="fas fa-check-circle text-cyan-400 text-sm"></i>
+                <span>Exclusive Panel Updates, Safe Configs &amp; Tutorials</span>
+            </div>
+            <div class="flex items-center gap-2.5 text-gray-200">
+                <i class="fas fa-check-circle text-amber-400 text-sm"></i>
+                <span>Earn <b>10৳ Wallet Cash</b> for every 10 friends you invite!</span>
+            </div>
+        </div>
+
+        <!-- Join Discord Button -->
+        <div class="flex flex-col sm:flex-row gap-3 justify-center items-center mt-6">
+            <a href="<%= discordUrl %>" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #5865F2, #4752c4) !important;" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-black font-orbitron text-xs uppercase tracking-wider shadow-[0_4px_25px_rgba(88,101,242,0.5)] border border-indigo-400/50 hover:scale-105 transition-transform flex items-center justify-center gap-2.5 no-underline cursor-pointer">
+                <i class="fab fa-discord text-lg"></i>
+                <span>Join Discord Server Now</span>
+            </a>
+
+            <% if (!currentUser) { %>
+            <a href="/login" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs uppercase tracking-wider border border-white/20 transition flex items-center justify-center gap-2 no-underline cursor-pointer">
+                <i class="fas fa-user-plus text-cyan-400"></i>
+                <span>Create / Login Account</span>
+            </a>
+            <% } else { %>
+            <a href="/account?tab=referrals" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-bold text-xs uppercase tracking-wider border border-cyan-400/40 transition flex items-center justify-center gap-2 no-underline cursor-pointer">
+                <i class="fas fa-share-alt"></i>
+                <span>My Referral Dashboard</span>
+            </a>
+            <% } %>
+        </div>
+
+        <div class="text-[11px] text-gray-400 font-mono mt-6">
+            Referral Code: <span class="text-amber-400 font-bold"><%= refCode || 'DIRECT' %></span>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

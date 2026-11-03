@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "title": "Slider 1",
+    "image": "/uploads/media/229/01M4S90187Y7K0RG8V7G62ZMN0.png",
+    "link": "https://youtu.be/ije_9IXcTEo?si=X0z4fhnoJmxq3ohZ"
+  },
+  {
+    "id": 2,
+    "title": "Slider 2",
+    "image": "/uploads/media/234/01M4SA4QZGJS3Q2KG0CKTCQ3SB.png",
+    "link": "https://youtu.be/-F36TKhvR_c?si=Q9I3dLsYe88qPdct"
+  },
+  {
+    "id": 3,
+    "title": "Slider 3",
+    "image": "/uploads/media/235/01M4SAHP3GB1A9QHXK17K8010Y.png",
+    "link": "https://youtu.be/h2-AlBeSPko?si=XwbWooHIyCYUvhpi"
+  }
+]

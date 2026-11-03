@@ -1,0 +1,73 @@
+{
+  "enabled": true,
+  "deposit_threshold": 500,
+  "spend_threshold": 500,
+  "title": "LUCKY SPIN & WIN REWARDS",
+  "subtitle": "প্রতি ৫০০৳ ডিপোজিট অথবা ৫০০৳ অর্ডারে পাবেন ১টি লাকি স্পিন!",
+  "segments": [
+    {
+      "index": 0,
+      "label": "Try Tomorrow",
+      "type": "none",
+      "value": 0,
+      "weight": 8,
+      "color": "#475569"
+    },
+    {
+      "index": 1,
+      "label": "৳1 Balance",
+      "type": "balance",
+      "value": 1,
+      "weight": 65,
+      "color": "#06b6d4"
+    },
+    {
+      "index": 2,
+      "label": "Better Luck",
+      "type": "none",
+      "value": 0,
+      "weight": 5,
+      "color": "#334155"
+    },
+    {
+      "index": 3,
+      "label": "2% Promo Code",
+      "type": "coupon",
+      "value": 2,
+      "weight": 10,
+      "color": "#a855f7"
+    },
+    {
+      "index": 4,
+      "label": "৳2 Balance",
+      "type": "balance",
+      "value": 2,
+      "weight": 6,
+      "color": "#00f0ff"
+    },
+    {
+      "index": 5,
+      "label": "5% VIP Promo",
+      "type": "coupon",
+      "value": 5,
+      "weight": 2,
+      "color": "#f59e0b"
+    },
+    {
+      "index": 6,
+      "label": "৳5 Balance",
+      "type": "balance",
+      "value": 5,
+      "weight": 3,
+      "color": "#10b981"
+    },
+    {
+      "index": 7,
+      "label": "৳10 Grand Prize",
+      "type": "balance",
+      "value": 10,
+      "weight": 1,
+      "color": "#ec4899"
+    }
+  ]
+}

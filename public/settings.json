@@ -1,0 +1,93 @@
+{
+    "storeName": "ZERO EXCEPTION",
+    "storeTagline": "Fast, Trusted 24/7 Digital Game Key Store",
+    "noticeText": "⚡ 24/7 AUTOMATED DELIVERY: Instant License Delivery via WhatsApp & Telegram within 30 Seconds. Safe, Verified, Anti-Ban!",
+    "noticeEnabled": true,
+    "popupEnabled": false,
+    "popupTitle": "VIP SPECIAL ANNOUNCEMENT",
+    "popupMessage": "Welcome to ZERO EXCEPTION! All panel keys are 100% updated and online. Contact WhatsApp for bulk reseller discounts.",
+    "whatsappNumber": "01727400370",
+    "whatsappText": "Hello ZERO EXCEPTION, I need help with panel keys.",
+    "telegramUrl": "https://t.me/+nE1pT80-i6oyOGU1/",
+    "paymentMethods": {
+        "bkash": {
+            "name": "bKash Personal",
+            "number": "01700878400",
+            "active": true,
+            "type": "Personal"
+        },
+        "nagad": {
+            "name": "Nagad Personal",
+            "number": "01700878400",
+            "active": true,
+            "type": "Personal"
+        },
+        "rocket": {
+            "name": "Rocket Personal",
+            "number": "00000000000",
+            "active": true,
+            "type": "Personal"
+        },
+        "binance": {
+            "name": "Binance USDT",
+            "number": "1290554507",
+            "active": true,
+            "type": "Crypto"
+        }
+    },
+    "currencyRates": {
+        "BDT": {
+            "symbol": "৳",
+            "rate": 1,
+            "name": "BDT"
+        },
+        "INR": {
+            "symbol": "₹",
+            "rate": 0.8,
+            "name": "INR"
+        },
+        "NPR": {
+            "symbol": "Rs",
+            "rate": 1.12,
+            "name": "NPR"
+        },
+        "PKR": {
+            "symbol": "Rs",
+            "rate": 2.4,
+            "name": "PKR"
+        },
+        "USDT": {
+            "symbol": "$",
+            "rate": 0.007874,
+            "bdt_per_usdt": 127,
+            "name": "US Dollar",
+            "flag": "🇺🇸",
+            "display_rate": "1 USDT = 127৳"
+        }
+    },
+    "cloudSync": {
+        "autoSync": false
+    },
+    "admins": [
+        {
+            "id": "super-admin",
+            "name": "Main Server Admin",
+            "email": "tgsgaming2024@gmail.com",
+            "password": "Sweet+candy2026",
+            "role": "Super Admin",
+            "isSuperAdmin": true,
+            "status": "active",
+            "permissions": {
+                "products_manage": true,
+                "products_delete": true,
+                "payments_manage": true,
+                "notices_manage": true,
+                "currencies_manage": true,
+                "sync_manage": true,
+                "backup_manage": true,
+                "admins_manage": true
+            },
+            "createdAt": "2026-10-16T00:00:00.000Z"
+        }
+    ]
+}

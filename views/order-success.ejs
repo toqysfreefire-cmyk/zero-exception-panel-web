@@ -1,0 +1,292 @@
+<%- include('partials/header') %>
+
+<%
+var rawNum = String(settings.whatsapp_intl || settings.whatsapp_number || '8801727400370').replace(/[^0-9]/g, '');
+var waIntlNum = rawNum;
+if (rawNum.startsWith('0')) {
+    waIntlNum = '88' + rawNum;
+} else if (rawNum.length === 10 && rawNum.startsWith('1')) {
+    waIntlNum = '880' + rawNum;
+}
+
+var waText = "🛒 *PANEL SELL — NEW ORDER PURCHASE*\n" +
+    "━━━━━━━━━━━━━━━━━━━━━━\n" +
+    "🆔 *Order ID:* " + order.id + "\n" +
+    "📦 *Product:* " + order.product_name + "\n" +
+    "⏱️ *Plan / Duration:* " + order.variant + "\n" +
+    "💰 *Amount Paid:* " + order.price + (currentCurrency.symbol || '৳') + "\n" +
+    "💳 *Payment Gateway:* " + order.payment_method + "\n" +
+    "🔖 *Transaction ID (TrxID):* " + order.transaction_id + "\n" +
+    "🎮 *Player ID / UID:* " + (order.player_id || 'N/A') + "\n" +
+    "📱 *Customer WhatsApp:* " + (order.whatsapp || 'N/A') + "\n";
+
+if (order.license_key) {
+    waText += "🔑 *Assigned Product Key:* " + order.license_key + "\n";
+}
+
+if (order.phone_model) {
+    waText += "📱 *Device To Root:* " + (order.phone_brand || '') + " " + order.phone_model + "\n" +
+        "🤖 *Android OS:* " + (order.android_version || 'Android') + "\n" +
+        "🔓 *Bootloader:* " + (order.bootloader_status || 'Unlocked') + "\n" +
+        "⚡ *Root Solution:* " + (order.root_solution || 'KernelSU') + "\n";
+}
+
+waText += "━━━━━━━━━━━━━━━━━━━━━━\n" +
+    "Hello Admin, I have completed payment for this order. Please verify my Transaction ID and deliver my key / root service!";
+
+var waFullUrl = "https://wa.me/" + waIntlNum + "?text=" + encodeURIComponent(waText);
+%>
+
+<div class="container mx-auto px-4 py-10 max-w-2xl text-center">
+    <div class="rounded-3xl border-2 border-cyan-500/40 p-6 md:p-10 shadow-2xl shadow-cyan-950/40 text-white" style="background: #090e21;">
+        <!-- Success Icon -->
+        <div class="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-4xl text-black bg-[#00f0ff] shadow-lg shadow-cyan-400/50">
+            <i class="fas fa-check-double"></i>
+        </div>
+
+        <h1 class="text-2xl md:text-3xl font-black mb-2 font-orbitron text-white">Purchase Confirmed!</h1>
+        <p class="text-xs md:text-sm text-gray-300 mb-6 max-w-md mx-auto">
+            Your order has been recorded. An automated order alert has been sent to our Gmail, and your WhatsApp purchase receipt is ready below.
+        </p>
+
+        <!-- Automated WhatsApp Auto-Dispatch Card -->
+        <div class="mb-6 p-4 rounded-2xl border-2 border-emerald-500/50 bg-[#051a14] shadow-lg shadow-emerald-950/40 text-left">
+            <div class="flex items-center justify-between gap-3 mb-2 pb-2 border-b border-emerald-500/30">
+                <div class="flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-[#25D366] text-black font-black text-sm flex items-center justify-center">
+                        <i class="fab fa-whatsapp"></i>
+                    </span>
+                    <span class="font-black text-sm text-[#25D366] uppercase font-orbitron tracking-wider">WhatsApp Instant Sync</span>
+                </div>
+                <span class="text-[11px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
+                    Auto-Formatted
+                </span>
+            </div>
+            <p class="text-xs text-gray-300 mb-3">
+                Your Product Name, Transaction ID (<strong class="text-yellow-300 font-mono"><%= order.transaction_id %></strong>), and all order specifications have been encoded to dispatch directly to Admin WhatsApp (<strong class="text-emerald-400 font-mono"><%= settings.whatsapp_number || '01727400370' %></strong>).
+            </p>
+
+            <a id="btnSendWhatsApp" href="<%= waFullUrl %>" target="_blank" class="w-full py-3.5 px-5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-black font-black text-sm md:text-base rounded-xl shadow-lg shadow-green-500/40 flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5 no-underline">
+                <i class="fab fa-whatsapp text-xl"></i>
+                <span>SEND ORDER RECEIPT TO WHATSAPP (<%= settings.whatsapp_number || '01727400370' %>)</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+
+            <div class="mt-2.5 text-center text-[11px] text-gray-400" id="autoRedirectNotice">
+                <i class="fas fa-circle-notch fa-spin text-[#00f0ff] me-1"></i> Opening WhatsApp automatically in <span id="waCountdown" class="text-white font-bold font-mono">3</span>s...
+            </div>
+        </div>
+
+        <% if (order.license_key) { %>
+        <!-- Instant Digital Activation Key Display Card -->
+        <div class="mb-6 p-5 rounded-2xl border-2 border-cyan-400 bg-gradient-to-br from-[#0c1a38] to-[#060c1d] shadow-2xl shadow-cyan-500/30 text-left relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="flex items-center justify-between gap-3 mb-2.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-cyan-400 text-black font-black flex items-center justify-center text-sm shadow-md shadow-cyan-400/50">
+                        <i class="fas fa-key"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm md:text-base font-black text-cyan-300 font-orbitron tracking-wider m-0">
+                            YOUR PRODUCT ACTIVATION KEY
+                        </h3>
+                        <span class="text-[11px] text-gray-300">Ready for instant activation in panel or app</span>
+                    </div>
+                </div>
+                <span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-emerald-500/40">
+                    <i class="fas fa-circle-check me-1"></i> Instant Delivery
+                </span>
+            </div>
+
+            <div class="p-3 bg-black/60 rounded-xl border border-cyan-500/40 flex items-center justify-between gap-3 my-3">
+                <code id="displayKeyText" class="font-mono text-base md:text-xl font-black text-yellow-300 tracking-wider select-all break-all"><%= order.license_key %></code>
+                <button type="button" onclick="navigator.clipboard.writeText('<%= order.license_key %>'); this.innerText='COPIED!'; setTimeout(() => this.innerHTML='<i class=\'fas fa-copy me-1\'></i> COPY', 2000)" class="shrink-0 px-4 py-2 bg-cyan-400 hover:bg-cyan-300 text-black font-black text-xs rounded-lg transition shadow-md shadow-cyan-400/40">
+                    <i class="fas fa-copy me-1"></i> COPY
+                </button>
+            </div>
+
+            <div class="text-[11px] text-gray-300 flex items-center gap-2">
+                <i class="fas fa-shield-halved text-cyan-400"></i>
+                <span>Please save this key. Paste it directly into your <%= order.product_name %> login screen.</span>
+            </div>
+        </div>
+        <% } else if (!(order.variant && order.variant.toLowerCase().includes('account')) && !(order.product_name && order.product_name.toLowerCase().includes('account'))) { %>
+        <!-- Payment Verification & Manual Key Delivery Notice -->
+        <div class="mb-6 p-5 rounded-2xl border-2 border-amber-500/60 bg-gradient-to-br from-[#1b1c31] to-[#0a0d1e] shadow-2xl shadow-cyan-950/40 text-left relative overflow-hidden">
+            <div class="flex items-center justify-between gap-3 mb-2.5">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-9 h-9 rounded-xl bg-amber-400 text-black font-black flex items-center justify-center text-base shadow-md shadow-amber-400/40">
+                        <i class="fas fa-clock"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm md:text-base font-black text-amber-300 font-orbitron tracking-wider m-0">
+                            <%= order.status === 'processing' ? '⚡ ORDER UNDER PROCESSING' : 'ORDER RECEIVED • PAYMENT VERIFICATION PENDING' %>
+                        </h3>
+                        <span class="text-[11px] text-gray-300"><%= order.status === 'processing' ? 'অ্যাডমিন আপনার অর্ডারটি প্রসেস করছেন।' : 'অর্ডারটি সফলভাবে গৃহীত হয়েছে। অ্যাডমিন পেমেন্ট ভেরিফাই করছেন।' %></span>
+                    </div>
+                </div>
+                <span class="bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase px-2.5 py-1 rounded-full border border-amber-500/40 shrink-0">
+                    <i class="fas <%= order.status === 'processing' ? 'fa-spinner fa-spin' : 'fa-hourglass-half' %> me-1"></i> <%= order.status === 'processing' ? 'Under Processing' : 'Pending Verification' %>
+                </span>
+            </div>
+            <p class="text-xs text-gray-200 my-2 leading-relaxed">
+                আপনার Transaction ID (<strong class="text-yellow-300 font-mono"><%= order.transaction_id %></strong>) এবং অর্ডার বিস্তারিত তথ্য অ্যাডমিনের কাছে পাঠানো হয়েছে। পেমেন্ট যাচাইয়ের পর আপনার কী (Key) বা সেটআপ ফাইল সরাসরি আপনার হোয়াটসঅ্যাপে (<strong class="text-emerald-400 font-mono"><%= order.whatsapp %></strong>) পাঠিয়ে দেওয়া হবে।
+            </p>
+            <div class="text-[11px] text-cyan-300 flex items-center gap-2 mt-2 pt-2 border-t border-cyan-500/20">
+                <i class="fab fa-whatsapp text-emerald-400 text-sm"></i>
+                <span>দ্রুত ডেলিভারি পেতে উপরের সবুজ বাটনে ক্লিক করে অ্যাডমিনকে হোয়াটসঅ্যাপে মেসেজ পাঠান।</span>
+            </div>
+        </div>
+        <% } else if ((order.variant && order.variant.toLowerCase().includes('account')) || (order.product_name && order.product_name.toLowerCase().includes('account'))) { %>
+        <!-- Free Fire Account Delivery Note Card -->
+        <div class="mb-6 p-5 rounded-2xl border-2 border-amber-400 bg-gradient-to-br from-[#2a1a08] to-[#120a04] shadow-2xl shadow-amber-500/20 text-left relative overflow-hidden">
+            <div class="flex items-center justify-between gap-3 mb-2.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-amber-400 text-black font-black flex items-center justify-center text-sm shadow-md shadow-amber-400/50">
+                        <i class="fas fa-gamepad"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm md:text-base font-black text-amber-300 font-orbitron tracking-wider m-0">
+                            FREE FIRE ACCOUNT ORDER CONFIRMED
+                        </h3>
+                        <span class="text-[11px] text-gray-300">Login credentials will be delivered directly via WhatsApp</span>
+                    </div>
+                </div>
+                <span class="bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-amber-500/40">
+                    <i class="fab fa-whatsapp me-1"></i> WhatsApp Delivery
+                </span>
+            </div>
+            <p class="text-xs text-gray-300 my-2">
+                Free Fire Account credentials (Login ID &amp; Password) are delivered directly to your WhatsApp (<strong class="text-emerald-400 font-mono"><%= order.whatsapp %></strong>). Click the green button above to contact Admin on WhatsApp for instant handover.
+            </p>
+        </div>
+        <% } %>
+
+        <!-- Order Summary Receipt Box -->
+        <div class="rounded-2xl p-4 md:p-6 text-left border border-cyan-500/30 mb-6 text-sm" style="background: #060a17;">
+            <div class="flex items-center justify-between pb-3 mb-3 border-b border-cyan-500/20">
+                <div>
+                    <span class="text-xs text-gray-400 uppercase font-bold block">Order Reference ID</span>
+                    <span class="text-xl font-black font-orbitron text-[#00f0ff]"><%= order.id %></span>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs text-gray-400 uppercase font-bold block">Status</span>
+                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                        <i class="fas fa-hourglass-half me-1"></i> Awaiting Verification
+                    </span>
+                </div>
+            </div>
+
+            <div class="space-y-2.5 text-xs md:text-sm">
+                <div class="flex justify-between py-1 border-b border-gray-800">
+                    <span class="text-gray-400 font-semibold">Purchased Product:</span>
+                    <span class="font-bold text-white text-right"><%= order.product_name %></span>
+                </div>
+
+                <div class="flex justify-between py-1 border-b border-gray-800">
+                    <span class="text-gray-400 font-semibold">Selected Package / Plan:</span>
+                    <span class="font-bold text-cyan-300 text-right"><%= order.variant %></span>
+                </div>
+
+                <div class="flex justify-between py-1 border-b border-gray-800">
+                    <span class="text-gray-400 font-semibold">Total Price Paid:</span>
+                    <span class="font-black text-[#00f0ff] font-orbitron text-base text-right"><%= order.price %><%= currentCurrency.symbol %></span>
+                </div>
+
+                <div class="flex justify-between py-1 border-b border-gray-800">
+                    <span class="text-gray-400 font-semibold">Payment Gateway:</span>
+                    <span class="font-bold text-pink-400 text-right"><%= order.payment_method %></span>
+                </div>
+
+                <div class="flex justify-between py-1 border-b border-gray-800 bg-cyan-950/30 px-2 rounded">
+                    <span class="text-cyan-400 font-bold uppercase">Transaction ID (TrxID):</span>
+                    <span class="font-black text-yellow-300 font-mono text-sm tracking-wider text-right"><%= order.transaction_id %></span>
+                </div>
+
+                <% if (order.license_key) { %>
+                <div class="flex justify-between py-1 border-b border-gray-800 bg-cyan-900/30 px-2 rounded">
+                    <span class="text-cyan-300 font-bold uppercase">Activation Key:</span>
+                    <span class="font-black text-cyan-400 font-mono text-sm tracking-wider text-right"><%= order.license_key %></span>
+                </div>
+                <% } %>
+
+                <% if (order.player_id && order.player_id !== 'N/A') { %>
+                <div class="flex justify-between py-1 border-b border-gray-800">
+                    <span class="text-gray-400 font-semibold">In-Game Player UID:</span>
+                    <span class="font-mono font-bold text-white text-right"><%= order.player_id %></span>
+                </div>
+                <% } %>
+
+                <div class="flex justify-between py-1 border-b border-gray-800">
+                    <span class="text-gray-400 font-semibold">Customer WhatsApp:</span>
+                    <span class="font-mono font-bold text-emerald-400 text-right"><%= order.whatsapp %></span>
+                </div>
+
+                <% if (order.phone_model) { %>
+                <div class="flex justify-between py-1 border-b border-gray-800">
+                    <span class="text-gray-400 font-semibold">Device To Root:</span>
+                    <span class="font-bold text-[#00f0ff] text-right"><%= order.phone_brand || '' %> <%= order.phone_model %></span>
+                </div>
+                <div class="flex justify-between py-1 border-b border-gray-800">
+                    <span class="text-gray-400 font-semibold">Android OS &amp; Solution:</span>
+                    <span class="font-semibold text-gray-300 text-right"><%= order.android_version || 'Android' %> • <%= order.root_solution || 'KernelSU' %></span>
+                </div>
+                <% } %>
+            </div>
+
+            <!-- Gmail Alert Status -->
+            <div class="mt-4 pt-3 border-t border-cyan-500/20 flex items-center justify-between text-xs text-gray-400">
+                <span class="flex items-center gap-1.5 text-cyan-300">
+                    <i class="fas fa-envelope-circle-check text-base"></i>
+                    <span>Automated Email Notification</span>
+                </span>
+                <span class="text-gray-300 font-mono font-semibold">
+                    Dispatched to Admin Gmail
+                </span>
+            </div>
+        </div>
+
+        <!-- Action Links -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <a href="/" class="w-full py-3 px-4 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-xl text-xs md:text-sm flex items-center justify-center gap-2 border border-gray-700 transition no-underline">
+                <i class="fas fa-arrow-left"></i> Return to Storefront
+            </a>
+            <% if (settings.telegram) { %>
+            <a href="<%= settings.telegram %>" target="_blank" class="w-full py-3 px-4 bg-sky-950/50 hover:bg-sky-900/50 text-sky-300 font-bold rounded-xl text-xs md:text-sm flex items-center justify-center gap-2 border border-sky-500/30 transition no-underline">
+                <i class="fab fa-telegram text-base"></i> Telegram Support Group
+            </a>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var countdown = 3;
+    var countdownElem = document.getElementById('waCountdown');
+    var noticeElem = document.getElementById('autoRedirectNotice');
+    var waBtn = document.getElementById('btnSendWhatsApp');
+    var waLink = waBtn ? waBtn.href : '';
+
+    var timer = setInterval(function() {
+        countdown--;
+        if (countdownElem) countdownElem.textContent = countdown;
+        if (countdown <= 0) {
+            clearInterval(timer);
+            if (noticeElem) {
+                noticeElem.innerHTML = '<span class="text-emerald-400 font-bold"><i class="fas fa-check-circle me-1"></i> WhatsApp link activated! Tap the button above if it did not launch automatically.</span>';
+            }
+            if (waLink) {
+                // Try auto-triggering WhatsApp
+                var win = window.open(waLink, '_blank');
+                if (!win || win.closed || typeof win.closed === 'undefined') {
+                    // Pop-up was blocked by browser, highlight the button
+                    if (waBtn) waBtn.classList.add('animate-pulse');
+                }
+            }
+        }
+    }, 1000);
+});
+</script>
+
+<%- include('partials/footer') %>

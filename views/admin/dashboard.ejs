@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-950">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Dashboard - <%= settings.site_name %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="<%= settings.favicon %>">
+
+    <!-- Tailwind & FontAwesome & Bootstrap JS for modals -->
+    <link rel="stylesheet" href="/assets/css/tailwindcss.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+
+    <style>
+        :root {
+            --primary: #00f0ff;
+            --primary-dark: #0284c7;
+            --cyber-dark: #050811;
+            --cyber-card: #0b1224;
+            --cyber-border: rgba(0, 240, 255, 0.35);
+        }
+        body {
+            background-color: #060913;
+            color: #f1f5f9;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.65rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #94a3b8;
+            transition: all 0.15s ease;
+            text-decoration: none !important;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            color: #ffffff;
+            background-color: rgba(0, 240, 255, 0.12);
+            border-left: 3px solid #00f0ff;
+        }
+        /* Universal Form Control Styling for Dashboard & Modals (Overriding Bootstrap white resets) */
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="password"],
+        input[type="file"],
+        input[type="search"],
+        select,
+        textarea {
+            background-color: #0c1322 !important;
+            border: 1.5px solid rgba(0, 240, 255, 0.35) !important;
+            color: #ffffff !important;
+            border-radius: 0.75rem !important;
+            padding: 0.65rem 0.9rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            outline: none !important;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="file"]:focus,
+        input[type="search"]:focus,
+        select:focus,
+        textarea:focus {
+            background-color: #050811 !important;
+            border-color: #00f0ff !important;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5) !important;
+            color: #ffffff !important;
+        }
+        select option {
+            background-color: #0b1224 !important;
+            color: #ffffff !important;
+        }
+        label {
+            color: #00f0ff !important;
+            font-weight: 800 !important;
+            font-size: 0.75rem !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            margin-bottom: 0.35rem !important;
+            display: block !important;
+        }
+        table select {
+            padding: 0.35rem 0.75rem !important;
+            font-size: 0.75rem !important;
+            border-radius: 0.5rem !important;
+            display: inline-block !important;
+            width: auto !important;
+            background-color: #0c1322 !important;
+            color: #00f0ff !important;
+            font-weight: 700 !important;
+        }
+        table input, table select {
+            width: auto !important;
+        }
+        .filament-card {
+            background-color: #0c1322;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 1rem;
+        }
+        .nav-tab-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            color: #94a3b8;
+            transition: all 0.2s;
+        }
+        .nav-tab-btn.active {
+            background-color: #0284c7;
+            color: #ffffff;
+        }
+
+        /* Cyberpunk Modal Overrides (Overriding Bootstrap defaults) */
+        .modal-backdrop {
+            background-color: #000000 !important;
+            opacity: 0.85 !important;
+        }
+        .modal-content {
+            background-color: #0b1224 !important;
+            border: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.95), 0 0 25px rgba(0, 240, 255, 0.25) !important;
+            color: #ffffff !important;
+            border-radius: 1.25rem !important;
+        }
+        .modal-header {
+            background-color: #0d1527 !important;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.25) !important;
+            color: #ffffff !important;
+            padding: 1rem 1.25rem !important;
+        }
+        .modal-header .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%) !important;
+            opacity: 0.8 !important;
+        }
+        .modal-header .btn-close:hover {
+            opacity: 1 !important;
+        }
+        .modal-footer {
+            background-color: #0d1527 !important;
+            border-top: 1px solid rgba(0, 240, 255, 0.25) !important;
+            padding: 1rem 1.25rem !important;
+        }
+        .modal-body {
+            background-color: #0b1224 !important;
+            color: #ffffff !important;
+            padding: 1.25rem !important;
+        }
+        .modal-body label, .modal label {
+            color: #00f0ff !important;
+            font-weight: 800 !important;
+            font-size: 0.75rem !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            margin-bottom: 0.35rem !important;
+            display: block !important;
+        }
+        .modal-body input,
+        .modal-body select,
+        .modal-body textarea {
+            width: 100% !important;
+        }
+        .modal-body select option {
+            background-color: #0b1224 !important;
+            color: #ffffff !important;
+        }
+        .modal-body small {
+            color: #94a3b8 !important;
+        }
+        .modal-footer .btn-secondary {
+            background-color: #1e293b !important;
+            border: 1px solid #334155 !important;
+            color: #94a3b8 !important;
+            font-weight: 700 !important;
+        }
+        .modal-footer .btn-secondary:hover {
+            background-color: #334155 !important;
+            color: #ffffff !important;
+        }
+        .modal-footer .btn-success {
+            background: linear-gradient(135deg, #00f0ff 0%, #0284c7 100%) !important;
+            border: none !important;
+            color: #000000 !important;
+            font-weight: 900 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
+        }
+        .modal-footer .btn-success:hover {
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.7) !important;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="min-h-full flex flex-col antialiased">
+
+    <!-- Top Admin Bar -->
+    <header class="bg-gray-900 border-b border-gray-800 sticky top-0 z-40 px-4 sm:px-6 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <button id="mobileMenuBtn" class="md:hidden text-gray-400 hover:text-white">
+                <i class="fas fa-bars text-lg"></i>
+            </button>
+            <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-black text-sm">PS</span>
+                <span class="font-black text-lg tracking-wide text-white"><%= settings.site_name %> <span class="text-xs font-normal text-emerald-400 uppercase tracking-widest bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 ml-1">Admin</span></span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <a href="/" target="_blank" class="text-xs font-semibold text-gray-300 hover:text-emerald-400 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg border border-gray-700 transition flex items-center gap-1.5 text-decoration-none">
+                <i class="fas fa-external-link-alt text-xs"></i> View Live Store
+            </a>
+
+            <div class="flex items-center gap-3 pl-3 border-l border-gray-800">
+                <div class="hidden sm:block text-right">
+                    <div class="text-xs font-bold text-white"><%= user.name || 'Super Admin' %></div>
+                    <div class="text-[10px] text-emerald-400"><%= user.email %></div>
+                </div>
+                <a href="/admin/logout" class="text-gray-400 hover:text-red-400 p-2 rounded-lg hover:bg-gray-800 transition" title="Sign Out">
+                    <i class="fas fa-power-off text-base"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 flex overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="hidden md:flex flex-col w-64 bg-gray-900/90 border-r border-gray-800 p-4 shrink-0 space-y-1">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 px-3 py-2">Navigation</div>
+            <a href="#overview" class="sidebar-link active" onclick="switchTab('overview', this)">
+                <i class="fas fa-chart-pie w-5"></i>
+                <span>Overview</span>
+            </a>
+            <a href="#products" class="sidebar-link" onclick="switchTab('products', this)">
+                <i class="fas fa-boxes-stacked w-5"></i>
+                <span>Products</span>
+                <span class="ml-auto bg-gray-800 text-xs px-2 py-0.5 rounded-full text-emerald-400 font-bold"><%= products.length %></span>
+            </a>
+            <a href="#orders" class="sidebar-link" onclick="switchTab('orders', this)">
+                <i class="fas fa-receipt w-5"></i>
+                <span>Orders</span>
+                <span class="ml-auto bg-gray-800 text-xs px-2 py-0.5 rounded-full text-blue-400 font-bold"><%= orders.length %></span>
+            </a>
+            <a href="#keys" class="sidebar-link" onclick="switchTab('keys', this)">
+                <i class="fas fa-key w-5 text-amber-400"></i>
+                <span>Product Keys</span>
+                <span class="ml-auto bg-amber-500/20 text-xs px-2 py-0.5 rounded-full text-amber-400 font-bold"><%= keys.filter(k => k.status === 'available').length %></span>
+            </a>
+            <a href="#sliders" class="sidebar-link" onclick="switchTab('sliders', this)">
+                <i class="fas fa-images w-5"></i>
+                <span>Hero Banners</span>
+                <span class="ml-auto bg-gray-800 text-xs px-2 py-0.5 rounded-full text-purple-400 font-bold"><%= sliders.length %></span>
+            </a>
+            <a href="#settings" class="sidebar-link" onclick="switchTab('settings', this)">
+                <i class="fas fa-sliders w-5"></i>
+                <span>Site Settings</span>
+            </a>
+
+            <div class="pt-6 mt-auto">
+                <div class="p-3 bg-gray-800/50 rounded-xl border border-gray-800 text-xs text-gray-400">
+                    <div class="font-bold text-white mb-1"><i class="fas fa-shield-alt text-emerald-400 me-1"></i> Authorized Panel</div>
+                    <div>Logged in as: <br><span class="text-gray-300 font-mono"><%= user.email %></span></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+
+            <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+            <div class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-circle-check text-lg"></i>
+                    <span><%= successMessage %></span>
+                </div>
+            </div>
+            <% } %>
+
+            <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+            <div class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-triangle-exclamation text-lg"></i>
+                    <span><%= errorMessage %></span>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- TAB 1: OVERVIEW -->
+            <div id="tab-overview" class="admin-tab-pane">
+                <!-- Stats Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+                    <div class="filament-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Products</span>
+                            <span class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg"><i class="fas fa-box"></i></span>
+                        </div>
+                        <div class="text-3xl font-black text-white mb-1"><%= products.length %></div>
+                        <div class="text-xs text-gray-400">Listed across <%= categories.length %> categories</div>
+                    </div>
+
+                    <div class="filament-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Orders</span>
+                            <span class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg"><i class="fas fa-shopping-cart"></i></span>
+                        </div>
+                        <div class="text-3xl font-black text-white mb-1"><%= orders.length %></div>
+                        <div class="text-xs text-blue-400 font-semibold">Active customer requests</div>
+                    </div>
+
+                    <div class="filament-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Available Keys</span>
+                            <span class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg"><i class="fas fa-key"></i></span>
+                        </div>
+                        <% var availableKeyCount = keys.filter(k => k.status === 'available').length; %>
+                        <div class="text-3xl font-black text-amber-400 mb-1"><%= availableKeyCount %></div>
+                        <div class="text-xs text-gray-400"><%= keys.length %> total in inventory</div>
+                    </div>
+
+                    <div class="filament-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Revenue</span>
+                            <span class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg"><i class="fas fa-coins"></i></span>
+                        </div>
+                        <% 
+                        var totalRevenue = orders.reduce((sum, o) => sum + (parseInt(o.price) || 0), 0);
+                        %>
+                        <div class="text-3xl font-black text-white mb-1"><%= totalRevenue %>৳</div>
+                        <div class="text-xs text-emerald-400 font-semibold">Verified transactions</div>
+                    </div>
+
+                    <div class="filament-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Maintenance</span>
+                            <span class="w-10 h-10 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center text-lg"><i class="fas fa-wrench"></i></span>
+                        </div>
+                        <% var maintCount = products.filter(p => p.is_maintenance).length; %>
+                        <div class="text-3xl font-black text-white mb-1"><%= maintCount %></div>
+                        <div class="text-xs text-amber-400 font-semibold"><%= maintCount %> panels currently offline</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity & Quick Actions -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="filament-card p-6 lg:col-span-2">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fas fa-clock-rotate-left text-emerald-400"></i> Recent Orders
+                            </h3>
+                            <button onclick="switchTab('orders', document.querySelectorAll('.sidebar-link')[2])" class="text-xs text-emerald-400 hover:underline">View All</button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-gray-300">
+                                <thead class="text-xs uppercase bg-gray-800/60 text-gray-400 border-b border-gray-800">
+                                    <tr>
+                                        <th class="py-2.5 px-3">Order ID</th>
+                                        <th class="py-2.5 px-3">Product</th>
+                                        <th class="py-2.5 px-3">Amount</th>
+                                        <th class="py-2.5 px-3">Method</th>
+                                        <th class="py-2.5 px-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-800">
+                                    <% orders.slice(0, 5).forEach(function(o) { %>
+                                    <tr class="hover:bg-gray-800/30">
+                                        <td class="py-2.5 px-3 font-mono text-xs font-bold text-emerald-400"><%= o.id %></td>
+                                        <td class="py-2.5 px-3 font-semibold text-white">
+                                            <%= o.product_name %> <span class="text-xs text-gray-500 font-normal">(<%= o.variant %>)</span>
+                                            <% if (o.phone_model) { %>
+                                            <div class="text-[10px] text-cyan-400 font-mono"><i class="fas fa-mobile-alt text-amber-400 mr-1"></i><%= o.phone_brand || '' %> <%= o.phone_model %></div>
+                                            <% } %>
+                                        </td>
+                                        <td class="py-2.5 px-3 font-bold text-white"><%= o.price %>৳</td>
+                                        <td class="py-2.5 px-3 text-xs"><%= o.payment_method %></td>
+                                        <td class="py-2.5 px-3">
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase <%= o.status === 'completed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400' %>">
+                                                <%= o.status %>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="filament-card p-6 space-y-4">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fas fa-bolt text-amber-400"></i> Quick Operations
+                        </h3>
+                        <button onclick="openAddProductModal()" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-900/30">
+                            <i class="fas fa-plus"></i> Add New Product
+                        </button>
+                        <button onclick="openAddKeyModal()" class="w-full py-3 px-4 bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-black rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition border border-amber-500/40">
+                            <i class="fas fa-key text-amber-400"></i> Add Product Key
+                        </button>
+                        <button onclick="switchTab('keys', document.querySelectorAll('.sidebar-link')[3])" class="w-full py-3 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition border border-gray-700">
+                            <i class="fas fa-boxes-stacked text-cyan-400"></i> Manage Keys Inventory (<%= keys.filter(k => k.status === 'available').length %> In Stock)
+                        </button>
+                        <button onclick="switchTab('settings', document.querySelectorAll('.sidebar-link')[5])" class="w-full py-3 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition border border-gray-700">
+                            <i class="fas fa-bullhorn text-amber-400"></i> Edit Notice Marquee
+                        </button>
+                        <a href="/" target="_blank" class="w-full py-3 px-4 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition border border-gray-700 text-decoration-none">
+                            <i class="fas fa-store text-sky-400"></i> Browse Storefront
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: PRODUCTS -->
+            <div id="tab-products" class="admin-tab-pane" style="display: none;">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-black text-white">Products Management</h2>
+                        <p class="text-sm text-gray-400">Add, edit, toggle maintenance, or adjust pricing for gaming panels and root services.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="openAddKeyModal()" class="py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-black font-black text-sm rounded-xl flex items-center gap-2 shadow-lg shadow-amber-500/30">
+                            <i class="fas fa-key"></i> Add Key
+                        </button>
+                        <button onclick="openAddProductModal()" class="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-900/40">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filament-card overflow-hidden">
+                    <div class="p-4 border-b border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="relative w-full sm:w-72">
+                            <input type="text" id="adminProductSearch" onkeyup="filterAdminProducts()" placeholder="Filter products..." class="w-full pl-9 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                        </div>
+                        <div class="text-xs text-gray-400">Showing <span class="text-white font-bold"><%= products.length %></span> items</div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-gray-300" id="adminProductsTable">
+                            <thead class="text-xs uppercase bg-gray-800/80 text-gray-400 border-b border-gray-800">
+                                <tr>
+                                    <th class="py-3 px-4">Item</th>
+                                    <th class="py-3 px-4">Category</th>
+                                    <th class="py-3 px-4">Price</th>
+                                    <th class="py-3 px-4">Stock Keys</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-800">
+                                <% products.forEach(function(p) { %>
+                                <tr class="hover:bg-gray-800/40 product-row" data-name="<%= p.title.toLowerCase() %>">
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center gap-3">
+                                            <img src="<%= p.image %>" alt="<%= p.title %>" class="w-10 h-10 rounded-lg object-cover bg-gray-800 border border-gray-700">
+                                            <div>
+                                                <div class="font-bold text-white"><%= p.title %></div>
+                                                <div class="text-xs text-gray-500 font-mono">/topup/<%= p.slug %></div>
+                                                <% if (p.supported_phones) { %>
+                                                <div class="text-[11px] text-cyan-400 font-mono mt-0.5"><i class="fas fa-mobile-alt text-amber-400 mr-1"></i><%= p.supported_phones %></div>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase bg-gray-800 text-gray-300 border border-gray-700">
+                                            <%= p.category %>
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-4 font-bold text-white"><%= p.price %>৳</td>
+                                    <td class="py-3 px-4">
+                                        <% var pKeysAvail = keys.filter(k => k.product_id === p.id && k.status === 'available').length; %>
+                                        <div class="flex items-center gap-2">
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold <%= pKeysAvail > 0 ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'bg-red-500/15 text-red-300 border border-red-500/30' %>">
+                                                <i class="fas fa-key text-[10px]"></i> <%= pKeysAvail %> Available
+                                            </span>
+                                            <button type="button" onclick="openAddKeyModal(<%= p.id %>)" class="text-[11px] text-amber-400 hover:text-white underline font-semibold" title="Add Key for this product">
+                                                + Key
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <form action="/admin/products/toggle-maintenance/<%= p.id %>" method="POST" class="inline">
+                                            <% if (p.is_maintenance) { %>
+                                            <button type="submit" class="px-2.5 py-1 rounded-full text-xs font-bold uppercase bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition flex items-center gap-1.5" title="Click to set Online">
+                                                <i class="fas fa-wrench"></i> Offline (Maintenance)
+                                            </button>
+                                            <% } else { %>
+                                            <button type="submit" class="px-2.5 py-1 rounded-full text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition flex items-center gap-1.5" title="Click to set Maintenance">
+                                                <i class="fas fa-circle-check"></i> Online
+                                            </button>
+                                            <% } %>
+                                        </form>
+                                    </td>
+                                    <td class="py-3 px-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button onclick='openEditProductModal(<%= JSON.stringify(p) %>)' class="p-2 text-gray-400 hover:text-emerald-400 rounded-lg hover:bg-gray-800 transition" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <form action="/admin/products/delete/<%= p.id %>" method="POST" onsubmit="return confirm('Delete this product permanently?')" class="inline">
+                                                <button type="submit" class="p-2 text-gray-400 hover:text-red-400 rounded-lg hover:bg-gray-800 transition" title="Delete">
+                                                    <i class="fas fa-trash-can"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: ORDERS -->
+            <div id="tab-orders" class="admin-tab-pane" style="display: none;">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-black text-white">Orders Log</h2>
+                        <p class="text-sm text-gray-400">View and manage buyer orders, device root variants, and transaction IDs.</p>
+                    </div>
+                </div>
+
+                <div class="filament-card overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-gray-300">
+                            <thead class="text-xs uppercase bg-gray-800/80 text-gray-400 border-b border-gray-800">
+                                <tr>
+                                    <th class="py-3 px-4">Order ID</th>
+                                    <th class="py-3 px-4">Product &amp; Variant</th>
+                                    <th class="py-3 px-4">Player UID</th>
+                                    <th class="py-3 px-4">WhatsApp</th>
+                                    <th class="py-3 px-4">Payment &amp; TrxID</th>
+                                    <th class="py-3 px-4">Amount</th>
+                                    <th class="py-3 px-4">Activation Key</th>
+                                    <th class="py-3 px-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-800">
+                                <% orders.forEach(function(o) { %>
+                                <tr class="hover:bg-gray-800/40">
+                                    <td class="py-3 px-4 font-mono font-bold text-emerald-400"><%= o.id %></td>
+                                    <td class="py-3 px-4">
+                                        <div class="font-bold text-white"><%= o.product_name %></div>
+                                        <div class="text-xs text-gray-400"><%= o.variant %></div>
+                                        <% if (o.phone_model) { %>
+                                        <div class="mt-1 text-[11px] text-cyan-400 font-mono bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/50 inline-block">
+                                            <i class="fas fa-mobile-alt text-amber-400 mr-1"></i><%= o.phone_brand || '' %> <%= o.phone_model %> (<%= o.android_version || 'Android' %>) [<%= o.root_solution || 'KernelSU' %>]
+                                        </div>
+                                        <% } %>
+                                    </td>
+                                    <td class="py-3 px-4 font-mono font-semibold text-white">
+                                        <%= o.player_id %>
+                                        <% if (o.bootloader_status) { %>
+                                        <div class="text-[10px] text-gray-400 mt-0.5">BL: <%= o.bootloader_status %></div>
+                                        <% } %>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <% 
+                                            var custDigits = String(o.whatsapp || '').replace(/[^0-9]/g, '');
+                                            var custWaUrl = custDigits;
+                                            if (custDigits.startsWith('0')) {
+                                                custWaUrl = '88' + custDigits;
+                                            } else if (custDigits.length === 10 && custDigits.startsWith('1')) {
+                                                custWaUrl = '880' + custDigits;
+                                            }
+                                        %>
+                                        <a href="https://wa.me/<%= custWaUrl %>" target="_blank" class="text-emerald-400 hover:underline flex items-center gap-1 font-mono text-xs">
+                                            <i class="fab fa-whatsapp text-emerald-400"></i> <%= o.whatsapp %>
+                                        </a>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="font-semibold text-white"><%= o.payment_method %></div>
+                                        <div class="text-xs font-mono text-gray-400"><%= o.transaction_id %></div>
+                                    </td>
+                                    <td class="py-3 px-4 font-bold text-white"><%= o.price %>৳</td>
+                                    <td class="py-3 px-4">
+                                        <% if (o.license_key) { %>
+                                        <div class="flex items-center gap-1.5 bg-black/70 px-2.5 py-1 rounded-md border border-cyan-500/30 max-w-[170px]">
+                                            <span class="text-xs text-yellow-300 font-mono font-bold truncate select-all" title="<%= o.license_key %>"><%= o.license_key %></span>
+                                            <button type="button" onclick="navigator.clipboard.writeText('<%= o.license_key %>'); alert('Key copied to clipboard!')" class="text-[10px] text-cyan-400 hover:text-white shrink-0" title="Copy Key">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                        <% } else { %>
+                                        <button type="button" onclick="openAssignKeyModal('<%= o.id %>', '<%= encodeURIComponent(o.product_name) %>', <%= o.product_id || 1 %>, '<%= encodeURIComponent(o.variant || '') %>')" class="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-black font-bold text-[11px] rounded-lg border border-amber-500/40 transition flex items-center gap-1">
+                                            <i class="fas fa-key"></i> Assign Key
+                                        </button>
+                                        <% } %>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <form action="/admin/orders/status/<%= o.id %>" method="POST" class="flex items-center gap-1">
+                                            <select name="status" onchange="this.form.submit()" class="bg-gray-800 border border-gray-700 text-xs rounded-lg px-2 py-1 text-white focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                                <option value="processing" <%= o.status === 'processing' ? 'selected' : '' %>>Processing</option>
+                                                <option value="completed" <%= o.status === 'completed' ? 'selected' : '' %>>Completed</option>
+                                                <option value="cancelled" <%= o.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: PRODUCT KEYS -->
+            <div id="tab-keys" class="admin-tab-pane" style="display: none;">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-black text-white flex items-center gap-2">
+                            <i class="fas fa-key text-amber-400"></i> Product License Keys
+                        </h2>
+                        <p class="text-sm text-gray-400">Add, edit, bulk import, and manage game panel activation keys & licenses.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="openBulkAddKeyModal()" class="py-2.5 px-4 bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm rounded-xl flex items-center gap-2 shadow-lg shadow-purple-900/40">
+                            <i class="fas fa-file-import"></i> Bulk Add Keys
+                        </button>
+                        <button onclick="openAddKeyModal()" class="py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-black font-black text-sm rounded-xl flex items-center gap-2 shadow-lg shadow-amber-500/40">
+                            <i class="fas fa-plus"></i> Add Single Key
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="filament-card p-4">
+                        <span class="text-xs font-bold text-gray-400 uppercase">Total Keys Recorded</span>
+                        <div class="text-2xl font-black text-white mt-1"><%= keys.length %></div>
+                    </div>
+                    <div class="filament-card p-4 border-l-4 border-emerald-500">
+                        <span class="text-xs font-bold text-emerald-400 uppercase">In Stock (Available)</span>
+                        <div class="text-2xl font-black text-emerald-400 mt-1"><%= keys.filter(k => k.status === 'available').length %></div>
+                    </div>
+                    <div class="filament-card p-4 border-l-4 border-pink-500">
+                        <span class="text-xs font-bold text-pink-400 uppercase">Used (Assigned)</span>
+                        <div class="text-2xl font-black text-pink-400 mt-1"><%= keys.filter(k => k.status === 'used').length %></div>
+                    </div>
+                    <div class="filament-card p-4 border-l-4 border-cyan-500">
+                        <span class="text-xs font-bold text-cyan-400 uppercase">Covered Products</span>
+                        <div class="text-2xl font-black text-cyan-400 mt-1"><%= new Set(keys.map(k => k.product_id)).size %> Products</div>
+                    </div>
+                </div>
+
+                <div class="filament-card overflow-hidden">
+                    <!-- Filters & Search Toolbar -->
+                    <div class="p-4 border-b border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                            <div class="relative w-full sm:w-64">
+                                <input type="text" id="adminKeySearch" onkeyup="filterAdminKeys()" placeholder="Search key, product, order ID..." class="w-full pl-9 pr-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                            </div>
+                            <select id="adminKeyStatusFilter" onchange="filterAdminKeys()" class="w-full sm:w-40 py-2 px-3 bg-gray-900 border border-gray-700 rounded-lg text-xs font-bold text-white">
+                                <option value="">All Statuses</option>
+                                <option value="available">Available (In Stock)</option>
+                                <option value="used">Used (Assigned)</option>
+                            </select>
+                            <select id="adminKeyProductFilter" onchange="filterAdminKeys()" class="w-full sm:w-48 py-2 px-3 bg-gray-900 border border-gray-700 rounded-lg text-xs font-bold text-white">
+                                <option value="">All Products</option>
+                                <% products.forEach(function(p) { %>
+                                <option value="<%= p.id %>"><%= p.title %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="text-xs text-gray-400">Total: <span id="visibleKeyCount" class="text-cyan-400 font-bold"><%= keys.length %></span> keys</div>
+                    </div>
+
+                    <!-- Keys Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-gray-300" id="adminKeysTable">
+                            <thead class="text-xs uppercase bg-gray-800/80 text-gray-400 border-b border-gray-800">
+                                <tr>
+                                    <th class="py-3 px-4">Key ID &amp; Tier</th>
+                                    <th class="py-3 px-4">Product Name</th>
+                                    <th class="py-3 px-4">License Key String</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4">Assigned Details</th>
+                                    <th class="py-3 px-4">Notes</th>
+                                    <th class="py-3 px-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-800">
+                                <% keys.forEach(function(k) { %>
+                                <tr class="hover:bg-gray-800/40 key-row" data-key="<%= k.license_key.toLowerCase() %>" data-product-id="<%= k.product_id %>" data-product-name="<%= (k.product_title || '').toLowerCase() %>" data-status="<%= k.status %>" data-order="<%= (k.assigned_order_id || '').toLowerCase() %>">
+                                    <td class="py-3 px-4">
+                                        <div class="font-mono font-bold text-xs text-cyan-400"><%= k.id %></div>
+                                        <span class="inline-block mt-0.5 text-[10px] font-bold px-2 py-0.5 rounded bg-gray-800 text-gray-300 border border-gray-700">
+                                            <%= k.variant || '1 Day Key' %>
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="font-bold text-white"><%= k.product_title || 'Game Panel' %></div>
+                                        <div class="text-[11px] text-gray-500 font-mono">ID: <%= k.product_id %></div>
+                                    </td>
+                                    <td class="py-3 px-4 font-mono">
+                                        <div class="flex items-center gap-2 bg-black/60 px-3 py-1.5 rounded-lg border border-cyan-500/30 w-fit">
+                                            <span class="text-yellow-300 font-bold select-all text-xs tracking-wider"><%= k.license_key %></span>
+                                            <button type="button" onclick="navigator.clipboard.writeText('<%= k.license_key %>'); alert('Key copied: <%= k.license_key %>')" class="text-xs text-cyan-400 hover:text-white" title="Copy Key">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <form action="/admin/keys/toggle-status/<%= k.id %>" method="POST" class="inline">
+                                            <% if (k.status === 'available') { %>
+                                            <button type="submit" title="Click to toggle to USED" class="px-2.5 py-1 rounded-full text-xs font-black uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30 transition flex items-center gap-1.5">
+                                                <i class="fas fa-check-circle"></i> AVAILABLE
+                                            </button>
+                                            <% } else { %>
+                                            <button type="submit" title="Click to toggle to AVAILABLE" class="px-2.5 py-1 rounded-full text-xs font-black uppercase bg-pink-500/20 text-pink-400 border border-pink-500/40 hover:bg-pink-500/30 transition flex items-center gap-1.5">
+                                                <i class="fas fa-ban"></i> USED
+                                            </button>
+                                            <% } %>
+                                        </form>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <% if (k.assigned_order_id) { %>
+                                        <div class="font-mono text-xs font-bold text-cyan-300"><%= k.assigned_order_id %></div>
+                                        <div class="text-[11px] text-gray-400">UID: <%= k.assigned_to || 'N/A' %></div>
+                                        <% } else { %>
+                                        <span class="text-xs text-gray-500 italic">Unassigned (In Inventory)</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="py-3 px-4 text-xs text-gray-400 max-w-[150px] truncate">
+                                        <%= k.notes || '-' %>
+                                    </td>
+                                    <td class="py-3 px-4 text-right">
+                                        <div class="flex items-center justify-end gap-1.5">
+                                            <button type="button" onclick='openEditKeyModal(<%= JSON.stringify(k) %>)' class="p-2 text-gray-400 hover:text-amber-400 rounded-lg hover:bg-gray-800 transition" title="Edit Key">
+                                                <i class="fas fa-pen"></i>
+                                            </button>
+                                            <form action="/admin/keys/delete/<%= k.id %>" method="POST" onsubmit="return confirm('Delete this license key permanently?')" class="inline">
+                                                <button type="submit" class="p-2 text-gray-400 hover:text-red-400 rounded-lg hover:bg-gray-800 transition" title="Delete Key">
+                                                    <i class="fas fa-trash-can"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                                <% if (keys.length === 0) { %>
+                                <tr>
+                                    <td colspan="7" class="py-8 text-center text-gray-400 text-sm">
+                                        <i class="fas fa-key text-3xl text-gray-600 block mb-2"></i>
+                                        No product keys added yet. Click <strong>Add Single Key</strong> or <strong>Bulk Add Keys</strong> above.
+                                    </td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: SLIDERS -->
+            <div id="tab-sliders" class="admin-tab-pane" style="display: none;">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-black text-white">Hero Banners</h2>
+                        <p class="text-sm text-gray-400">Manage promotional image sliders displayed at top of storefront.</p>
+                    </div>
+                    <button onclick="openAddSliderModal()" class="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-900/40">
+                        <i class="fas fa-plus"></i> Add Banner
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <% sliders.forEach(function(s) { %>
+                    <div class="filament-card overflow-hidden">
+                        <div class="aspect-video bg-gray-800 overflow-hidden relative">
+                            <img src="<%= s.image %>" alt="<%= s.title %>" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-4 flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-white text-sm"><%= s.title %></h4>
+                                <a href="<%= s.link %>" target="_blank" class="text-xs text-gray-400 hover:underline truncate block max-w-[200px]"><%= s.link %></a>
+                            </div>
+                            <form action="/admin/sliders/delete/<%= s.id %>" method="POST" onsubmit="return confirm('Remove this banner?')" class="inline">
+                                <button type="submit" class="p-2 text-gray-400 hover:text-red-400 rounded-lg hover:bg-gray-800 transition">
+                                    <i class="fas fa-trash-can"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <% }); %>
+                </div>
+            </div>
+
+            <!-- TAB 5: SETTINGS -->
+            <div id="tab-settings" class="admin-tab-pane" style="display: none;">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-black text-white">Site &amp; Notice Settings</h2>
+                        <p class="text-sm text-gray-400">Configure global website branding, marquee notices, and contact links.</p>
+                    </div>
+                </div>
+
+                <div class="filament-card p-6 max-w-2xl">
+                    <form action="/admin/settings" method="POST" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Store Brand Name</label>
+                            <input type="text" name="site_name" value="<%= settings.site_name %>" required class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Notice Bar Marquee Text</label>
+                            <textarea name="notice_marquee" rows="3" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"><%= settings.notice_marquee %></textarea>
+                            <small class="text-xs text-gray-500">Displays scrolling banner across the top header.</small>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Payment Gateway Number (bKash &amp; Nagad)</label>
+                                <input type="text" name="payment_number" value="<%= settings.payment_number || '01700878400' %>" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                <small class="text-xs text-gray-400">Personal Send Money number shown to customers during checkout.</small>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-2">WhatsApp Support Number</label>
+                                <input type="text" name="whatsapp_number" value="<%= settings.whatsapp_number || '01727400370' %>" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                <small class="text-xs text-gray-400">Direct phone number for WhatsApp customer support.</small>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-2">WhatsApp Direct Link</label>
+                                <input type="text" name="whatsapp" value="<%= settings.whatsapp %>" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Telegram Channel Link</label>
+                                <input type="text" name="telegram" value="<%= settings.telegram %>" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-2">YouTube Channel / Tutorial</label>
+                                <input type="text" name="youtube" value="<%= settings.youtube %>" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Telegram Feedback Group</label>
+                                <input type="text" name="telegram_feedback" value="<%= settings.telegram_feedback %>" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Gmail SMTP Notification Settings -->
+                        <div class="mt-6 pt-6 border-t border-gray-700">
+                            <h4 class="text-sm font-black text-cyan-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <i class="fas fa-envelope-circle-check text-base"></i> Automated Gmail Order Notification Settings
+                            </h4>
+                            <p class="text-xs text-gray-400 mb-4">
+                                Automatically receives an itemized email with customer details, TrxID, package duration, and WhatsApp whenever someone buys any product.
+                            </p>
+
+                            <div class="space-y-4 bg-gray-900/80 p-4 rounded-xl border border-gray-700">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Admin Notification Email (Recipient)</label>
+                                    <input type="email" name="admin_email" value="<%= settings.admin_email || 'tgsgaming2024@gmail.com' %>" required class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                                    <small class="text-[11px] text-gray-400">Order purchase notification emails are delivered to this Gmail address.</small>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Gmail Sender Address (SMTP User)</label>
+                                        <input type="email" name="smtp_user" value="<%= settings.smtp_user || 'tgsgaming2024@gmail.com' %>" placeholder="yourgmail@gmail.com" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Gmail 16-Digit App Password</label>
+                                        <input type="password" name="smtp_pass" value="<%= settings.smtp_pass ? '••••••••••••••••' : '' %>" placeholder="16-character Google App Password" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none font-mono">
+                                    </div>
+                                </div>
+
+                                <div class="p-3 bg-cyan-950/40 border border-cyan-500/30 rounded-lg text-xs text-cyan-200 space-y-1">
+                                    <div class="font-bold flex items-center gap-1 text-cyan-300">
+                                        <i class="fas fa-info-circle"></i> How to generate a Gmail App Password:
+                                    </div>
+                                    <div>1. Open your Google Account (<a href="https://myaccount.google.com/security" target="_blank" class="underline text-white font-bold">myaccount.google.com/security</a>).</div>
+                                    <div>2. Ensure <strong>2-Step Verification</strong> is ON.</div>
+                                    <div>3. Search for <strong>App passwords</strong> in the top search bar.</div>
+                                    <div>4. Create an app named "Panel Sell", copy the generated 16-character code, and paste it in the box above.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-800 flex flex-wrap items-center justify-between gap-3">
+                            <button type="submit" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-lg transition">
+                                <i class="fas fa-save me-1"></i> Save Settings
+                            </button>
+                    </form>
+
+                    <!-- Test Email Form -->
+                    <form action="/admin/settings/test-email" method="POST" class="inline-block">
+                        <button type="submit" class="px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-black font-black text-xs rounded-xl shadow-md transition flex items-center gap-2">
+                            <i class="fas fa-paper-plane"></i> Send Test Email to Gmail
+                        </button>
+                    </form>
+                        </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modal: Add Product -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-gray-900 border border-gray-800 text-white rounded-2xl shadow-2xl">
+                <div class="modal-header border-b border-gray-800 py-3 px-5">
+                    <h5 class="font-bold text-white text-base flex items-center gap-2">
+                        <i class="fas fa-plus-circle text-emerald-400"></i> Add New Product
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/admin/products/add" method="POST" enctype="multipart/form-data">
+                    <div class="modal-body p-5 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Product Title <span class="text-red-400">*</span></label>
+                                <input type="text" name="title" required placeholder="e.g. VIP HEADSHOT PRO" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Category <span class="text-red-400">*</span></label>
+                                <select id="add_category" name="category" required class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="non-root">NON ROOT (Non-Root Mod APK / Panel)</option>
+                                    <option value="root">ROOT (Root Mod APK / Panel)</option>
+                                    <option value="root-service">ROOT SERVICE (Device Rooting Service)</option>
+                                    <option value="i-phone">I PHONE (iOS / Certificate)</option>
+                                    <option value="pc">PC (PC Cheat / Emulator)</option>
+                                    <option value="pubg">PUBG (PUBG Mobile)</option>
+                                    <option value="other">OTHER (Bots &amp; Services)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Base Price (৳) <span class="text-red-400">*</span></label>
+                                <input type="number" name="price" required value="50" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Discount Badge</label>
+                                <input type="text" name="discount" placeholder="e.g. -20% or FLASH SALE" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Initial Status</label>
+                                <select name="is_maintenance" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="0">Online (Active &amp; Ready)</option>
+                                    <option value="1">Under Maintenance</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Product Description</label>
+                            <textarea name="description" rows="2" placeholder="High performance gaming panel with instant key delivery and 24/7 support..." class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                        </div>
+
+                        <div>
+                            <label id="add_duration_options_label" class="block text-xs font-bold text-gray-300 uppercase mb-1">Durations (Days|Fixed Price)</label>
+                            <textarea id="add_duration_options" name="duration_options" rows="4" placeholder="1|50&#10;7|200&#10;30|500" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none font-mono"></textarea>
+                            <small id="add_duration_options_help" class="text-[11px] text-gray-400 mt-1 block">One duration per line: number of days|fixed price in BDT. Leave blank to use default durations.</small>
+                        </div>
+
+                        <!-- Product Image: File Upload OR URL -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 bg-gray-900/90 rounded-xl border border-cyan-500/30">
+                            <div>
+                                <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">
+                                    <i class="fas fa-upload me-1"></i> Upload Image File (from Device)
+                                </label>
+                                <input type="file" name="image_file" accept="image/*" class="w-full px-3 py-1.5 bg-gray-950 border border-cyan-500/30 rounded-lg text-white text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-black file:bg-cyan-500 file:text-black hover:file:bg-cyan-400 cursor-pointer">
+                                <small class="text-[11px] text-gray-400 mt-1 block">Upload JPG, PNG, WEBP directly from computer/phone.</small>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">
+                                    <i class="fas fa-link me-1"></i> OR Image URL / Web Path
+                                </label>
+                                <input type="text" name="image" placeholder="/uploads/media/203/01M1S8RJ1CTP1MQHG8AA5QYEJA.jpg" class="w-full px-3 py-2 bg-gray-950 border border-cyan-500/30 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                                <small class="text-[11px] text-gray-400 mt-1 block">Leave blank if uploading an image file.</small>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Supported Phone Variants (For Root Mobile Service Only)</label>
+                            <input type="text" name="supported_phones" placeholder="Xiaomi • Poco • Samsung • OnePlus • Realme • Vivo • Tecno • Infinix" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                            <small class="text-[11px] text-gray-400">Leave blank for regular game panels. Fill only for Root mobile services.</small>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">YouTube Setup Video</label>
+                                <input type="text" name="setup_url" placeholder="https://youtu.be/..." class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">APK / File Download URL</label>
+                                <input type="text" name="apk_url" placeholder="https://t.me/..." class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Feedback Channel</label>
+                                <input type="text" name="feedback_url" placeholder="https://t.me/..." class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Maintenance Notice Message</label>
+                            <textarea name="maintenance_message" rows="2" placeholder="Multi-language alert for when maintenance mode is active..." class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-t border-gray-800 py-3 px-5">
+                        <button type="button" class="btn btn-secondary text-xs rounded-lg" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success text-xs font-black rounded-lg px-5 py-2.5">
+                            <i class="fas fa-check me-1"></i> Save &amp; Publish Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Product -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-gray-900 border border-gray-800 text-white rounded-2xl shadow-2xl">
+                <div class="modal-header border-b border-gray-800 py-3 px-5">
+                    <h5 class="font-bold text-white text-base flex items-center gap-2">
+                        <i class="fas fa-pen text-amber-400"></i> Edit Product
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editProductForm" method="POST" enctype="multipart/form-data">
+                    <div class="modal-body p-5 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Product Title</label>
+                                <input type="text" id="edit_title" name="title" required class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Category</label>
+                                <select id="edit_category" name="category" required class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="non-root">NON ROOT (Non-Root Mod APK / Panel)</option>
+                                    <option value="root">ROOT (Root Mod APK / Panel)</option>
+                                    <option value="root-service">ROOT SERVICE (Device Rooting Service)</option>
+                                    <option value="i-phone">I PHONE (iOS / Certificate)</option>
+                                    <option value="pc">PC (PC Cheat / Emulator)</option>
+                                    <option value="other">OTHER (Bots &amp; Services)</option>
+                                    <option value="pubg">PUBG (PUBG Mobile)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Base Price (৳)</label>
+                                <input type="number" id="edit_price" name="price" required class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Discount Badge</label>
+                                <input type="text" id="edit_discount" name="discount" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Status</label>
+                                <select id="edit_is_maintenance" name="is_maintenance" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="0">Online (Active)</option>
+                                    <option value="1">Under Maintenance</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Product Description</label>
+                            <textarea id="edit_description" name="description" rows="2" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                        </div>
+
+                        <div>
+                            <label id="edit_duration_options_label" class="block text-xs font-bold text-gray-300 uppercase mb-1">Durations (Days|Fixed Price)</label>
+                            <textarea id="edit_duration_options" name="duration_options" rows="4" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none font-mono"></textarea>
+                            <small id="edit_duration_options_help" class="text-[11px] text-gray-400 mt-1 block">One duration per line: number of days|fixed price in BDT. Leave blank to use default durations.</small>
+                        </div>
+
+                        <!-- Edit Image: Replace via file upload OR new URL -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 bg-gray-900/90 rounded-xl border border-cyan-500/30">
+                            <div>
+                                <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">
+                                    <i class="fas fa-upload me-1"></i> Replace Image File (Optional)
+                                </label>
+                                <input type="file" name="image_file" accept="image/*" class="w-full px-3 py-1.5 bg-gray-950 border border-cyan-500/30 rounded-lg text-white text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-black file:bg-cyan-500 file:text-black hover:file:bg-cyan-400 cursor-pointer">
+                                <small class="text-[11px] text-gray-400 mt-1 block">Select a new file only if changing the image.</small>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">
+                                    <i class="fas fa-link me-1"></i> Current Image URL / Path
+                                </label>
+                                <input type="text" id="edit_image" name="image" class="w-full px-3 py-2 bg-gray-950 border border-cyan-500/30 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Supported Phone Variants (For Root Section)</label>
+                            <input type="text" id="edit_supported_phones" name="supported_phones" placeholder="Xiaomi • Poco • Samsung • OnePlus • Realme • Vivo • Tecno • Infinix" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">YouTube Setup Video</label>
+                                <input type="text" id="edit_setup_url" name="setup_url" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">APK Download URL</label>
+                                <input type="text" id="edit_apk_url" name="apk_url" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Feedback Channel</label>
+                                <input type="text" id="edit_feedback_url" name="feedback_url" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Maintenance Notice Message</label>
+                            <textarea id="edit_maintenance_message" name="maintenance_message" rows="3" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-t border-gray-800 py-3 px-5">
+                        <button type="button" class="btn btn-secondary text-xs rounded-lg" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success text-xs font-black rounded-lg px-5 py-2.5">
+                            <i class="fas fa-save me-1"></i> Update Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add Slider -->
+    <div class="modal fade" id="addSliderModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-gray-900 border border-gray-800 text-white rounded-2xl shadow-2xl">
+                <div class="modal-header border-b border-gray-800 py-3 px-5">
+                    <h5 class="font-bold text-white text-base flex items-center gap-2">
+                        <i class="fas fa-images text-cyan-400"></i> Add Hero Banner
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/admin/sliders/add" method="POST">
+                    <div class="modal-body p-5 space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Banner Title</label>
+                            <input type="text" name="title" required placeholder="e.g. Free Fire OB45 Patch" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Banner Image URL</label>
+                            <input type="text" name="image" required placeholder="/uploads/media/229/01M4S90187Y7K0RG8V7G62ZMN0.png" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Destination Link</label>
+                            <input type="text" name="link" placeholder="https://..." class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-t border-gray-800 py-3 px-5">
+                        <button type="button" class="btn btn-secondary text-xs rounded-lg" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success text-xs font-black rounded-lg px-5 py-2.5">
+                            <i class="fas fa-plus me-1"></i> Add Banner
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add Single Key -->
+    <div class="modal fade" id="addKeyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-gray-900 border border-gray-800 text-white rounded-2xl shadow-2xl">
+                <div class="modal-header border-b border-gray-800 py-3 px-5">
+                    <h5 class="font-bold text-white text-base flex items-center gap-2">
+                        <i class="fas fa-key text-amber-400"></i> Add Product License Key
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/admin/keys/add" method="POST">
+                    <div class="modal-body p-5 space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Target Product *</label>
+                            <select name="product_id" id="add_key_product_id" required class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
+                                <% products.forEach(function(p) { %>
+                                <option value="<%= p.id %>"><%= p.title %> (<%= p.category %>)</option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Plan / Variant Duration *</label>
+                            <select name="variant" id="add_key_variant" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
+                                <option value="1 Day Key">1 Day Key</option>
+                                <option value="7 Days Key">7 Days Key</option>
+                                <option value="30 Days Key">30 Days Key</option>
+                                <option value="Lifetime Key">Lifetime Key</option>
+                                <option value="Standard Device Rooting">Standard Device Rooting</option>
+                                <option value="Root + Gaming Kernel (120 FPS)">Root + Gaming Kernel (120 FPS)</option>
+                                <option value="VIP Root + Anti-Ban Suite">VIP Root + Anti-Ban Suite</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">License Key String *</label>
+                            <input type="text" name="license_key" required placeholder="e.g. DRIP-VIP-OB45-99A1-77BC" class="w-full px-3 py-2 bg-gray-900 border border-cyan-500/40 rounded-lg text-white text-sm font-mono font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Internal Notes (Optional)</label>
+                            <input type="text" name="notes" placeholder="e.g. Official Developer Key Batch #1" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-t border-gray-800 py-3 px-5">
+                        <button type="button" class="btn btn-secondary text-xs rounded-lg" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success text-xs font-black rounded-lg px-5 py-2.5">
+                            <i class="fas fa-check me-1"></i> Save Key to Inventory
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Bulk Add Keys -->
+    <div class="modal fade" id="bulkAddKeyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-gray-900 border border-gray-800 text-white rounded-2xl shadow-2xl">
+                <div class="modal-header border-b border-gray-800 py-3 px-5">
+                    <h5 class="font-bold text-white text-base flex items-center gap-2">
+                        <i class="fas fa-file-import text-purple-400"></i> Bulk Import Product Keys
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/admin/keys/bulk-add" method="POST">
+                    <div class="modal-body p-5 space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Target Product *</label>
+                            <select name="product_id" required class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
+                                <% products.forEach(function(p) { %>
+                                <option value="<%= p.id %>"><%= p.title %> (<%= p.category %>)</option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Plan / Variant Duration *</label>
+                            <select name="variant" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
+                                <option value="1 Day Key">1 Day Key</option>
+                                <option value="7 Days Key">7 Days Key</option>
+                                <option value="30 Days Key">30 Days Key</option>
+                                <option value="Lifetime Key">Lifetime Key</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Paste Keys (One Per Line) *</label>
+                            <textarea name="bulk_keys" rows="6" required placeholder="KEY-1234-5678&#10;KEY-9876-5432&#10;KEY-5555-4444" class="w-full px-3 py-2 bg-gray-900 border border-cyan-500/40 rounded-lg text-white text-xs font-mono"></textarea>
+                            <small class="text-[11px] text-gray-400 block mt-1">Each non-empty line will be registered as an individual active key.</small>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Batch Note (Optional)</label>
+                            <input type="text" name="notes" placeholder="e.g. Supplier Telegram Batch" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-t border-gray-800 py-3 px-5">
+                        <button type="button" class="btn btn-secondary text-xs rounded-lg" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success text-xs font-black rounded-lg px-5 py-2.5">
+                            <i class="fas fa-file-import me-1"></i> Import Keys
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Key -->
+    <div class="modal fade" id="editKeyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-gray-900 border border-gray-800 text-white rounded-2xl shadow-2xl">
+                <div class="modal-header border-b border-gray-800 py-3 px-5">
+                    <h5 class="font-bold text-white text-base flex items-center gap-2">
+                        <i class="fas fa-pen text-amber-400"></i> Edit Product Key (<span id="edit_key_id_display" class="font-mono text-cyan-400"></span>)
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editKeyForm" method="POST">
+                    <div class="modal-body p-5 space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Product</label>
+                            <select id="edit_key_product_id" name="product_id" required class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
+                                <% products.forEach(function(p) { %>
+                                <option value="<%= p.id %>"><%= p.title %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Plan / Variant Duration</label>
+                            <input type="text" id="edit_key_variant" name="variant" required class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">License Key String *</label>
+                            <input type="text" id="edit_key_license_key" name="license_key" required class="w-full px-3 py-2 bg-gray-900 border border-cyan-500/40 rounded-lg text-white text-sm font-mono font-bold">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Status</label>
+                                <select id="edit_key_status" name="status" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
+                                    <option value="available">Available (In Stock)</option>
+                                    <option value="used">Used (Assigned)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Assigned Order ID</label>
+                                <input type="text" id="edit_key_order_id" name="assigned_order_id" placeholder="ORD-xxxxx" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm font-mono">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Assigned Customer / UID</label>
+                            <input type="text" id="edit_key_assigned_to" name="assigned_to" placeholder="Player UID or WhatsApp" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Notes</label>
+                            <input type="text" id="edit_key_notes" name="notes" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-t border-gray-800 py-3 px-5">
+                        <button type="button" class="btn btn-secondary text-xs rounded-lg" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success text-xs font-black rounded-lg px-5 py-2.5">
+                            <i class="fas fa-save me-1"></i> Update Key
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Assign Key to Order -->
+    <div class="modal fade" id="assignKeyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-gray-900 border border-gray-800 text-white rounded-2xl shadow-2xl">
+                <div class="modal-header border-b border-gray-800 py-3 px-5">
+                    <h5 class="font-bold text-white text-base flex items-center gap-2">
+                        <i class="fas fa-link text-cyan-400"></i> Assign Key to Order (<span id="assign_order_id_display" class="font-mono text-cyan-400"></span>)
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="assignKeyForm" method="POST">
+                    <div class="modal-body p-5 space-y-4">
+                        <div class="p-3 bg-cyan-950/40 rounded-xl border border-cyan-500/30 text-xs text-cyan-200">
+                            <div>Order Item: <strong id="assign_order_product_name" class="text-white"></strong></div>
+                            <div>Tier / Plan: <strong id="assign_order_variant" class="text-yellow-300"></strong></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Option A: Select from Available Stock</label>
+                            <select id="assign_select_key_id" name="selected_key_id" class="w-full px-3 py-2 bg-gray-900 border border-cyan-500/30 rounded-lg text-white text-sm">
+                                <option value="">-- Choose matching in-stock key --</option>
+                            </select>
+                            <small class="text-[11px] text-gray-400 mt-1 block">Keys matching this product in inventory.</small>
+                        </div>
+
+                        <div class="text-center text-xs font-bold text-gray-500 uppercase">— OR —</div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-cyan-400 uppercase mb-1">Option B: Enter / Generate Custom Key</label>
+                            <input type="text" id="assign_key_input" name="key_input" placeholder="Type or paste license key directly..." class="w-full px-3 py-2 bg-gray-900 border border-cyan-500/30 rounded-lg text-white text-sm font-mono font-bold">
+                            <small class="text-[11px] text-gray-400 mt-1 block">If entered, this key will be assigned to the buyer and added to inventory.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-t border-gray-800 py-3 px-5">
+                        <button type="button" class="btn btn-secondary text-xs rounded-lg" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success text-xs font-black rounded-lg px-5 py-2.5">
+                            <i class="fas fa-check me-1"></i> Assign Key &amp; Deliver
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    // Tab switching
+    function switchTab(tabId, el) {
+        document.querySelectorAll('.admin-tab-pane').forEach(function(pane) {
+            pane.style.display = 'none';
+        });
+        document.querySelectorAll('.sidebar-link').forEach(function(link) {
+            link.classList.remove('active');
+        });
+
+        var targetPane = document.getElementById('tab-' + tabId);
+        if (targetPane) {
+            targetPane.style.display = 'block';
+        }
+        if (el) {
+            el.classList.add('active');
+        }
+    }
+
+    // Filter Admin Products
+    function filterAdminProducts() {
+        var input = document.getElementById('adminProductSearch');
+        var filter = input.value.toLowerCase();
+        var rows = document.querySelectorAll('.product-row');
+        rows.forEach(function(row) {
+            var name = row.getAttribute('data-name') || '';
+            row.style.display = name.includes(filter) ? '' : 'none';
+        });
+    }
+
+    // Modal controls
+    function openAddProductModal() {
+        updateDurationEditor('add');
+        var modal = new bootstrap.Modal(document.getElementById('addProductModal'));
+        modal.show();
+    }
+
+    function openAddSliderModal() {
+        var modal = new bootstrap.Modal(document.getElementById('addSliderModal'));
+        modal.show();
+    }
+
+    function openEditProductModal(product) {
+        document.getElementById('editProductForm').action = '/admin/products/edit/' + product.id;
+        document.getElementById('edit_title').value = product.title || '';
+        document.getElementById('edit_category').value = product.category || 'non-root';
+        updateDurationEditor('edit');
+        document.getElementById('edit_price').value = product.price || 0;
+        document.getElementById('edit_discount').value = product.discount || '';
+        document.getElementById('edit_is_maintenance').value = product.is_maintenance ? '1' : '0';
+        document.getElementById('edit_image').value = product.image || '';
+        document.getElementById('edit_setup_url').value = product.setup_url || '';
+        document.getElementById('edit_apk_url').value = product.apk_url || '';
+        document.getElementById('edit_feedback_url').value = product.feedback_url || '';
+        document.getElementById('edit_maintenance_message').value = product.maintenance_message || '';
+        document.getElementById('edit_supported_phones').value = product.supported_phones || '';
+        document.getElementById('edit_description').value = product.description || '';
+
+        var durationOptions = product.duration_options || '';
+        if (Array.isArray(durationOptions)) {
+            durationOptions = durationOptions.map(function(option) {
+                var price = option.price;
+                if (price === undefined) {
+                    price = Math.round((Number(product.price) || 0) * (Number(option.multiplier || option.value) || 1));
+                }
+                return option.days ? option.days + '|' + price : (option.label || option.name || option.title || option.variant || '') + '|' + price;
+            }).join('\n');
+        } else if (typeof durationOptions !== 'string') {
+            durationOptions = '';
+        }
+        document.getElementById('edit_duration_options').value = durationOptions;
+
+        var modal = new bootstrap.Modal(document.getElementById('editProductModal'));
+        modal.show();
+    }
+
+    function updateDurationEditor(prefix) {
+        var categorySelect = document.getElementById(prefix + '_category');
+        var label = document.getElementById(prefix + '_duration_options_label');
+        var help = document.getElementById(prefix + '_duration_options_help');
+        var textarea = document.getElementById(prefix + '_duration_options');
+        if (!categorySelect || !label || !help || !textarea) return;
+
+        var isRootService = categorySelect.value === 'root-service';
+        label.textContent = isRootService ? 'Service Plans (Plan Name|Fixed Price)' : 'Durations (Days|Fixed Price)';
+        help.textContent = isRootService
+            ? 'One plan per line: plan name|fixed price in BDT. Leave blank to use default plans.'
+            : 'One duration per line: number of days|fixed price in BDT. Leave blank to use default durations.';
+        textarea.placeholder = isRootService
+            ? 'Standard Device Rooting|500\nRoot + Gaming Kernel|675'
+            : '1|50\n7|200\n30|500';
+    }
+
+    document.getElementById('add_category').addEventListener('change', function() {
+        updateDurationEditor('add');
+    });
+    document.getElementById('edit_category').addEventListener('change', function() {
+        updateDurationEditor('edit');
+    });
+
+    // Pass keys from backend to client JS for assignKeyModal matching
+    var allAdminKeys = <%- JSON.stringify(keys) %>;
+
+    // Key Modals
+    function openAddKeyModal(productId) {
+        if (productId) {
+            var select = document.getElementById('add_key_product_id');
+            if (select) select.value = productId;
+        }
+        var modal = new bootstrap.Modal(document.getElementById('addKeyModal'));
+        modal.show();
+    }
+
+    function openBulkAddKeyModal() {
+        var modal = new bootstrap.Modal(document.getElementById('bulkAddKeyModal'));
+        modal.show();
+    }
+
+    function openEditKeyModal(key) {
+        document.getElementById('editKeyForm').action = '/admin/keys/edit/' + key.id;
+        document.getElementById('edit_key_id_display').innerText = key.id;
+        document.getElementById('edit_key_product_id').value = key.product_id || 1;
+        document.getElementById('edit_key_variant').value = key.variant || '1 Day Key';
+        document.getElementById('edit_key_license_key').value = key.license_key || '';
+        document.getElementById('edit_key_status').value = key.status || 'available';
+        document.getElementById('edit_key_order_id').value = key.assigned_order_id || '';
+        document.getElementById('edit_key_assigned_to').value = key.assigned_to || '';
+        document.getElementById('edit_key_notes').value = key.notes || '';
+
+        var modal = new bootstrap.Modal(document.getElementById('editKeyModal'));
+        modal.show();
+    }
+
+    function openAssignKeyModal(orderId, prodNameEncoded, prodId, variantEncoded) {
+        var prodName = decodeURIComponent(prodNameEncoded || '');
+        var variant = decodeURIComponent(variantEncoded || '');
+
+        document.getElementById('assignKeyForm').action = '/admin/orders/assign-key/' + orderId;
+        document.getElementById('assign_order_id_display').innerText = orderId;
+        document.getElementById('assign_order_product_name').innerText = prodName;
+        document.getElementById('assign_order_variant').innerText = variant || 'Standard';
+        document.getElementById('assign_key_input').value = '';
+
+        // Populate dropdown with available keys for this product
+        var select = document.getElementById('assign_select_key_id');
+        select.innerHTML = '<option value="">-- Choose matching in-stock key --</option>';
+
+        var matchingKeys = allAdminKeys.filter(function(k) {
+            return k.status === 'available' && (k.product_id === prodId || (k.product_title && k.product_title.toLowerCase() === prodName.toLowerCase()));
+        });
+
+        if (matchingKeys.length === 0) {
+            var opt = document.createElement('option');
+            opt.disabled = true;
+            opt.innerText = 'No available keys in stock for this product (Use Option B below)';
+            select.appendChild(opt);
+        } else {
+            matchingKeys.forEach(function(k) {
+                var opt = document.createElement('option');
+                opt.value = k.id;
+                opt.innerText = k.license_key + ' (' + (k.variant || 'Standard') + ' - ' + k.id + ')';
+                select.appendChild(opt);
+            });
+        }
+
+        var modal = new bootstrap.Modal(document.getElementById('assignKeyModal'));
+        modal.show();
+    }
+
+    // Filter Keys
+    function filterAdminKeys() {
+        var search = (document.getElementById('adminKeySearch').value || '').toLowerCase().trim();
+        var statusFilter = (document.getElementById('adminKeyStatusFilter').value || '').toLowerCase().trim();
+        var productFilter = (document.getElementById('adminKeyProductFilter').value || '').trim();
+
+        var rows = document.querySelectorAll('.key-row');
+        var visibleCount = 0;
+
+        rows.forEach(function(row) {
+            var keyStr = row.getAttribute('data-key') || '';
+            var prodId = row.getAttribute('data-product-id') || '';
+            var prodName = row.getAttribute('data-product-name') || '';
+            var status = row.getAttribute('data-status') || '';
+            var orderId = row.getAttribute('data-order') || '';
+
+            var matchesSearch = !search || keyStr.includes(search) || prodName.includes(search) || orderId.includes(search);
+            var matchesStatus = !statusFilter || status === statusFilter;
+            var matchesProduct = !productFilter || prodId === productFilter;
+
+            if (matchesSearch && matchesStatus && matchesProduct) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        var countDisplay = document.getElementById('visibleKeyCount');
+        if (countDisplay) countDisplay.innerText = visibleCount;
+    }
+
+    // Auto tab switch based on URL hash
+    window.addEventListener('DOMContentLoaded', function() {
+        var hash = window.location.hash.replace('#', '');
+        if (hash) {
+            var targetLink = document.querySelector('.sidebar-link[href="#' + hash + '"]');
+            if (targetLink) {
+                switchTab(hash, targetLink);
+            }
+        }
+    });
+
+    // Mobile sidebar toggle
+    var mobileBtn = document.getElementById('mobileMenuBtn');
+    var sidebar = document.getElementById('sidebar');
+    if (mobileBtn && sidebar) {
+        mobileBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('hidden');
+        });
+    }
+    </script>
+</body>
+</html>

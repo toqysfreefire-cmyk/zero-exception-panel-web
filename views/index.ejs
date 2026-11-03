@@ -1,0 +1,518 @@
+<%- include('partials/header') %>
+
+<!-- Hero Slider Section -->
+<section class="container m-auto px-2 px-md-3 mt-2 mt-md-3">
+    <div class="hero-slider">
+        <section class="carousel slider-wrapper" aria-label="Gallery" dir="ltr" tabindex="0">
+            <div class="slider-viewport-wrap position-relative overflow-hidden rounded-2xl shadow-sm">
+                <div class="carousel__viewport">
+                    <ol class="carousel__track flex transition-transform duration-500" id="sliderTrack">
+                        <% sliders.forEach(function(slide, idx) { %>
+                        <li class="carousel__slide flex-shrink-0 w-full">
+                            <div class="carousel__item">
+                                <a href="<%= slide.link %>" target="_blank" rel="noopener">
+                                    <img src="<%= slide.image %>" alt="<%= slide.title %>" class="slider-img w-full h-auto object-cover rounded-2xl" loading="<%= idx === 0 ? 'eager' : 'lazy' %>">
+                                </a>
+                            </div>
+                        </li>
+                        <% }); %>
+                    </ol>
+                </div>
+
+                <!-- Slider Nav Arrows -->
+                <button type="button" class="carousel__prev" id="sliderPrevBtn" aria-label="Previous slide">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button type="button" class="carousel__next" id="sliderNextBtn" aria-label="Next slide">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+
+            <!-- Slider Pagination Dots -->
+            <ol class="carousel__pagination flex justify-center gap-2 mt-2" id="sliderDots">
+                <% sliders.forEach(function(slide, idx) { %>
+                <li class="carousel__pagination-item">
+                    <button type="button" class="carousel__pagination-button <%= idx === 0 ? 'carousel__pagination-button--active' : '' %>" data-slide-index="<%= idx %>" aria-label="Go to slide <%= idx + 1 %>"></button>
+                </li>
+                <% }); %>
+            </ol>
+        </section>
+    </div>
+</section>
+
+<!-- Topup & Products Section -->
+<section id="topup" class="my-2">
+    <div class="container mx-auto">
+
+        <!-- Cyber Flash Sale Live Countdown Banner -->
+        <% if (typeof flashSale !== 'undefined' && flashSale && flashSale.enabled) { %>
+        <div class="px-2 mb-4 max-w-4xl mx-auto" id="flashSaleSection">
+            <div class="relative rounded-3xl p-4 sm:p-6 bg-gradient-to-r from-[#180a24] via-[#240c2e] to-[#0d1730] border-2 border-pink-500/80 shadow-[0_0_35px_rgba(236,72,153,0.35)] overflow-hidden">
+                <div class="absolute -right-8 -top-8 w-44 h-44 bg-pink-500/20 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute -left-8 -bottom-8 w-44 h-44 bg-cyan-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="text-center md:text-left">
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/25 border border-pink-400 text-pink-300 text-[11px] font-black uppercase tracking-wider mb-2 animate-pulse shadow-sm">
+                            <i class="fas fa-bolt text-amber-300"></i> <%= flashSale.banner_tag || 'MEGA FLASH SALE' %>
+                        </div>
+                        <h3 class="text-lg sm:text-2xl font-black text-white uppercase tracking-wide m-0">
+                            <%= flashSale.title || '⚡ MIDNIGHT CYBER FLASH SALE' %>
+                        </h3>
+                        <p class="text-xs text-pink-200/80 mt-1 mb-0">
+                            <%= flashSale.subtitle || 'সীমিত সময়ের জন্য বিশেষ মেগা অফার! শেষ হতে আর মাত্র:' %>
+                        </p>
+                    </div>
+
+                    <!-- Live Cyber Clock -->
+                    <div class="flex items-center gap-2 sm:gap-2.5 font-orbitron" id="flashCountdownWrap" data-end="<%= flashSale.end_time %>">
+                        <div class="flex flex-col items-center bg-black/80 border border-pink-500/60 rounded-2xl px-3 py-1.5 min-w-[56px] shadow-inner">
+                            <span class="text-xl sm:text-2xl font-black text-pink-400" id="fsHours">00</span>
+                            <span class="text-[9px] text-slate-400 uppercase font-mono font-bold">Hours</span>
+                        </div>
+                        <span class="text-pink-400 font-black text-xl animate-pulse">:</span>
+                        <div class="flex flex-col items-center bg-black/80 border border-pink-500/60 rounded-2xl px-3 py-1.5 min-w-[56px] shadow-inner">
+                            <span class="text-xl sm:text-2xl font-black text-pink-400" id="fsMins">00</span>
+                            <span class="text-[9px] text-slate-400 uppercase font-mono font-bold">Mins</span>
+                        </div>
+                        <span class="text-pink-400 font-black text-xl animate-pulse">:</span>
+                        <div class="flex flex-col items-center bg-black/80 border border-pink-500/60 rounded-2xl px-3 py-1.5 min-w-[56px] shadow-inner">
+                            <span class="text-xl sm:text-2xl font-black text-amber-400" id="fsSecs">00</span>
+                            <span class="text-[9px] text-slate-400 uppercase font-mono font-bold">Secs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- VIP Reseller Welcome Banner -->
+        <% if (typeof userDiscount !== 'undefined' && userDiscount > 0 && typeof currentUser !== 'undefined' && currentUser) { %>
+        <div class="px-2 mb-3 max-w-xl mx-auto">
+            <div class="p-3.5 rounded-2xl <%= isReseller ? 'bg-gradient-to-r from-amber-950 via-yellow-950 to-black border border-amber-500/60' : (isSubReseller ? 'bg-gradient-to-r from-cyan-950 via-blue-950 to-black border border-cyan-500/60' : 'bg-gradient-to-r from-emerald-950 via-emerald-900 to-black border border-emerald-500/60') %> flex items-center justify-between text-white shadow-lg">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl <%= isReseller ? 'text-amber-400' : (isSubReseller ? 'text-cyan-400' : 'text-emerald-400') %>">
+                        <i class="fas <%= isReseller ? 'fa-crown' : (isSubReseller ? 'fa-gem' : 'fa-tags') %>"></i>
+                    </span>
+                    <div>
+                        <div class="text-xs font-black tracking-wider uppercase <%= isReseller ? 'text-amber-400' : (isSubReseller ? 'text-cyan-400' : 'text-emerald-300') %>">
+                            <%= isReseller ? '👑 VIP RESELLER ACCOUNT' : (isSubReseller ? '💎 SUB-RESELLER ACCOUNT' : '✨ VIP MEMBER') %>: <%= currentUser.name %>
+                        </div>
+                        <div class="text-[11px] text-gray-300">
+                            Your <strong><%= userDiscount %>% VIP Discount</strong> is active on all panel keys!
+                        </div>
+                    </div>
+                </div>
+                <span class="px-3 py-1 font-black text-xs rounded-xl shadow <%= isReseller ? 'bg-amber-400 text-black' : (isSubReseller ? 'bg-cyan-400 text-black' : 'bg-emerald-500 text-black') %>">
+                    <%= userDiscount %>% OFF
+                </span>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- Search Bar -->
+        <div class="px-2 mb-3">
+            <div class="relative max-w-xl mx-auto" style="position: relative;">
+                <span class="absolute inset-y-0 left-0 flex items-center pointer-events-none" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #00f0ff; z-index: 5; font-size: 14px;">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" id="productSearchInput" class="w-full bg-white border border-gray-300 rounded-full text-sm font-medium focus:outline-none shadow-sm" style="padding-left: 46px !important; padding-right: 44px !important; padding-top: 10px !important; padding-bottom: 10px !important;" placeholder="Search panels, mods, root services...">
+                <button type="button" id="clearSearchBtn" class="absolute inset-y-0 right-0 flex items-center transition" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); display: none; color: #94a3b8; z-index: 5; background: none; border: none; cursor: pointer;" title="Clear search">
+                    <i class="fas fa-times-circle" style="font-size: 16px;"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Categories -->
+        <div class="px-2 filter-wrapper">
+            <% 
+            const standardCatIds = new Set(['all', 'non-root', 'root', 'accounts', 'i-phone', 'ios', 'pc', 'other', 'pubg', 'demo']);
+            const customCategories = [];
+            const addedSet = new Set();
+
+            if (typeof categories !== 'undefined' && Array.isArray(categories)) {
+                categories.forEach(c => {
+                    if (c && c.id && !standardCatIds.has(c.id) && !addedSet.has(c.id)) {
+                        addedSet.add(c.id);
+                        customCategories.push({ id: c.id, name: c.name || c.id.toUpperCase() });
+                    }
+                });
+            }
+
+            if (typeof products !== 'undefined' && Array.isArray(products)) {
+                products.forEach(p => {
+                    if (p && p.category && !standardCatIds.has(p.category) && !addedSet.has(p.category)) {
+                        addedSet.add(p.category);
+                        const label = p.categoryName || p.category.toUpperCase().replace(/-/g, ' ');
+                        customCategories.push({ id: p.category, name: label });
+                    }
+                });
+            }
+            %>
+            <div class="filter-grid" id="filterGrid" style="--filter-cols: 5;">
+                <button type="button" class="filter-btn active-filter" data-filter="all">All</button>
+                <button type="button" class="filter-btn" data-filter="non-root">NON ROOT</button>
+                <button type="button" class="filter-btn" data-filter="root">ROOT</button>
+                <button type="button" class="filter-btn" data-filter="accounts">ACCOUNTS</button>
+                <button type="button" class="filter-toggle-btn" id="toggle-filters-btn" aria-expanded="false" aria-controls="extra-filters">
+                    <span id="toggle-text">More</span>
+                    <svg id="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="filter-extra" id="extra-filters" style="--filter-cols: 4;">
+                <button type="button" class="filter-btn" data-filter="i-phone">I PHONE</button>
+                <button type="button" class="filter-btn" data-filter="pc">PC</button>
+                <button type="button" class="filter-btn" data-filter="other">OTHER</button>
+                <button type="button" class="filter-btn" data-filter="pubg">PUBG</button>
+                <% customCategories.forEach(function(cc) { %>
+                <button type="button" class="filter-btn" data-filter="<%= cc.id %>"><%= cc.name %></button>
+                <% }); %>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="pb-3 pb-md-4">
+            <div class="row g-2 g-md-3 mx-0 product-grid-equal" id="productsGrid">
+                <% products.forEach(function(product, idx) { %>
+                <div class="col-4 col-sm-6 col-md-4 col-lg-3 product-item reveal-on-scroll <%= product.category %> px-1 px-md-2"
+                     data-category="<%= product.category %>"
+                     data-title="<%= (product.title || '').toLowerCase() %>"
+                     data-reveal-delay="<%= idx * 25 %>">
+                    <div class="product-card <%= product.is_maintenance ? 'is-maintenance' : 'is-normal' %>">
+                        <% const isFlash = (typeof flashSale !== 'undefined' && flashSale && flashSale.enabled && flashSale.product_ids && flashSale.product_ids.includes(product.id)); %>
+                        <% if (isFlash) { %>
+                        <div class="discount-badge-left" style="background: linear-gradient(135deg, #ec4899, #f43f5e) !important; border: 1.5px solid #fda4af !important; animation: pulse 1.5s infinite;">
+                            <span>⚡ FLASH DEAL</span>
+                        </div>
+                        <% } else if (product.discount) { %>
+                        <div class="discount-badge-left">
+                            <span><%= product.discount %></span>
+                        </div>
+                        <% } %>
+
+                        <% if (product.is_maintenance) { %>
+                        <a href="javascript:void(0)" class="product-img-link js-maintenance-notice" data-notice-title="<%= product.title %>" data-notice-message="<%= product.maintenance_message %>">
+                            <img src="<%= (product.image && (product.image.startsWith('/') || product.image.startsWith('http'))) ? product.image : ('/' + (product.image || 'images/logo.jpg')) %>" alt="<%= product.title %>" class="product-img" loading="lazy" onerror="this.onerror=null; this.src='/images/logo.jpg';">
+                        </a>
+                        <% } else { %>
+                        <a href="/topup/<%= product.slug %>" class="product-img-link">
+                            <img src="<%= (product.image && (product.image.startsWith('/') || product.image.startsWith('http'))) ? product.image : ('/' + (product.image || 'images/logo.jpg')) %>" alt="<%= product.title %>" class="product-img" loading="lazy" onerror="this.onerror=null; this.src='/images/logo.jpg';">
+                        </a>
+                        <% } %>
+
+                        <div class="product-info">
+                            <div class="product-badge-title text-center py-1">
+                                <h3 class="product-title-full" title="<%= product.title %>"><%= product.title %></h3>
+                            </div>
+
+                            <% if (product.id === 26 || (product.slug && product.slug === 'root-service') || (product.title && product.title.toLowerCase().includes('root service-with phone'))) { %>
+                            <div class="root-device-support-box">
+                                <div class="root-device-tag">
+                                    <i class="fas fa-microchip"></i> ROOTABLE PHONE VARIANTS
+                                </div>
+                                <div class="root-device-list" title="<%= product.supported_phones || 'Xiaomi • Poco • Samsung • OnePlus • Realme • Vivo • Tecno • Infinix' %>">
+                                    <%= product.supported_phones || 'Xiaomi • Poco • Samsung • OnePlus • Realme • Vivo • Tecno • Infinix' %>
+                                </div>
+                            </div>
+                            <% } %>
+
+                            <div class="text-center mt-1">
+                                <% if (typeof userDiscount !== 'undefined' && userDiscount > 0) { 
+                                    var origP = Number(product.price) || 0;
+                                    var discP = Math.round(origP * (1 - userDiscount / 100));
+                                %>
+                                <span class="text-xs text-gray-400 line-through mr-1"><%= formatPrice(origP) %></span>
+                                <span class="product-price-custom text-emerald-600 font-extrabold">
+                                    <%= formatPrice(discP) %>
+                                </span>
+                                <span class="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1 rounded ml-1">-<%= userDiscount %>%</span>
+                                <% } else { %>
+                                <span class="product-price-custom">
+                                    <%= formatPrice(product.price) %>
+                                </span>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="product-actions">
+                            <% if (product.category === 'accounts') { %>
+                            <a href="/topup/<%= product.slug %>" class="buy-now-btn-premium" style="grid-column: 1 / -1; width: 100%; text-align: center; justify-content: center; background: linear-gradient(135deg, #f59e0b, #ef4444); border-color: #f59e0b;">
+                                <i class="fas fa-gamepad mr-1"></i> Buy Account
+                            </a>
+                            <% } else { %>
+                            <button type="button" class="info-download-btn"
+                                    data-title="<%= product.title %>"
+                                    data-setup="<%= product.setup_url %>"
+                                    data-apk="<%= product.apk_url %>"
+                                    data-feedback="<%= product.feedback_url %>">
+                                FILE &amp; SETUP
+                            </button>
+
+                            <% if (product.is_maintenance) { %>
+                            <button type="button" class="maintenance-btn-red js-maintenance-notice"
+                                    data-notice-title="<%= product.title %>"
+                                    data-notice-message="<%= product.maintenance_message %>">
+                                MAINTENANCE
+                            </button>
+                            <% } else { %>
+                            <a href="/topup/<%= product.slug %>" class="buy-now-btn-premium">
+                                Buy Now
+                            </a>
+                            <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+
+            <!-- No Results Found Indicator -->
+            <div id="noProductsFound" class="text-center py-12 px-4" style="display: none;">
+                <div class="w-16 h-16 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h4 class="text-base font-bold text-gray-800 mb-1">No Panels Found</h4>
+                <p class="text-xs text-gray-500 mb-3">No matching panels found for your current filter/search.</p>
+                <button type="button" id="resetFiltersBtn" class="btn btn-sm btn-outline-success font-bold px-4 py-1.5 rounded-full" style="color: #008c09; border-color: #008c09;">
+                    Reset Search &amp; Filters
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Community Tabs Section (Top Buyers, Recent Orders, Feedbacks) -->
+<section class="container mx-auto my-4 my-md-5 px-2 px-md-4">
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200">
+            <div class="d-flex border-bottom border-gray-200 tab-header">
+                <button type="button" class="tab-button flex-fill py-3 text-xs md:text-sm font-bold uppercase active-tab" data-tab="top" id="btn-top-buyers">
+                    🏆 Top Buyers
+                </button>
+                <button type="button" class="tab-button flex-fill py-3 text-xs md:text-sm font-bold uppercase" data-tab="recent" id="btn-recent-orders">
+                    🚀 Recent Orders
+                </button>
+                <button type="button" class="tab-button flex-fill py-3 text-xs md:text-sm font-bold uppercase" data-tab="feedbacks" id="btn-feedbacks">
+                    💬 Feedbacks
+                </button>
+            </div>
+
+            <div class="p-3 p-md-5 bg-white">
+                <!-- Top Buyers Tab -->
+                <div class="tab-content active" id="list-top-buyers">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="activity-item d-flex align-items-center justify-content-between p-3 rounded-xl" style="background: #faf9fe; border: 1px solid color-mix(in srgb, var(--main-pink) 10%, transparent);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl d-flex align-items-center justify-content-center font-bold text-base avatar-with-photo" style="width:40px; height:40px; background: #fef3c7; color: #d97706;">
+                                    <img src="/uploads/avatar/1.jpg" alt="Misbah" class="avatar-photo-img" loading="lazy">
+                                    <span class="avatar-rank-badge">🥇</span>
+                                </div>
+                                <div>
+                                    <h4 class="text-gray-800 font-bold text-sm mb-0">Misbah</h4>
+                                    <span class="text-[9px] font-medium px-2 py-0.5 rounded-pill" style="background: color-mix(in srgb, var(--main-pink) 10%, transparent); color: var(--main-pink);">Top Member</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="text-base font-black" style="color: var(--main-pink);">42233৳</span>
+                            </div>
+                        </div>
+
+                        <div class="activity-item d-flex align-items-center justify-content-between p-3 rounded-xl" style="background: #faf9fe; border: 1px solid color-mix(in srgb, var(--main-pink) 10%, transparent);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl d-flex align-items-center justify-content-center font-bold text-base" style="width:40px; height:40px; background: #f1f5f9; color: #475569;">
+                                    <span class="avatar-rank-badge">🥈</span>
+                                    <span>R</span>
+                                </div>
+                                <div>
+                                    <h4 class="text-gray-800 font-bold text-sm mb-0">Rifat Ahmed</h4>
+                                    <span class="text-[9px] font-medium px-2 py-0.5 rounded-pill" style="background: color-mix(in srgb, var(--main-pink) 10%, transparent); color: var(--main-pink);">Elite Member</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="text-base font-black" style="color: var(--main-pink);">31500৳</span>
+                            </div>
+                        </div>
+
+                        <div class="activity-item d-flex align-items-center justify-content-between p-3 rounded-xl" style="background: #faf9fe; border: 1px solid color-mix(in srgb, var(--main-pink) 10%, transparent);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl d-flex align-items-center justify-content-center font-bold text-base" style="width:40px; height:40px; background: #ffedd5; color: #c2410c;">
+                                    <span class="avatar-rank-badge">🥉</span>
+                                    <span>T</span>
+                                </div>
+                                <div>
+                                    <h4 class="text-gray-800 font-bold text-sm mb-0">Tanvir FF</h4>
+                                    <span class="text-[9px] font-medium px-2 py-0.5 rounded-pill" style="background: color-mix(in srgb, var(--main-pink) 10%, transparent); color: var(--main-pink);">VIP Buyer</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="text-base font-black" style="color: var(--main-pink);">24890৳</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders Tab -->
+                <div class="tab-content" id="list-recent-orders" style="display: none;">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="activity-item d-flex align-items-center justify-content-between p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-gray-800 font-bold text-sm mb-0">DRIP WIRE EXTERNAL (7 Days)</h4>
+                                    <span class="text-xs text-gray-500">Player ID: 29481920 • 2 mins ago</span>
+                                </div>
+                            </div>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill text-xs font-bold">Success</span>
+                        </div>
+
+                        <div class="activity-item d-flex align-items-center justify-content-between p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-gray-800 font-bold text-sm mb-0">ELITE MODZ (30 Days)</h4>
+                                    <span class="text-xs text-gray-500">Player ID: 84920194 • 5 mins ago</span>
+                                </div>
+                            </div>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill text-xs font-bold">Success</span>
+                        </div>
+
+                        <div class="activity-item d-flex align-items-center justify-content-between p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-gray-800 font-bold text-sm mb-0">PHANTOM ANDROID-IOS (1 Day)</h4>
+                                    <span class="text-xs text-gray-500">Player ID: 59302194 • 12 mins ago</span>
+                                </div>
+                            </div>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill text-xs font-bold">Success</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feedbacks Tab -->
+                <div class="tab-content" id="list-feedbacks" style="display: none;">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="activity-item p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <div class="d-flex justify-content-between items-center mb-1">
+                                <h5 class="text-sm font-bold text-gray-800 mb-0">Hasan Mahmud</h5>
+                                <div class="text-yellow-400 text-xs">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-0">Awesome panel! 100% headshot and no recoil, works smoothly without any lag.</p>
+                        </div>
+
+                        <div class="activity-item p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <div class="d-flex justify-content-between items-center mb-1">
+                                <h5 class="text-sm font-bold text-gray-800 mb-0">Shakil Gaming</h5>
+                                <div class="text-yellow-400 text-xs">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-0">Instant delivery in 30 seconds! Highly recommended panel seller.</p>
+                        </div>
+
+                        <div class="activity-item p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <div class="d-flex justify-content-between items-center mb-1">
+                                <h5 class="text-sm font-bold text-gray-800 mb-0">AR Prince</h5>
+                                <div class="text-yellow-400 text-xs">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-0">Safe for main ID, playing for 2 weeks straight without any issue.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Carousel Slider script
+(function() {
+    var track = document.getElementById('sliderTrack');
+    var prevBtn = document.getElementById('sliderPrevBtn');
+    var nextBtn = document.getElementById('sliderNextBtn');
+    var dots = document.querySelectorAll('#sliderDots button');
+    var currentIndex = 0;
+    var totalSlides = <%= sliders.length %>;
+
+    function goToSlide(index) {
+        if (index < 0) index = totalSlides - 1;
+        if (index >= totalSlides) index = 0;
+        currentIndex = index;
+        if (track) {
+            track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+        }
+        dots.forEach(function(dot, idx) {
+            if (idx === currentIndex) {
+                dot.classList.add('carousel__pagination-button--active');
+            } else {
+                dot.classList.remove('carousel__pagination-button--active');
+            }
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function() { goToSlide(currentIndex - 1); });
+    }
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function() { goToSlide(currentIndex + 1); });
+    }
+    dots.forEach(function(dot) {
+        dot.addEventListener('click', function() {
+            var idx = parseInt(this.getAttribute('data-slide-index'));
+            goToSlide(idx);
+        });
+    });
+
+    // Auto rotate every 5 seconds
+    setInterval(function() {
+        goToSlide(currentIndex + 1);
+    }, 5000);
+})();
+
+// Flash Sale Countdown Timer
+(function() {
+    var wrap = document.getElementById('flashCountdownWrap');
+    if (!wrap) return;
+    var endTimeStr = wrap.getAttribute('data-end');
+    if (!endTimeStr) return;
+    var targetTime = new Date(endTimeStr).getTime();
+
+    function updateFsClock() {
+        var now = Date.now();
+        var diff = targetTime - now;
+        if (diff <= 0) {
+            var fsSec = document.getElementById('flashSaleSection');
+            if (fsSec) fsSec.style.display = 'none';
+            return;
+        }
+        var totalSec = Math.floor(diff / 1000);
+        var hours = Math.floor(totalSec / 3600);
+        var mins = Math.floor((totalSec % 3600) / 60);
+        var secs = totalSec % 60;
+
+        var elH = document.getElementById('fsHours');
+        var elM = document.getElementById('fsMins');
+        var elS = document.getElementById('fsSecs');
+        if (elH) elH.textContent = (hours < 10 ? '0' : '') + hours;
+        if (elM) elM.textContent = (mins < 10 ? '0' : '') + mins;
+        if (elS) elS.textContent = (secs < 10 ? '0' : '') + secs;
+    }
+
+    updateFsClock();
+    setInterval(updateFsClock, 1000);
+})();
+</script>
+
+<%- include('partials/footer') %>

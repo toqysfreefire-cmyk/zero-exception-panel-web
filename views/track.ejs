@@ -1,0 +1,247 @@
+<%- include('partials/header') %>
+
+<div class="container mx-auto px-4 py-8 max-w-3xl">
+    <!-- Header / Banner -->
+    <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cyan-500/10 border-2 border-cyan-400/40 text-cyan-400 text-3xl mb-3 shadow-[0_0_20px_rgba(0,240,255,0.3)]">
+            <i class="fas fa-satellite-dish fa-spin" style="--fa-animation-duration: 6s;"></i>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-black font-orbitron tracking-wider text-gray-900 dark:text-white uppercase">
+            Live Order <span class="text-cyan-500">Tracking</span>
+        </h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md mx-auto">
+            আপনার Order ID, TrxID (বিকাশ/নগদ/রকেট ট্রানজেকশন আইডি) অথবা WhatsApp নম্বর দিয়ে অর্ডারের রিয়েল-টাইম স্ট্যাটাস ও লাইসেন্স কী চেক করুন।
+        </p>
+    </div>
+
+    <!-- Tracker Search Card -->
+    <div class="bg-gradient-to-b from-[#0a1226] to-[#060a17] border border-cyan-500/30 rounded-2xl p-5 sm:p-7 shadow-2xl mb-8">
+        <form id="trackForm" class="flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-1">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400 text-sm"></i>
+                <input type="text" id="trackQuery" name="q" value="<%= typeof query !== 'undefined' ? query : '' %>" required
+                    placeholder="Enter Order ID (e.g. ORD-1024), TrxID, or WhatsApp..."
+                    class="w-full pl-11 pr-4 py-3 bg-[#080d1c] border border-cyan-500/40 rounded-xl text-white text-sm font-mono placeholder-gray-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition">
+            </div>
+            <button type="submit" id="btnTrack" class="px-7 py-3 bg-gradient-to-r from-cyan-400 to-emerald-500 hover:from-cyan-300 hover:to-emerald-400 text-black font-black text-xs uppercase tracking-wider rounded-xl transition shadow-[0_0_20px_rgba(0,240,255,0.4)] flex items-center justify-center gap-2 shrink-0 cursor-pointer">
+                <i class="fas fa-crosshairs"></i>
+                <span>Track Order</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Live Status Result Container -->
+    <div id="trackResultContainer" style="<%= (typeof initialOrder !== 'undefined' && initialOrder) ? 'display:block;' : 'display:none;' %>">
+        <% if (typeof initialOrder !== 'undefined' && initialOrder) { %>
+            <%- include('partials/track_card', { order: initialOrder }) %>
+        <% } %>
+    </div>
+
+    <div id="trackLoading" style="display:none;" class="text-center py-12">
+        <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-cyan-500 border-t-transparent mb-3"></div>
+        <p class="text-cyan-400 font-mono text-xs uppercase tracking-widest">Searching Live Order Registry...</p>
+    </div>
+
+    <div id="trackNotFound" style="display:none;" class="bg-red-950/40 border border-red-500/40 rounded-2xl p-6 text-center text-white">
+        <i class="fas fa-exclamation-triangle text-red-400 text-3xl mb-2"></i>
+        <h3 class="text-base font-bold text-red-300">কোনো অর্ডার পাওয়া যায়নি</h3>
+        <p class="text-xs text-gray-300 mt-1 max-w-sm mx-auto">
+            অনুগ্রহ করে আপনার দেওয়া Order ID অথবা TrxID চেক করে আবার চেষ্টা করুন। কোনো সমস্যা হলে সরাসরি অ্যাডমিনকে WhatsApp-এ জানান।
+        </p>
+        <a href="<%= settings.whatsapp %>" target="_blank" class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl no-underline">
+            <i class="fab fa-whatsapp text-sm"></i> Contact Admin on WhatsApp
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var trackForm = document.getElementById('trackForm');
+    var trackQuery = document.getElementById('trackQuery');
+    var resultBox = document.getElementById('trackResultContainer');
+    var loadingBox = document.getElementById('trackLoading');
+    var notFoundBox = document.getElementById('trackNotFound');
+    var btnTrack = document.getElementById('btnTrack');
+
+    function performTrack(query) {
+        if (!query) return;
+        resultBox.style.display = 'none';
+        notFoundBox.style.display = 'none';
+        loadingBox.style.display = 'block';
+        if (btnTrack) btnTrack.disabled = true;
+
+        fetch('/api/track-order?query=' + encodeURIComponent(query))
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                loadingBox.style.display = 'none';
+                if (btnTrack) btnTrack.disabled = false;
+
+                if (data.success && data.order) {
+                    renderOrderCard(data.order);
+                    resultBox.style.display = 'block';
+                } else {
+                    notFoundBox.style.display = 'block';
+                }
+            })
+            .catch(function(err) {
+                loadingBox.style.display = 'none';
+                if (btnTrack) btnTrack.disabled = false;
+                notFoundBox.style.display = 'block';
+            });
+    }
+
+    if (trackForm) {
+        trackForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            performTrack(trackQuery.value.trim());
+        });
+    }
+
+    // Auto-search if query is in URL parameter
+    var urlParams = new URLSearchParams(window.location.search);
+    var qParam = urlParams.get('q');
+    if (qParam && !document.querySelector('#trackResultContainer .order-card-rendered')) {
+        trackQuery.value = qParam;
+        performTrack(qParam);
+    }
+
+    function renderOrderCard(o) {
+        var statusBadge = '';
+        var step1 = 'completed';
+        var step2 = (o.status === 'pending') ? 'current' : 'completed';
+        var step3 = (o.status === 'processing') ? 'current' : ((o.status === 'completed') ? 'completed' : 'pending');
+        var step4 = (o.status === 'completed') ? 'completed' : 'pending';
+
+        if (o.status === 'completed') {
+            statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-black uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"><i class="fas fa-check-circle mr-1"></i> Completed & Delivered</span>';
+        } else if (o.status === 'processing') {
+            statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-black uppercase bg-cyan-500/20 text-cyan-400 border border-cyan-500/40"><i class="fas fa-spinner fa-spin mr-1"></i> Under Processing</span>';
+        } else if (o.status === 'cancelled') {
+            statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-black uppercase bg-red-500/20 text-red-400 border border-red-500/40"><i class="fas fa-times-circle mr-1"></i> Cancelled</span>';
+        } else {
+            statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-black uppercase bg-amber-500/20 text-amber-400 border border-amber-500/40"><i class="fas fa-clock mr-1"></i> Pending Verification</span>';
+        }
+
+        var keySection = '';
+        if (o.status === 'completed' && o.license_key) {
+            keySection = `
+                <div class="mt-6 p-4 rounded-xl bg-gradient-to-r from-emerald-950 via-[#0a1b24] to-emerald-950 border-2 border-emerald-400/60 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <span class="text-xs font-black text-emerald-400 uppercase tracking-widest"><i class="fas fa-key mr-1"></i> Your License Key</span>
+                        <span class="text-[10px] bg-emerald-500 text-black font-extrabold px-2 py-0.5 rounded uppercase">Ready to Use</span>
+                    </div>
+                    <div class="flex items-center gap-2 bg-black/60 p-2.5 rounded-lg border border-emerald-500/30 font-mono text-sm text-yellow-300">
+                        <span class="truncate select-all font-bold flex-1">${escapeHtml(o.license_key)}</span>
+                        <button type="button" onclick="navigator.clipboard.writeText('${escapeHtml(o.license_key)}'); this.innerHTML='<i class=\\'fas fa-check text-emerald-400\\'></i> Copied'; setTimeout(()=>{this.innerHTML='<i class=\\'fas fa-copy\\'></i> Copy';}, 2000);" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shrink-0 transition flex items-center gap-1">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-emerald-200/80 mt-2">কী কপি করে আপনার প্যানেলে পেস্ট করুন। কোনো সমস্যা হলে আমাদের হেল্পলাইনে যোগাযোগ করুন।</p>
+                </div>
+            `;
+        } else {
+            keySection = `
+                <div class="mt-6 p-4 rounded-xl bg-cyan-950/40 border border-cyan-500/30 flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-white uppercase tracking-wider">Verification in Progress</h4>
+                        <p class="text-xs text-gray-300 mt-0.5">অ্যাডমিন টিম আপনার TrxID ভেরিফাই করছে। ভেরিফিকেশন সম্পূর্ণ হলেই স্বয়ংক্রিয়ভাবে এখানে আপনার লাইসেন্স কী ভেসে উঠবে।</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        var orderDate = o.created_at ? new Date(o.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'Recently';
+
+        var html = `
+            <div class="order-card-rendered bg-gradient-to-b from-[#0a1226] to-[#060a17] border border-cyan-500/40 rounded-2xl p-5 sm:p-7 shadow-2xl text-white">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-cyan-500/20 gap-3">
+                    <div>
+                        <span class="text-xs font-mono text-cyan-400 tracking-wider">ORDER #${escapeHtml(String(o.id))}</span>
+                        <h2 class="text-lg sm:text-xl font-black text-white font-orbitron mt-0.5">${escapeHtml(o.product_name || 'Panel Product')}</h2>
+                        <span class="text-xs text-gray-400">Variant: <b class="text-white">${escapeHtml(o.variant || 'Standard')}</b> • Placed: ${orderDate}</span>
+                    </div>
+                    <div>${statusBadge}</div>
+                </div>
+
+                <!-- Stepper Progress Tracker -->
+                <div class="py-6">
+                    <div class="grid grid-cols-4 gap-2 text-center relative">
+                        <!-- Step 1 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-emerald-500 text-black flex items-center justify-center font-bold text-sm shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="text-[11px] font-bold mt-2 text-emerald-400">Order Placed</span>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full ${step2 === 'completed' ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.5)]' : (step2 === 'current' ? 'bg-amber-500 text-black animate-pulse shadow-[0_0_15px_rgba(245,158,11,0.5)]' : 'bg-gray-800 text-gray-500')} flex items-center justify-center font-bold text-sm">
+                                <i class="fas ${step2 === 'completed' ? 'fa-check' : 'fa-receipt'}"></i>
+                            </div>
+                            <span class="text-[11px] font-bold mt-2 ${step2 === 'completed' ? 'text-emerald-400' : (step2 === 'current' ? 'text-amber-400' : 'text-gray-500')}">Payment Review</span>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full ${step3 === 'completed' ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.5)]' : (step3 === 'current' ? 'bg-cyan-500 text-black animate-pulse shadow-[0_0_15px_rgba(0,240,255,0.5)]' : 'bg-gray-800 text-gray-500')} flex items-center justify-center font-bold text-sm">
+                                <i class="fas ${step3 === 'completed' ? 'fa-check' : 'fa-cogs'}"></i>
+                            </div>
+                            <span class="text-[11px] font-bold mt-2 ${step3 === 'completed' ? 'text-emerald-400' : (step3 === 'current' ? 'text-cyan-400' : 'text-gray-500')}">Processing</span>
+                        </div>
+                        <!-- Step 4 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full ${step4 === 'completed' ? 'bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.8)]' : 'bg-gray-800 text-gray-500'} flex items-center justify-center font-bold text-sm">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                            <span class="text-[11px] font-bold mt-2 ${step4 === 'completed' ? 'text-emerald-400' : 'text-gray-500'}">Key Delivered</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Details Meta -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-black/40 rounded-xl border border-white/5 text-xs">
+                    <div>
+                        <span class="text-gray-400 block">Gateway:</span>
+                        <b class="text-cyan-400 font-mono">${escapeHtml(o.payment_method || 'bKash')}</b>
+                    </div>
+                    <div>
+                        <span class="text-gray-400 block">Total Amount:</span>
+                        <b class="text-emerald-400 font-bold">${escapeHtml(String(o.price || '0'))}৳</b>
+                    </div>
+                    <div>
+                        <span class="text-gray-400 block">TrxID:</span>
+                        <b class="text-yellow-400 font-mono truncate block" title="${escapeHtml(o.transaction_id || 'N/A')}">${escapeHtml(o.transaction_id || 'N/A')}</b>
+                    </div>
+                    <div>
+                        <span class="text-gray-400 block">Player UID:</span>
+                        <b class="text-white font-mono">${escapeHtml(o.player_id || 'N/A')}</b>
+                    </div>
+                </div>
+
+                ${keySection}
+
+                <!-- Direct WhatsApp Support Button -->
+                <div class="mt-6 pt-4 border-t border-cyan-500/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                    <span class="text-gray-400">Need instant update or custom file setup?</span>
+                    <a href="https://wa.me/<%= settings.whatsapp_intl %>?text=${encodeURIComponent('Hello Admin, Checking status of Order #' + o.id + ' (' + (o.product_name||'') + ')')}" target="_blank" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center gap-2 no-underline transition">
+                        <i class="fab fa-whatsapp"></i> Chat Regarding This Order
+                    </a>
+                </div>
+            </div>
+        `;
+
+        resultBox.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, function(m) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+        });
+    }
+});
+</script>
+
+<%- include('partials/footer') %>

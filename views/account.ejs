@@ -1,0 +1,1419 @@
+<%- include('partials/header') %>
+
+<div class="container mx-auto px-4 py-8 max-w-5xl">
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-xs text-gray-400 mb-6 font-mono">
+        <a href="/" class="hover:text-cyan-400 transition no-underline text-gray-400">Home</a>
+        <span>/</span>
+        <span class="text-cyan-400 font-bold">My Account &amp; Dashboard</span>
+    </div>
+
+    <!-- Main Account Header Banner -->
+    <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#071329] via-[#051a24] to-[#071329] border border-cyan-500/40 shadow-2xl text-white mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="flex items-center gap-4 sm:gap-5">
+            <div class="relative group cursor-pointer" onclick="switchAccountTab('tabProfile')" title="Click to Change Photo & Edit Profile">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 border-2 border-cyan-400/50 text-cyan-300 flex items-center justify-center text-3xl shrink-0 shadow-[0_0_20px_rgba(0,240,255,0.4)] overflow-hidden">
+                    <% if (user.avatar) { %>
+                        <img src="<%= user.avatar %>" alt="<%= user.name %>" id="headerProfileAvatarImg" class="w-full h-full object-cover transition duration-300 group-hover:scale-110" onerror="this.style.display='none'; document.getElementById('headerProfileAvatarIcon').style.display='flex';" />
+                        <div id="headerProfileAvatarIcon" style="display: none;" class="w-full h-full items-center justify-center text-3xl text-cyan-300">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                    <% } else { %>
+                        <img src="/uploads/avatar/1.jpg" alt="<%= user.name %>" id="headerProfileAvatarImg" style="display: none;" class="w-full h-full object-cover transition duration-300 group-hover:scale-110" />
+                        <div id="headerProfileAvatarIcon" class="w-full h-full flex items-center justify-center text-3xl text-cyan-300">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                    <% } %>
+                </div>
+                <!-- Camera / Edit Badge -->
+                <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-cyan-400 text-black flex items-center justify-center text-[10px] shadow-lg border-2 border-[#071329] font-bold group-hover:scale-125 transition-transform">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+            <div>
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <h1 class="text-xl sm:text-2xl font-black font-orbitron tracking-wide text-white m-0" id="accountHeaderName">
+                        <%= user.name || 'Customer' %>
+                    </h1>
+                    <button type="button" onclick="switchAccountTab('tabProfile')" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 hover:bg-cyan-500/40 border border-cyan-400/40 text-cyan-300 transition flex items-center gap-1 cursor-pointer">
+                        <i class="fas fa-user-edit text-[9px]"></i> Edit Profile
+                    </button>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider <%= (user.role === 'admin') ? 'bg-purple-600 text-white' : ((user.role === 'reseller') ? 'bg-amber-400 text-black shadow' : ((user.role === 'sub_reseller' || user.role === 'sub-reseller') ? 'bg-cyan-400 text-black shadow' : 'bg-emerald-500 text-black')) %>">
+                        <i class="fas <%= (user.role === 'reseller') ? 'fa-crown mr-1' : ((user.role === 'sub_reseller' || user.role === 'sub-reseller') ? 'fa-gem mr-1' : ((user.role === 'admin') ? 'fa-shield-alt mr-1' : 'fa-user-check mr-1')) %>"></i>
+                        <%= (user.role === 'admin') ? 'ADMINISTRATOR' : ((user.role === 'reseller') ? 'VIP RESELLER' : ((user.role === 'sub_reseller' || user.role === 'sub-reseller') ? 'SUB-RESELLER' : 'CUSTOMER')) %>
+                    </span>
+                    <% if (typeof userDiscount !== 'undefined' && userDiscount > 0) { %>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500 text-black">
+                        <i class="fas fa-tags mr-1"></i> <%= userDiscount %>% VIP Discount
+                    </span>
+                    <% } %>
+                </div>
+                <p class="text-xs text-cyan-200/80 font-mono mt-1.5 flex items-center gap-2 flex-wrap">
+                    <span class="flex items-center gap-1.5"><i class="fas fa-envelope text-[11px]"></i> <%= user.email %></span>
+                    <% if (user.phone) { %>
+                    <span>&bull;</span>
+                    <span class="flex items-center gap-1.5" id="accountHeaderPhoneWrapper"><i class="fas fa-phone-alt text-[11px]"></i> <span id="accountHeaderPhone"><%= user.phone %></span></span>
+                    <% } else { %>
+                    <span class="items-center gap-1.5" id="accountHeaderPhoneWrapper" style="display: none;"><span>&bull;</span> <i class="fas fa-phone-alt text-[11px]"></i> <span id="accountHeaderPhone"></span></span>
+                    <% } %>
+                </p>
+            </div>
+        </div>
+
+        <!-- Wallet Balance Card & Add Money Button -->
+        <div class="p-4 rounded-2xl bg-black/60 border border-emerald-500/40 text-center sm:text-right shrink-0 min-w-[200px] shadow-lg">
+            <span class="text-[10px] uppercase font-bold text-gray-400 block tracking-wider">Store Wallet Balance:</span>
+            <div class="flex items-baseline justify-center sm:justify-end gap-1.5 mt-0.5">
+                <span class="text-3xl font-black font-orbitron text-emerald-400"><%= (user.wallet_balance || 0) %></span>
+                <span class="text-sm font-bold text-white">৳ BDT</span>
+            </div>
+            <a href="/add-funds" class="mt-2.5 inline-flex items-center justify-center gap-1.5 w-full px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black text-xs font-black uppercase tracking-wider rounded-xl transition shadow no-underline cursor-pointer">
+                <i class="fas fa-plus-circle"></i> Add Funds / টাকা লোড
+            </a>
+        </div>
+    </div>
+
+    <!-- Daily Spin & Win Banner -->
+    <div class="mb-6 p-4 rounded-3xl bg-gradient-to-r from-amber-500/15 via-purple-500/15 to-pink-500/15 border border-amber-400/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl relative overflow-hidden">
+        <div class="flex items-center gap-3.5 text-center sm:text-left">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 text-2xl shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                <i class="fas fa-dharmachakra"></i>
+            </div>
+            <div>
+                <h3 class="text-sm font-black font-orbitron uppercase text-white m-0 tracking-wide flex items-center justify-center sm:justify-start gap-2">
+                    Lucky Spin &amp; Win
+                    <span class="text-[9px] px-2 py-0.5 rounded-full bg-amber-400 text-black font-black">Spins: <%= (typeof user !== 'undefined' && user.spin_credits) ? user.spin_credits : 0 %></span>
+                </h3>
+                <p class="text-xs m-0 mt-0.5" style="color: #fef08a !important; font-weight: 600;">প্রতি ৫০০৳ ডিপোজিট বা ৫০০৳ অর্ডারে পাবেন ১টি লাকি স্পিন! সর্বোচ্চ ১০৳ ব্যালেন্স ও ৫% ভিআইপি কুপন জেতার সুযোগ।</p>
+            </div>
+        </div>
+        <button type="button" onclick="openLuckySpinModal()" class="shrink-0 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-pink-600 hover:from-amber-400 hover:to-pink-500 text-white font-black font-orbitron text-xs uppercase tracking-wider shadow-[0_4px_20px_rgba(245,158,11,0.4)] transition transform hover:scale-105 cursor-pointer">
+            <i class="fas fa-play me-1.5"></i> Spin Now (স্পিন করুন)
+        </button>
+    </div>
+
+    <!-- Discord Refer & Earn Banner (10 Refers -> 10৳ Wallet Reward) -->
+    <div class="mb-6 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-[#5865F2]/25 via-[#3b82f6]/15 to-[#06b6d4]/20 border border-[#5865F2]/50 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_4px_25px_rgba(88,101,242,0.25)] relative overflow-hidden">
+        <div class="flex items-center gap-3.5 text-center sm:text-left">
+            <div class="w-12 h-12 rounded-2xl bg-[#5865F2]/30 border border-[#5865F2]/60 flex items-center justify-center text-[#5865F2] text-2xl shrink-0 shadow-[0_0_15px_rgba(88,101,242,0.5)]">
+                <i class="fab fa-discord text-white"></i>
+            </div>
+            <div>
+                <h3 class="text-sm font-black font-orbitron uppercase text-white m-0 tracking-wide flex items-center justify-center sm:justify-start gap-2">
+                    Discord Refer &amp; Earn (১০ রেফারে ১০৳)
+                    <span class="text-[9px] px-2.5 py-0.5 rounded-full bg-[#5865F2] text-white font-black font-mono">Progress: <%= (typeof user !== 'undefined' && user.referral_current) ? user.referral_current : 0 %>/10</span>
+                </h3>
+                <p class="text-xs text-cyan-200 m-0 mt-0.5">প্রতি ১০ জন বন্ধুকে রেফার করলেই ১০৳ ওয়ালেটে পাবেন। ১০ জন পূর্ণ হলে প্রগ্রেস আবার ০/১০ হয়ে যাবে!</p>
+            </div>
+        </div>
+        <button type="button" onclick="switchAccountTab('tabReferrals')" style="background: linear-gradient(135deg, #5865F2, #0284c7) !important;" class="shrink-0 px-5 py-2.5 rounded-2xl text-white font-black font-orbitron text-xs uppercase tracking-wider shadow-[0_4px_20px_rgba(88,101,242,0.4)] transition transform hover:scale-105 cursor-pointer flex items-center gap-2">
+            <i class="fas fa-link"></i>
+            <span>My Invite Link (রেফারেল লিংক)</span>
+        </button>
+    </div>
+
+    <!-- Interactive Navigation Tabs -->
+    <div class="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-2 mb-6 border-b border-cyan-500/20" id="accountTabsNav">
+        <button type="button" class="acc-tab-btn <%= (activeTab === 'orders' || !activeTab) ? 'active' : '' %>" data-target="tabOrders">
+            <i class="fas fa-shopping-bag"></i>
+            <span>Order History (<%= orders ? orders.length : 0 %>)</span>
+        </button>
+
+        <button type="button" class="acc-tab-btn <%= (activeTab === 'keys') ? 'active' : '' %>" data-target="tabKeys">
+            <i class="fas fa-key"></i>
+            <span>Key History (<%= keys ? keys.length : 0 %>)</span>
+        </button>
+
+        <button type="button" class="acc-tab-btn <%= (activeTab === 'deposits') ? 'active' : '' %>" data-target="tabDeposits">
+            <i class="fas fa-money-check-alt"></i>
+            <span>Deposit History (<%= deposits ? deposits.length : 0 %>)</span>
+        </button>
+
+        <button type="button" class="acc-tab-btn <%= (activeTab === 'hwid') ? 'active' : '' %>" data-target="tabHwid">
+            <i class="fas fa-microchip"></i>
+            <span>HWID Resets (<%= (typeof hwidRequests !== 'undefined' && hwidRequests) ? hwidRequests.length : 0 %>)</span>
+        </button>
+
+        <button type="button" class="acc-tab-btn <%= (activeTab === 'referrals' || activeTab === 'referral') ? 'active' : '' %>" data-target="tabReferrals">
+            <i class="fab fa-discord text-indigo-400"></i>
+            <span>Refer &amp; Earn (<%= (typeof user !== 'undefined' && user.referral_current) ? user.referral_current : 0 %>/10)</span>
+        </button>
+
+        <button type="button" class="acc-tab-btn <%= (activeTab === 'profile') ? 'active' : '' %>" data-target="tabProfile">
+            <i class="fas fa-user-shield"></i>
+            <span>My Profile</span>
+        </button>
+    </div>
+
+    <!-- ============================================================
+         TAB 1: ORDER HISTORY
+         ============================================================ -->
+    <div class="acc-tab-content <%= (activeTab === 'orders' || !activeTab) ? 'active' : '' %>" id="tabOrders">
+        <div class="bg-gradient-to-b from-[#091224] to-[#050b17] border border-cyan-500/30 rounded-3xl p-6 shadow-2xl text-white">
+            <div class="flex items-center justify-between gap-3 mb-5">
+                <h2 class="text-base font-black uppercase font-orbitron text-white tracking-wider m-0 flex items-center gap-2">
+                    <i class="fas fa-shopping-bag text-cyan-400"></i> My Purchased Orders
+                </h2>
+                <a href="/" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold no-underline flex items-center gap-1">
+                    <i class="fas fa-cart-plus"></i> Buy More Panels
+                </a>
+            </div>
+
+            <% if (orders && orders.length > 0) { %>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-gray-300">
+                    <thead class="text-[11px] uppercase bg-black/40 text-gray-400 border-b border-cyan-500/20">
+                        <tr>
+                            <th class="py-3 px-3">Order ID</th>
+                            <th class="py-3 px-3">Product &amp; Variant</th>
+                            <th class="py-3 px-3">Amount</th>
+                            <th class="py-3 px-3">Gateway</th>
+                            <th class="py-3 px-3">Status</th>
+                            <th class="py-3 px-3">License Key</th>
+                            <th class="py-3 px-3 text-right">Receipt</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        <% orders.forEach(function(o) { %>
+                        <tr class="hover:bg-white/5 transition">
+                            <td class="py-3 px-3 font-mono font-bold text-cyan-400 whitespace-nowrap">
+                                <a href="/order-success/<%= o.id %>" class="hover:underline text-cyan-400 flex items-center gap-1" title="View order receipt">
+                                    <%= o.id %> <i class="fas fa-external-link-alt text-[9px] text-gray-500"></i>
+                                </a>
+                            </td>
+                            <td class="py-3 px-3">
+                                <div class="font-bold text-white"><%= o.product_name %></div>
+                                <div class="text-[11px] text-cyan-300 font-mono">📦 <%= o.variant %></div>
+                            </td>
+                            <td class="py-3 px-3 font-bold text-emerald-400 font-orbitron whitespace-nowrap">
+                                <%= o.price %>৳
+                            </td>
+                            <td class="py-3 px-3 text-gray-300 whitespace-nowrap font-sans font-semibold">
+                                <%= o.payment_method || 'bKash' %>
+                            </td>
+                            <td class="py-3 px-3 whitespace-nowrap">
+                                <% if (o.status === 'completed') { %>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                                    <i class="fas fa-check-circle mr-1"></i> Completed
+                                </span>
+                                <% } else if (o.status === 'processing') { %>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-blue-500/20 text-blue-400 border border-blue-500/40">
+                                    <i class="fas fa-spinner fa-spin mr-1"></i> Processing
+                                </span>
+                                <% } else if (o.status === 'cancelled') { %>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-500/20 text-red-400 border border-red-500/40">
+                                    <i class="fas fa-times-circle mr-1"></i> Cancelled
+                                </span>
+                                <% } else { %>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">
+                                    <i class="fas fa-clock mr-1"></i> Pending Verification
+                                </span>
+                                <% } %>
+                            </td>
+                            <td class="py-3 px-3">
+                                <% if (o.license_key) { %>
+                                <div class="flex items-center gap-1.5 bg-black/60 text-yellow-300 px-2.5 py-1 rounded-lg border border-yellow-500/30 font-mono text-[11px] max-w-xs">
+                                    <span class="truncate select-all font-bold" title="<%= o.license_key %>"><%= o.license_key %></span>
+                                    <button type="button" onclick="navigator.clipboard.writeText('<%= o.license_key %>'); this.innerText='COPIED!'; setTimeout(() => this.innerHTML='<i class=\'fas fa-copy\'></i>', 2000)" class="px-1.5 py-0.5 bg-emerald-500/30 hover:bg-emerald-500/50 text-emerald-300 rounded text-[10px] font-bold shrink-0 transition" title="Copy Key">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <% } else { %>
+                                <span class="text-[11px] text-gray-500 italic">Key will appear once verified</span>
+                                <% } %>
+                            </td>
+                            <td class="py-3 px-3 text-right whitespace-nowrap">
+                                <a href="/order-success/<%= o.id %>" class="inline-flex items-center gap-1 px-2.5 py-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 rounded-lg text-[11px] font-bold transition no-underline">
+                                    <i class="fas fa-file-invoice"></i> Receipt
+                                </a>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <% } else { %>
+            <div class="text-center py-12 text-gray-400 bg-black/30 rounded-2xl border border-white/5">
+                <i class="fas fa-shopping-bag text-4xl mb-3 text-gray-600 block"></i>
+                <h4 class="text-sm font-bold text-white mb-1">No orders placed yet</h4>
+                <p class="text-xs text-gray-400 mb-4">Browse our premium gaming panels, hacks, and mods to place your first order!</p>
+                <a href="/" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black font-black text-xs uppercase tracking-wider rounded-xl transition shadow no-underline">
+                    <i class="fas fa-gamepad"></i> Explore Panels Store
+                </a>
+            </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TAB 2: KEY HISTORY
+         ============================================================ -->
+    <div class="acc-tab-content <%= (activeTab === 'keys') ? 'active' : '' %>" id="tabKeys">
+        <div class="bg-gradient-to-b from-[#091224] to-[#050b17] border border-cyan-500/30 rounded-3xl p-6 shadow-2xl text-white">
+            <div class="flex items-center justify-between gap-3 mb-5">
+                <h2 class="text-base font-black uppercase font-orbitron text-white tracking-wider m-0 flex items-center gap-2">
+                    <i class="fas fa-key text-yellow-400"></i> My Delivered License Keys
+                </h2>
+                <span class="text-xs text-gray-400 font-mono">Instant Copy &amp; Verification</span>
+            </div>
+
+            <% if (keys && keys.length > 0) { %>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <% keys.forEach(function(k) { %>
+                <div class="p-4 rounded-2xl bg-black/60 border border-yellow-500/30 hover:border-yellow-400/60 transition shadow-lg relative group">
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <span class="text-xs font-black text-white font-orbitron"><%= k.product_name %></span>
+                        <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                            <%= k.variant %>
+                        </span>
+                    </div>
+
+                    <!-- Key Box -->
+                    <div class="p-3 rounded-xl bg-[#070d1a] border border-cyan-500/40 my-2 flex items-center justify-between gap-2">
+                        <span class="font-mono text-xs font-bold text-yellow-300 select-all truncate tracking-wider" id="keyText_<%= k.id %>">
+                            <%= k.license_key %>
+                        </span>
+                        <button type="button" onclick="navigator.clipboard.writeText('<%= k.license_key %>'); this.innerText='COPIED!'; setTimeout(() => this.innerHTML='<i class=\'fas fa-copy\'></i> Copy', 2000)" class="px-3 py-1 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black text-xs font-black uppercase tracking-wider rounded-lg transition shrink-0 cursor-pointer shadow">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+
+                    <%
+                        const isHwidResetUsed = (typeof hwidRequests !== 'undefined' && hwidRequests)
+                            ? hwidRequests.some(h => h.license_key === k.license_key && h.status === 'approved') || (k.hwid_reset_count && k.hwid_reset_count >= 1)
+                            : false;
+                        const isHwidPending = (typeof hwidRequests !== 'undefined' && hwidRequests)
+                            ? hwidRequests.some(h => h.license_key === k.license_key && h.status === 'pending')
+                            : false;
+                    %>
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-gray-400 font-mono mt-3 pt-2 border-t border-white/5">
+                        <div class="flex items-center gap-3">
+                            <span>Order: <strong class="text-cyan-400"><%= k.id %></strong></span>
+                            <span><%= k.created_at ? new Date(k.created_at).toLocaleDateString() : 'Active' %></span>
+                        </div>
+                        <% if (isHwidResetUsed) { %>
+                        <span class="px-2.5 py-1 bg-gray-500/20 text-gray-400 border border-gray-500/40 rounded-lg text-[10px] font-bold flex items-center gap-1 select-none" title="This key has already been reset once. Limit reached.">
+                            <i class="fas fa-lock"></i> Reset Used (1/1)
+                        </span>
+                        <% } else if (isHwidPending) { %>
+                        <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/40 rounded-lg text-[10px] font-bold flex items-center gap-1 animate-pulse select-none">
+                            <i class="fas fa-hourglass-half"></i> Reset Pending (1/1)
+                        </span>
+                        <% } else { %>
+                        <button type="button" onclick="openHwidResetModal('<%= k.id %>', '<%= (k.product_name || '').replace(/'/g, '') %>', '<%= (k.license_key || '').replace(/'/g, '') %>')" class="px-2.5 py-1 bg-amber-500/15 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-lg text-[10px] font-black uppercase tracking-wider transition flex items-center gap-1 cursor-pointer">
+                            <i class="fas fa-microchip"></i> Reset Device / HWID (1 Time)
+                        </button>
+                        <% } %>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+            <% } else { %>
+            <div class="text-center py-12 text-gray-400 bg-black/30 rounded-2xl border border-white/5">
+                <i class="fas fa-key text-4xl mb-3 text-gray-600 block"></i>
+                <h4 class="text-sm font-bold text-white mb-1">No license keys assigned yet</h4>
+                <p class="text-xs text-gray-400 max-w-md mx-auto">
+                    When you order a game panel or mod, our system or admin assigns your unique license key. Once assigned, all your license keys will permanently stay organized right here!
+                </p>
+                <a href="/" class="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black font-black text-xs uppercase tracking-wider rounded-xl transition shadow no-underline">
+                    <i class="fas fa-shopping-cart"></i> Order a Key Now
+                </a>
+            </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TAB 3: DEPOSIT / PAYMENT HISTORY
+         ============================================================ -->
+    <div class="acc-tab-content <%= (activeTab === 'deposits') ? 'active' : '' %>" id="tabDeposits">
+        <div class="bg-gradient-to-b from-[#091224] to-[#050b17] border border-cyan-500/30 rounded-3xl p-6 shadow-2xl text-white">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-5">
+                <div>
+                    <h2 class="text-base font-black uppercase font-orbitron text-white tracking-wider m-0 flex items-center gap-2">
+                        <i class="fas fa-money-check-alt text-emerald-400"></i> My Deposit &amp; Wallet Recharge History
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-1 m-0">Track all your money loading requests, TrxIDs, and approval status.</p>
+                </div>
+                <a href="/add-funds" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-black text-xs uppercase tracking-wider rounded-xl transition shadow flex items-center gap-1.5 no-underline shrink-0">
+                    <i class="fas fa-plus-circle"></i> Add Funds Now
+                </a>
+            </div>
+
+            <% if (deposits && deposits.length > 0) { %>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-gray-300">
+                    <thead class="text-[11px] uppercase bg-black/40 text-gray-400 border-b border-cyan-500/20">
+                        <tr>
+                            <th class="py-3 px-3">Deposit ID</th>
+                            <th class="py-3 px-3">Payment Method</th>
+                            <th class="py-3 px-3">Amount</th>
+                            <th class="py-3 px-3">Sender Phone</th>
+                            <th class="py-3 px-3">TrxID</th>
+                            <th class="py-3 px-3">Status</th>
+                            <th class="py-3 px-3 text-right">Date &amp; Time</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 font-mono">
+                        <% deposits.forEach(function(d) { %>
+                        <tr class="hover:bg-white/5 transition">
+                            <td class="py-3 px-3 font-bold text-cyan-400"><%= d.id %></td>
+                            <td class="py-3 px-3 font-sans font-bold text-white"><%= d.payment_method %></td>
+                            <td class="py-3 px-3 font-bold font-orbitron <%= (d.status === 'reverted' || d.amount < 0 || d.is_deduction) ? 'text-red-400' : 'text-emerald-400' %>">
+                                <%= (d.status === 'reverted' || d.amount < 0 || d.is_deduction) ? '-' : '+' %><%= Math.abs(d.amount) %>৳
+                            </td>
+                            <td class="py-3 px-3 text-gray-300"><%= d.sender_phone || 'N/A' %></td>
+                            <td class="py-3 px-3 select-all truncate max-w-xs text-yellow-300 font-bold"><%= d.transaction_id %></td>
+                            <td class="py-3 px-3">
+                                <% if (d.status === 'approved') { %>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                                    <i class="fas fa-check-circle mr-1"></i> Approved (+Added)
+                                </span>
+                                <% } else if (d.status === 'reverted') { %>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-500/20 text-red-400 border border-red-500/40">
+                                    <i class="fas fa-undo mr-1"></i> Reverted / Deducted
+                                </span>
+                                <% } else if (d.status === 'rejected') { %>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-500/20 text-red-400 border border-red-500/40">
+                                    <i class="fas fa-times-circle mr-1"></i> Rejected
+                                </span>
+                                <% } else { %>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">
+                                    <i class="fas fa-hourglass-half mr-1"></i> Under Review
+                                </span>
+                                <% } %>
+                            </td>
+                            <td class="py-3 px-3 text-right text-gray-400">
+                                <%= d.created_at ? new Date(d.created_at).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' }) : 'Recently' %>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <% } else { %>
+            <div class="text-center py-12 text-gray-400 bg-black/30 rounded-2xl border border-white/5">
+                <i class="fas fa-wallet text-4xl mb-3 text-gray-600 block"></i>
+                <h4 class="text-sm font-bold text-white mb-1">No deposit history yet</h4>
+                <p class="text-xs text-gray-400 max-w-md mx-auto mb-4">
+                    Top up your account balance via bKash, Nagad, Rocket or Binance to enjoy 1-click instant checkouts without needing to type TrxID during purchase!
+                </p>
+                <a href="/add-funds" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-black text-xs uppercase tracking-wider rounded-xl transition shadow no-underline">
+                    <i class="fas fa-plus-circle"></i> Add Funds to Wallet
+                </a>
+            </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TAB: HWID & DEVICE RESETS
+         ============================================================ -->
+    <div class="acc-tab-content <%= (activeTab === 'hwid') ? 'active' : '' %>" id="tabHwid">
+        <div class="bg-gradient-to-b from-[#091224] to-[#050b17] border border-cyan-500/30 rounded-3xl p-6 shadow-2xl text-white">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-5">
+                <div>
+                    <h2 class="text-base font-black uppercase font-orbitron text-white tracking-wider m-0 flex items-center gap-2">
+                        <i class="fas fa-microchip text-amber-400"></i> HWID &amp; Device Lock Reset Requests
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-1 m-0">Changed phone or formatted device? Request a device lock reset for your panel license key.</p>
+                </div>
+            </div>
+
+            <% if (typeof hwidRequests !== 'undefined' && hwidRequests && hwidRequests.length > 0) { %>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-gray-300">
+                    <thead class="text-[11px] uppercase bg-black/40 text-gray-400 border-b border-cyan-500/20">
+                        <tr>
+                            <th class="py-3 px-3">Request ID</th>
+                            <th class="py-3 px-3">Product Name</th>
+                            <th class="py-3 px-3">License Key</th>
+                            <th class="py-3 px-3">Reason / Device</th>
+                            <th class="py-3 px-3">Status</th>
+                            <th class="py-3 px-3 text-right">Requested At</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 font-mono">
+                        <% hwidRequests.forEach(function(h) { %>
+                        <tr class="hover:bg-white/5 transition">
+                            <td class="py-3 px-3 font-bold text-amber-400"><%= h.id %></td>
+                            <td class="py-3 px-3 font-sans font-bold text-white"><%= h.product_name %></td>
+                            <td class="py-3 px-3 select-all truncate max-w-xs text-yellow-300 font-bold"><%= h.license_key %></td>
+                            <td class="py-3 px-3 font-sans text-gray-300">
+                                <div><b><%= h.reason %></b></div>
+                                <small class="text-gray-400 font-mono"><%= h.device_model || 'Device' %></small>
+                            </td>
+                            <td class="py-3 px-3">
+                                <% if (h.status === 'approved') { %>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                                    <i class="fas fa-check-circle mr-1"></i> Reset Done / Unlocked
+                                </span>
+                                <% } else if (h.status === 'rejected') { %>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-500/20 text-red-400 border border-red-500/40">
+                                    <i class="fas fa-times-circle mr-1"></i> Rejected
+                                </span>
+                                <% } else { %>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">
+                                    <i class="fas fa-clock mr-1"></i> Pending Verification
+                                </span>
+                                <% } %>
+                            </td>
+                            <td class="py-3 px-3 text-right text-gray-400">
+                                <%= h.created_at ? new Date(h.created_at).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' }) : 'Recently' %>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <% } else { %>
+            <div class="text-center py-12 text-gray-400 bg-black/30 rounded-2xl border border-white/5">
+                <i class="fas fa-microchip text-4xl mb-3 text-gray-600 block"></i>
+                <h4 class="text-sm font-bold text-white mb-1">No HWID reset requests submitted yet</h4>
+                <p class="text-xs text-gray-400 max-w-md mx-auto mb-4">
+                    If your panel key gives a device lock or HWID error on your new phone, go to the <b>Key History</b> tab and click <b>Reset Device / HWID</b> to submit an unlock request!
+                </p>
+            </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TAB 4: MY PROFILE & IDENTITY SETTINGS
+         ============================================================ -->
+    <div class="acc-tab-content <%= (activeTab === 'profile') ? 'active' : '' %>" id="tabProfile">
+        <div class="bg-gradient-to-b from-[#091224] to-[#050b17] border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl text-white">
+            
+            <!-- Tab Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-white/10">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-mono tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+                            IDENTITY &amp; PREFERENCES
+                        </span>
+                        <span class="text-xs text-gray-400 font-mono">User ID: #<%= user.id || 'MEM' %></span>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-black uppercase font-orbitron text-white tracking-wider m-0 mt-1.5 flex items-center gap-2.5">
+                        <i class="fas fa-user-astronaut text-cyan-400"></i> My Profile &amp; Settings
+                    </h2>
+                    <p class="text-xs m-0 mt-1" style="color: #e2e8f0 !important; font-weight: 500;">আপনার নাম, প্রোফাইল পিকচার এবং যোগাযোগের তথ্য পরিবর্তন করুন।</p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1.5 rounded-xl bg-black/60 border border-emerald-500/40 text-emerald-400 text-xs font-mono font-bold flex items-center gap-1.5">
+                        <i class="fas fa-wallet"></i> <%= (user.wallet_balance || 0) %>৳ BDT
+                    </span>
+                    <button type="button" onclick="openLuckySpinModal()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer transition">
+                        <i class="fas fa-dharmachakra"></i> <%= (user.spin_credits || 0) %> Spins
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dynamic Notification Alert Box -->
+            <div id="profileAlertBox" style="display: none;" class="mb-6 p-4 rounded-2xl flex items-center justify-between gap-3 text-xs font-bold border transition-all duration-300">
+                <div class="flex items-center gap-2.5">
+                    <i id="profileAlertIcon" class="fas fa-check-circle text-base"></i>
+                    <span id="profileAlertMsg">Profile updated successfully!</span>
+                </div>
+                <button type="button" onclick="document.getElementById('profileAlertBox').style.display='none'" class="text-gray-400 hover:text-white text-base leading-none">&times;</button>
+            </div>
+
+            <!-- Form starts -->
+            <form id="profileUpdateForm" action="/api/profile/update" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="is_ajax" value="1">
+                <input type="hidden" name="avatarPreset" id="profileAvatarPresetInput" value="">
+                <input type="file" name="avatarFile" id="profileAvatarFileInput" accept="image/png, image/jpeg, image/webp, image/gif" style="display: none;">
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    <!-- LEFT COLUMN: AVATAR CUSTOMIZER (5 Cols) -->
+                    <div class="lg:col-span-5 flex flex-col items-center p-6 rounded-2xl bg-black/40 border border-cyan-500/20 text-center relative overflow-hidden">
+                        <div class="absolute -top-12 -left-12 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                        <span class="text-[11px] font-bold uppercase tracking-wider font-mono mb-4 block" style="color: #38bdf8 !important;">
+                            Profile Avatar / ছবি
+                        </span>
+
+                        <!-- Main Interactive Avatar Preview -->
+                        <div class="relative group cursor-pointer mb-4" onclick="document.getElementById('profileAvatarFileInput').click()" title="Click to upload custom picture">
+                            <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl p-1 bg-gradient-to-tr from-cyan-400 via-emerald-400 to-purple-500 shadow-[0_0_25px_rgba(0,240,255,0.35)]">
+                                <div class="w-full h-full rounded-[22px] overflow-hidden bg-[#070e1c] flex items-center justify-center relative">
+                                    <% if (user.avatar) { %>
+                                        <img src="<%= user.avatar %>" alt="<%= user.name %>" id="currentAvatarPreview" class="w-full h-full object-cover transition duration-300 group-hover:scale-110" onerror="this.src='/uploads/avatar/1.jpg';" />
+                                    <% } else { %>
+                                        <img src="/uploads/avatar/1.jpg" alt="<%= user.name %>" id="currentAvatarPreview" class="w-full h-full object-cover transition duration-300 group-hover:scale-110" />
+                                    <% } %>
+                                    
+                                    <!-- Hover Overlay -->
+                                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-cyan-300 gap-1">
+                                        <i class="fas fa-camera text-xl"></i>
+                                        <span class="text-[10px] font-bold uppercase tracking-wider font-orbitron">Change Photo</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Camera floating badge -->
+                            <div class="absolute -bottom-2 -right-2 w-9 h-9 rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-black flex items-center justify-center shadow-lg border-2 border-[#091224] text-xs font-bold group-hover:scale-110 transition-transform">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+
+                        <!-- Upload & Preset Buttons -->
+                        <div class="w-full flex flex-col gap-2 mb-4">
+                            <button type="button" onclick="document.getElementById('profileAvatarFileInput').click()" style="background: linear-gradient(135deg, rgba(6,182,212,0.25), rgba(59,130,246,0.25)) !important; border: 1.5px solid #00f0ff !important; color: #00f0ff !important; font-weight: 800; font-size: 12px; border-radius: 12px; padding: 10px 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,240,255,0.2);">
+                                <i class="fas fa-cloud-upload-alt text-base"></i>
+                                <span>Upload Custom Image (ছবি আপলোড)</span>
+                            </button>
+                            <button type="button" onclick="togglePresetGallery()" style="background: rgba(245, 158, 11, 0.15) !important; border: 1.5px solid #f59e0b !important; color: #fbbf24 !important; font-weight: 800; font-size: 12px; border-radius: 12px; padding: 10px 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <i class="fas fa-th text-xs"></i>
+                                <span id="togglePresetText">Choose Gaming Preset Avatars (৭টি অ্যাভাটার)</span>
+                            </button>
+                        </div>
+
+                        <!-- Gaming Preset Avatar Selector (Hidden by default, toggles open) -->
+                        <div id="presetAvatarGallery" class="w-full pt-3 border-t border-white/10" style="display: none;">
+                            <span class="text-[10px] text-gray-300 uppercase font-mono block mb-2 text-left flex items-center justify-between">
+                                <span>Select Ready-made Avatar:</span>
+                                <span class="text-cyan-300 text-[10px] font-bold">Click to Apply</span>
+                            </span>
+                            <div class="grid grid-cols-4 sm:grid-cols-7 lg:grid-cols-4 gap-2.5">
+                                <% 
+                                const readyAvatars = [
+                                    { file: '/uploads/avatar/1.jpg', name: 'Cyber Ninja' },
+                                    { file: '/uploads/avatar/12388.jpg', name: 'Ghost Rider' },
+                                    { file: '/uploads/avatar/4377.jpg', name: 'Neon Glitch' },
+                                    { file: '/uploads/avatar/4500.jpg', name: 'Viper Assassin' },
+                                    { file: '/uploads/avatar/5005.jpg', name: 'Gold King' },
+                                    { file: '/uploads/avatar/5341.jpg', name: 'Shadow Ghost' },
+                                    { file: '/uploads/avatar/6482.jpg', name: 'Cyberpunk' }
+                                ];
+                                readyAvatars.forEach(function(av, i) { 
+                                %>
+                                <div class="preset-avatar-option relative rounded-xl overflow-hidden border-2 border-white/20 hover:border-cyan-400 transition cursor-pointer group" onclick="selectPresetAvatar('<%= av.file %>', this)" title="<%= av.name %>">
+                                    <img src="<%= av.file %>" alt="<%= av.name %>" class="w-12 h-12 object-cover transition group-hover:scale-110" />
+                                    <div class="preset-check absolute inset-0 bg-cyan-500/70 hidden items-center justify-center text-black text-xs font-bold">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                </div>
+                                <% }); %>
+                            </div>
+                        </div>
+
+                        <div class="text-[11px] font-mono mt-3" style="color: #cbd5e1 !important; font-weight: 600;">
+                            JPG, PNG, WEBP, GIF (Max 5MB)
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: PROFILE DETAILS FORM (7 Cols) -->
+                    <div class="lg:col-span-7 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            
+                            <!-- Display Name Field -->
+                            <div>
+                                <label for="profileNameInput" style="color: #38bdf8 !important; font-size: 12px; font-weight: 800; font-family: monospace; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                    <span class="flex items-center gap-1.5">
+                                        <i class="fas fa-user-edit text-cyan-400"></i> FULL NAME / DISPLAY NAME *
+                                    </span>
+                                    <span style="color: #7dd3fc !important; font-size: 11px; font-weight: bold;">২-৬০ অক্ষর</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" id="profileNameInput" name="name" value="<%= user.name || '' %>" required minlength="2" maxlength="60" placeholder="Enter your name" style="background: #060e1f !important; border: 1.5px solid #00f0ff !important; color: #ffffff !important; font-size: 14px; font-weight: bold; border-radius: 12px; padding: 12px 40px 12px 16px; width: 100%; outline: none;" class="font-sans focus:ring-2 focus:ring-cyan-400/30">
+                                    <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-cyan-400 text-sm">
+                                        <i class="fas fa-pen"></i>
+                                    </span>
+                                </div>
+                                <p style="color: #e2e8f0 !important; font-size: 12px; font-weight: 500; margin-top: 5px; line-height: 1.4;">আপনার অ্যাকাউন্টের সকল অর্ডার ও ইনভয়েসে এই নাম প্রদর্শিত হবে।</p>
+                            </div>
+
+                            <!-- Phone / WhatsApp Field -->
+                            <div>
+                                <label for="profilePhoneInput" style="color: #34d399 !important; font-size: 12px; font-weight: 800; font-family: monospace; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                    <span class="flex items-center gap-1.5">
+                                        <i class="fab fa-whatsapp text-emerald-400 text-base"></i> WHATSAPP / MOBILE NUMBER
+                                    </span>
+                                    <span style="color: #6ee7b7 !important; font-size: 11px; font-weight: bold;">ঐচ্ছিক</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" id="profilePhoneInput" name="phone" value="<%= user.phone || '' %>" placeholder="e.g. 017xxxxxxxx or +88017xxxxxxxx" style="background: #060e1f !important; border: 1.5px solid #10b981 !important; color: #ffffff !important; font-size: 14px; font-weight: bold; border-radius: 12px; padding: 12px 40px 12px 16px; width: 100%; outline: none;" class="font-mono focus:ring-2 focus:ring-emerald-400/30">
+                                    <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-400 text-base">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </span>
+                                </div>
+                                <p style="color: #e2e8f0 !important; font-size: 12px; font-weight: 500; margin-top: 5px; line-height: 1.4;">অর্ডার ডেলিভারি নিশ্চিত করতে ও হোয়াটসঅ্যাপ সাপোর্ট মেসেজ পেতে ব্যবহৃত হবে।</p>
+                            </div>
+
+                            <!-- Registered Email (Read Only) -->
+                            <div>
+                                <label style="color: #c084fc !important; font-size: 12px; font-weight: 800; font-family: monospace; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                    <span class="flex items-center gap-1.5">
+                                        <i class="fas fa-envelope-open-text text-purple-400"></i> REGISTERED ACCOUNT EMAIL
+                                    </span>
+                                    <span class="px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-500/25 text-emerald-300 border border-emerald-500/50">
+                                        <i class="fas fa-shield-alt mr-1"></i> VERIFIED
+                                    </span>
+                                </label>
+                                <div class="relative">
+                                    <input type="email" value="<%= user.email %>" readonly disabled style="background: #050b17 !important; border: 1.5px solid rgba(255,255,255,0.2) !important; color: #e2e8f0 !important; font-size: 14px; font-weight: bold; border-radius: 12px; padding: 12px 40px 12px 16px; width: 100%; cursor: not-allowed;" class="font-mono">
+                                    <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                </div>
+                                <p style="color: #cbd5e1 !important; font-size: 12px; font-weight: 500; margin-top: 5px; line-height: 1.4;">নিরাপত্তার স্বার্থে ইমেইল স্বয়ংক্রিয়ভাবে সংরক্ষিত থাকে।</p>
+                            </div>
+
+                            <!-- Role & Tier Information Card -->
+                            <div class="p-4 rounded-xl bg-black/60 border border-cyan-500/30 flex flex-wrap items-center justify-between gap-3">
+                                <div>
+                                    <span style="color: #38bdf8 !important; font-size: 11px; font-weight: 900; text-transform: uppercase; font-family: monospace; display: block;">MEMBERSHIP TIER &amp; DISCOUNT</span>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="text-sm font-black font-orbitron text-white">
+                                            <%= (user.role === 'admin') ? 'ADMINISTRATOR' : ((user.role === 'reseller') ? 'VIP RESELLER' : ((user.role === 'sub_reseller' || user.role === 'sub-reseller') ? 'SUB-RESELLER' : 'CUSTOMER')) %>
+                                        </span>
+                                        <% if (typeof userDiscount !== 'undefined' && userDiscount > 0) { %>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-black">
+                                            <%= userDiscount %>% VIP Discount
+                                        </span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span style="color: #38bdf8 !important; font-size: 11px; font-weight: 900; text-transform: uppercase; font-family: monospace; display: block;">ACCOUNT STATUS</span>
+                                    <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5 justify-end mt-1">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span> Active &amp; Verified
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Language Preference Card (Bangla / English) -->
+                            <div class="p-4 rounded-xl bg-black/60 border border-cyan-500/30">
+                                <label style="color: #38bdf8 !important; font-size: 12px; font-weight: 800; font-family: monospace; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                                    <span class="flex items-center gap-1.5">
+                                        <i class="fas fa-globe text-cyan-400"></i> WEBSITE LANGUAGE / ওয়েবসাইট ভাষা
+                                    </span>
+                                    <span class="text-[11px] text-cyan-300 font-bold">বাংলা অথবা English</span>
+                                </label>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition select-none <%= (currentLang === 'bn') ? 'border-emerald-400 bg-emerald-950/40 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.25)]' : 'border-white/15 bg-slate-900/60 text-slate-300 hover:border-emerald-500/50' %>">
+                                        <input type="radio" name="language" value="bn" <%= (currentLang === 'bn') ? 'checked' : '' %> class="w-4 h-4 accent-emerald-400">
+                                        <div>
+                                            <div class="font-black text-sm text-white flex items-center gap-1.5">
+                                                <span>🇧🇩</span> <span>বাংলা (Bengali)</span>
+                                            </div>
+                                            <div class="text-[11px] text-slate-400 mt-0.5">সবকিছু সহজ বাংলায় দেখুন</div>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition select-none <%= (currentLang === 'en') ? 'border-cyan-400 bg-cyan-950/40 text-cyan-300 shadow-[0_0_10px_rgba(0,240,255,0.25)]' : 'border-white/15 bg-slate-900/60 text-slate-300 hover:border-cyan-500/50' %>">
+                                        <input type="radio" name="language" value="en" <%= (currentLang === 'en') ? 'checked' : '' %> class="w-4 h-4 accent-cyan-400">
+                                        <div>
+                                            <div class="font-black text-sm text-white flex items-center gap-1.5">
+                                                <span>🇺🇸</span> <span>English</span>
+                                            </div>
+                                            <div class="text-[11px] text-slate-400 mt-0.5">View store interface in English</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Currency Preference Card (BDT / USDT / INR) -->
+                            <div class="p-4 rounded-xl bg-black/60 border border-cyan-500/30 mt-3">
+                                <label style="color: #38bdf8 !important; font-size: 12px; font-weight: 800; font-family: monospace; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                                    <span class="flex items-center gap-1.5">
+                                        <i class="fas fa-coins text-yellow-400"></i> STORE CURRENCY / অ্যাকাউন্টের কারেন্সি
+                                    </span>
+                                    <span class="text-[11px] text-yellow-300 font-bold">BDT, USDT অথবা INR</span>
+                                </label>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <!-- BDT -->
+                                    <label class="flex items-center gap-2.5 p-3 rounded-xl border cursor-pointer transition select-none <%= (currentCurrencyCode === 'BDT') ? 'border-emerald-400 bg-emerald-950/40 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.25)]' : 'border-white/15 bg-slate-900/60 text-slate-300 hover:border-emerald-500/50' %>">
+                                        <input type="radio" name="currency" value="BDT" <%= (currentCurrencyCode === 'BDT') ? 'checked' : '' %> class="w-4 h-4 accent-emerald-400">
+                                        <div>
+                                            <div class="font-black text-sm text-white flex items-center gap-1.5">
+                                                <span>🇧🇩</span> <span>BDT (৳)</span>
+                                            </div>
+                                            <div class="text-[10px] text-slate-400 mt-0.5">বাংলাদেশি টাকা</div>
+                                        </div>
+                                    </label>
+
+                                    <!-- USDT -->
+                                    <label class="flex items-center gap-2.5 p-3 rounded-xl border cursor-pointer transition select-none <%= (currentCurrencyCode === 'USDT') ? 'border-cyan-400 bg-cyan-950/40 text-cyan-300 shadow-[0_0_10px_rgba(0,240,255,0.25)]' : 'border-white/15 bg-slate-900/60 text-slate-300 hover:border-cyan-500/50' %>">
+                                        <input type="radio" name="currency" value="USDT" <%= (currentCurrencyCode === 'USDT') ? 'checked' : '' %> class="w-4 h-4 accent-cyan-400">
+                                        <div>
+                                            <div class="font-black text-sm text-white flex items-center gap-1.5">
+                                                <span>🇺🇸</span> <span>USDT ($)</span>
+                                            </div>
+                                            <div class="text-[10px] text-slate-400 mt-0.5">US Dollar / Crypto</div>
+                                        </div>
+                                    </label>
+
+                                    <!-- INR -->
+                                    <label class="flex items-center gap-2.5 p-3 rounded-xl border cursor-pointer transition select-none <%= (currentCurrencyCode === 'INR') ? 'border-amber-400 bg-amber-950/40 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.25)]' : 'border-white/15 bg-slate-900/60 text-slate-300 hover:border-amber-500/50' %>">
+                                        <input type="radio" name="currency" value="INR" <%= (currentCurrencyCode === 'INR') ? 'checked' : '' %> class="w-4 h-4 accent-amber-400">
+                                        <div>
+                                            <div class="font-black text-sm text-white flex items-center gap-1.5">
+                                                <span>🇮🇳</span> <span>INR (₹)</span>
+                                            </div>
+                                            <div class="text-[10px] text-slate-400 mt-0.5">Indian Rupee</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Submit Buttons (High Contrast & Crystal Clear Text) -->
+                        <div class="pt-6 mt-6 border-t border-white/10 flex flex-col sm:flex-row items-center gap-3">
+                            <button type="submit" id="btnSaveProfile" style="background: linear-gradient(135deg, #059669 0%, #0284c7 50%, #2563eb 100%) !important; color: #ffffff !important; font-weight: 900 !important; font-size: 13px !important; text-transform: uppercase; font-family: 'Orbitron', monospace; letter-spacing: 1px; box-shadow: 0 4px 25px rgba(2, 132, 199, 0.6); border: 2px solid #38bdf8; border-radius: 14px; padding: 14px 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                                <i class="fas fa-check-circle" style="font-size: 16px; color: #6ee7b7;"></i>
+                                <span style="color: #ffffff !important; font-weight: 900;">SAVE CHANGES (পরিবর্তন সেভ করুন)</span>
+                            </button>
+                            <button type="button" onclick="resetProfileForm()" style="background: rgba(255, 255, 255, 0.12) !important; color: #ffffff !important; border: 1.5px solid rgba(255, 255, 255, 0.3) !important; font-weight: 800; font-size: 12px; text-transform: uppercase; border-radius: 14px; padding: 14px 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">
+                                <i class="fas fa-undo-alt text-xs"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Bottom Account Navigation / Admin / Logout -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-6 mt-8 border-t border-white/10 text-xs">
+                <div class="flex items-center gap-3">
+                    <% if (user.role === 'admin') { %>
+                    <a href="/admin" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition shadow flex items-center gap-1.5 no-underline">
+                        <i class="fas fa-shield-alt"></i> Open Admin Panel
+                    </a>
+                    <% } %>
+                    <a href="/add-funds" class="px-4 py-2 bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 font-bold text-xs uppercase tracking-wider rounded-xl transition flex items-center gap-1.5 no-underline">
+                        <i class="fas fa-plus-circle"></i> Add Funds / টাকা লোড
+                    </a>
+                </div>
+
+                <a href="/logout" class="px-4 py-2 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/40 font-bold text-xs uppercase tracking-wider rounded-xl transition flex items-center gap-1.5 no-underline">
+                    <i class="fas fa-power-off"></i> Log Out (লগআউট)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TAB 5: DISCORD REFER & EARN (10 Refers -> 10৳ Wallet Reward)
+         ============================================================ -->
+    <div class="acc-tab-content <%= (activeTab === 'referrals' || activeTab === 'referral') ? 'active' : '' %>" id="tabReferrals">
+        <div class="bg-gradient-to-b from-[#0e172e] via-[#091024] to-[#050b18] border-2 border-[#5865F2]/40 rounded-3xl p-6 sm:p-8 shadow-2xl text-white">
+            
+            <!-- Tab Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-white/10">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase font-mono tracking-wider bg-[#5865F2]/25 text-[#a5b4fc] border border-[#5865F2]/40">
+                            COMMUNITY REWARD PROGRAM
+                        </span>
+                        <span class="text-xs text-gray-400 font-mono">10 Refers = 10৳ Wallet Cash</span>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-black uppercase font-orbitron text-white tracking-wider m-0 mt-1.5 flex items-center gap-2.5">
+                        <i class="fab fa-discord text-[#5865F2] text-2xl"></i> Discord Refer &amp; Earn
+                    </h2>
+                    <p class="text-xs text-cyan-200 m-0 mt-1">প্রতি ১০ জন বন্ধুকে রেফার করলেই ১০৳ ওয়ালেটে পাবেন। ১০ জন পূর্ণ হলে প্রগ্রেস আবার ০/১০ হয়ে যাবে!</p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <a href="<%= (typeof referralSettings !== 'undefined' && referralSettings.discord_invite_url) ? referralSettings.discord_invite_url : 'https://discord.gg/5dVCdvuqm' %>" target="_blank" rel="noopener noreferrer" style="background: #5865F2 !important;" class="px-4 py-2 rounded-xl text-white font-bold text-xs flex items-center gap-2 shadow-lg no-underline hover:scale-105 transition-transform">
+                        <i class="fab fa-discord text-base"></i> Refer Discord
+                    </a>
+                </div>
+            </div>
+
+            <!-- Milestone Progress Card -->
+            <% 
+            const curRefers = (typeof user !== 'undefined' && user.referral_current) ? parseInt(user.referral_current) : 0;
+            const targetRefers = 10;
+            const pct = Math.min(100, Math.round((curRefers / targetRefers) * 100));
+            const remaining = Math.max(0, targetRefers - curRefers);
+            %>
+            <div class="p-6 rounded-3xl bg-black/60 border border-[#5865F2]/50 mb-8 relative overflow-hidden shadow-xl">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400 font-mono block">CURRENT MILESTONE PROGRESS (বর্তমান মাইলস্টোন)</span>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span class="text-3xl sm:text-4xl font-black font-orbitron text-emerald-400"><%= curRefers %></span>
+                            <span class="text-xl font-bold font-orbitron text-gray-400">/ 10</span>
+                            <span class="text-xs text-cyan-300 font-mono ml-2">(<%= pct %>% পূর্ণ হয়েছে)</span>
+                        </div>
+                    </div>
+
+                    <div class="text-left md:text-right">
+                        <% if (curRefers >= 10) { %>
+                        <span class="px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs font-bold font-mono">
+                            🎉 10৳ Credited to Wallet!
+                        </span>
+                        <% } else { %>
+                        <div class="p-2.5 rounded-xl bg-black/40 border border-cyan-500/30 inline-block">
+                            <span class="text-xs text-gray-300 font-mono block">
+                                আর মাত্র <b class="text-amber-400 font-bold"><%= remaining %> জন</b> রেফার করলেই <b class="text-emerald-400 font-bold">১০৳</b> ব্যালেন্স পাবেন!
+                            </span>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Animated Progress Bar -->
+                <div class="w-full h-4 rounded-full bg-[#050b18] border border-white/10 overflow-hidden p-0.5 relative">
+                    <div class="h-full rounded-full transition-all duration-700 ease-out" style="width: <%= Math.max(4, pct) %>%; background: linear-gradient(90deg, #5865F2 0%, #06b6d4 50%, #10b981 100%); box-shadow: 0 0 15px rgba(6, 182, 212, 0.6);"></div>
+                </div>
+
+                <!-- Progress ticks (0 to 10) -->
+                <div class="flex justify-between items-center text-[10px] font-mono text-gray-400 mt-2 px-1">
+                    <span>0</span>
+                    <span>2</span>
+                    <span>4</span>
+                    <span>6</span>
+                    <span>8</span>
+                    <span class="text-emerald-400 font-bold">10 জন (১০৳)</span>
+                </div>
+            </div>
+
+            <!-- Share & Invite Link Card -->
+            <div class="p-6 rounded-2xl bg-black/40 border border-cyan-500/30 mb-8">
+                <label class="text-xs font-bold text-cyan-300 uppercase font-mono block mb-2 flex items-center gap-2">
+                    <i class="fas fa-link text-cyan-400"></i> Your Unique Referral Invite Link (আপনার রেফারেল লিংক)
+                </label>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="myReferralUrlInput" readonly value="<%= (typeof inviteUrl !== 'undefined' && inviteUrl) ? inviteUrl : 'https://zeroexception.com/invite?ref=REF' + user.id %>" class="flex-1 px-4 py-3 rounded-xl bg-[#060e1f] border border-cyan-500/40 text-cyan-200 font-mono text-xs font-bold outline-none select-all">
+                    <button type="button" onclick="copyReferralLink()" style="background: linear-gradient(135deg, #00f0ff, #0284c7) !important;" class="px-6 py-3 rounded-xl text-black font-black font-orbitron text-xs uppercase tracking-wider shadow cursor-pointer flex items-center justify-center gap-2 transition hover:scale-105">
+                        <i class="fas fa-copy"></i> <span id="copyRefBtnText">Copy Link</span>
+                    </button>
+                </div>
+                
+                <!-- 1-Click Social Share Buttons -->
+                <div class="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-white/10">
+                    <span class="text-[11px] font-mono text-gray-400 mr-2">Share directly:</span>
+                    <a href="https://api.whatsapp.com/send?text=<%= encodeURIComponent('Join ZERO EXCEPTION Discord Community & Store! ' + ((typeof inviteUrl !== 'undefined') ? inviteUrl : '')) %>" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5 no-underline transition">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent((typeof inviteUrl !== 'undefined') ? inviteUrl : '') %>" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-lg bg-blue-600/30 hover:bg-blue-600/50 border border-blue-500/40 text-blue-300 text-xs font-bold flex items-center gap-1.5 no-underline transition">
+                        <i class="fab fa-facebook"></i> Facebook
+                    </a>
+                    <a href="https://t.me/share/url?url=<%= encodeURIComponent((typeof inviteUrl !== 'undefined') ? inviteUrl : '') %>&text=Join+Zero+Exception" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-500/40 text-cyan-300 text-xs font-bold flex items-center gap-1.5 no-underline transition">
+                        <i class="fab fa-telegram"></i> Telegram
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Overview 3-Card Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div class="p-4 rounded-2xl bg-black/50 border border-cyan-500/30 text-center">
+                    <span class="text-[10px] uppercase font-mono text-gray-400 block mb-1">Current Milestone</span>
+                    <strong class="text-2xl font-black font-orbitron text-cyan-400"><%= curRefers %> / 10</strong>
+                    <span class="text-[10px] text-gray-400 block mt-1">পূর্ণ হলে রিসেট হয়ে ০/১০ হবে</span>
+                </div>
+                <div class="p-4 rounded-2xl bg-black/50 border border-emerald-500/30 text-center">
+                    <span class="text-[10px] uppercase font-mono text-gray-400 block mb-1">Total Lifetime Refers</span>
+                    <strong class="text-2xl font-black font-orbitron text-emerald-400"><%= (typeof user !== 'undefined' && user.referral_total) ? user.referral_total : 0 %></strong>
+                    <span class="text-[10px] text-gray-400 block mt-1">সর্বমোট রেফার করা বন্ধু</span>
+                </div>
+                <div class="p-4 rounded-2xl bg-black/50 border border-amber-500/30 text-center">
+                    <span class="text-[10px] uppercase font-mono text-gray-400 block mb-1">Total Earnings</span>
+                    <strong class="text-2xl font-black font-orbitron text-amber-400"><%= (typeof user !== 'undefined' && user.referral_earnings) ? user.referral_earnings : 0 %>৳</strong>
+                    <span class="text-[10px] text-gray-400 block mt-1">ওয়ালেটে সরাসরি ক্যাশ ক্রেডিট</span>
+                </div>
+            </div>
+
+            <!-- Referred Members List Table -->
+            <div>
+                <h3 class="text-sm font-black font-orbitron uppercase text-white tracking-wide mb-3 flex items-center gap-2">
+                    <i class="fas fa-users text-cyan-400"></i> My Referred Friends History (<%= (typeof userReferrals !== 'undefined' && userReferrals) ? userReferrals.length : 0 %>)
+                </h3>
+                <% if (typeof userReferrals !== 'undefined' && userReferrals && userReferrals.length > 0) { %>
+                <div class="overflow-x-auto rounded-2xl border border-white/10">
+                    <table class="w-full text-left text-xs text-gray-300">
+                        <thead class="text-[11px] uppercase bg-black/60 text-gray-400 border-b border-white/10 font-mono">
+                            <tr>
+                                <th class="p-3">#</th>
+                                <th class="p-3">Referred Member</th>
+                                <th class="p-3">Joined Date</th>
+                                <th class="p-3 text-right">Reward Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 bg-black/30">
+                            <% userReferrals.forEach(function(r, idx) { %>
+                            <tr class="hover:bg-white/5 transition">
+                                <td class="p-3 font-mono text-gray-400"><%= idx + 1 %></td>
+                                <td class="p-3 font-bold text-white">
+                                    <%= r.referred_user_name || 'Member' %>
+                                    <span class="block text-[10px] font-mono text-cyan-400 font-normal"><%= r.referred_user_email || '' %></span>
+                                </td>
+                                <td class="p-3 font-mono text-gray-400"><%= new Date(r.created_at).toLocaleDateString() %></td>
+                                <td class="p-3 text-right">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono <%= r.milestone_awarded ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' %>">
+                                        <%= r.milestone_awarded ? '✓ 10৳ Milestone Paid' : 'Counted (+1)' %>
+                                    </span>
+                                </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+                <% } else { %>
+                <div class="text-center py-8 bg-black/30 rounded-2xl border border-white/5 text-gray-400">
+                    <i class="fas fa-user-friends text-3xl mb-2 text-gray-600 block"></i>
+                    <p class="text-xs text-gray-300">এখনো কোনো বন্ধু আপনার লিংক দিয়ে জয়েন করেনি। উপরের রেফারেল লিংক কপি করে বন্ধুদের সাথে শেয়ার করুন!</p>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Account Tab Navigation Buttons */
+.acc-tab-btn {
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: rgba(8, 15, 35, 0.7);
+    border: 1.5px solid rgba(0, 240, 255, 0.2);
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+.acc-tab-btn:hover {
+    color: #ffffff;
+    border-color: #00f0ff;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+}
+.acc-tab-btn.active {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.25) 0%, rgba(16, 185, 129, 0.25) 100%);
+    border-color: #00f0ff;
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.45);
+}
+
+.acc-tab-content {
+    display: none;
+}
+.acc-tab-content.active {
+    display: block;
+    animation: fadeInTab 0.25s ease;
+}
+
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var tabBtns = document.querySelectorAll('.acc-tab-btn');
+    var tabContents = document.querySelectorAll('.acc-tab-content');
+
+    function switchTab(targetId) {
+        tabBtns.forEach(function(b) {
+            if (b.getAttribute('data-target') === targetId) {
+                b.classList.add('active');
+            } else {
+                b.classList.remove('active');
+            }
+        });
+
+        tabContents.forEach(function(c) {
+            if (c.id === targetId) {
+                c.classList.add('active');
+            } else {
+                c.classList.remove('active');
+            }
+        });
+    }
+
+    // Expose globally
+    window.switchTab = switchTab;
+    window.switchAccountTab = switchTab;
+
+    tabBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var target = this.getAttribute('data-target');
+            switchTab(target);
+            // Update URL hash without scroll
+            if (history.pushState) {
+                var hashKey = target.replace('tab', '').toLowerCase();
+                history.pushState(null, null, '?tab=' + hashKey);
+            }
+        });
+    });
+
+    // Check URL parameters or hash on load
+    var urlParams = new URLSearchParams(window.location.search);
+    var tabParam = urlParams.get('tab');
+    var hash = window.location.hash.replace('#', '').toLowerCase();
+    var activeKey = tabParam || hash;
+
+    if (activeKey === 'keys' || activeKey === 'key') {
+        switchTab('tabKeys');
+    } else if (activeKey === 'deposits' || activeKey === 'deposit' || activeKey === 'payments') {
+        switchTab('tabDeposits');
+    } else if (activeKey === 'hwid' || activeKey === 'hwid-reset' || activeKey === 'resets') {
+        switchTab('tabHwid');
+    } else if (activeKey === 'referrals' || activeKey === 'referral' || activeKey === 'ref') {
+        switchTab('tabReferrals');
+    } else if (activeKey === 'profile') {
+        switchTab('tabProfile');
+        if (urlParams.get('saved') === '1') {
+            showProfileAlert('প্রোফাইল সফলভাবে আপডেট করা হয়েছে!', true);
+        } else if (urlParams.get('error')) {
+            showProfileAlert(decodeURIComponent(urlParams.get('error')), false);
+        }
+    } else if (activeKey === 'orders' || activeKey === 'order') {
+        switchTab('tabOrders');
+    }
+});
+
+function copyReferralLink() {
+    var input = document.getElementById('myReferralUrlInput');
+    if (!input) return;
+    input.select();
+    input.setSelectionRange(0, 99999);
+    try {
+        navigator.clipboard.writeText(input.value);
+    } catch(e) {
+        document.execCommand('copy');
+    }
+    var btnText = document.getElementById('copyRefBtnText');
+    if (btnText) {
+        var orig = btnText.textContent;
+        btnText.textContent = '✓ Copied!';
+        setTimeout(function() { btnText.textContent = orig; }, 2500);
+    }
+}
+
+// ============================================================
+// PROFILE & AVATAR EDIT CONTROLLER
+// ============================================================
+function togglePresetGallery() {
+    var gallery = document.getElementById('presetAvatarGallery');
+    var txt = document.getElementById('togglePresetText');
+    if (!gallery) return;
+    if (gallery.style.display === 'none' || !gallery.style.display) {
+        gallery.style.display = 'block';
+        if (txt) txt.textContent = 'Hide Preset Avatars (অ্যাভাটার লুকান)';
+    } else {
+        gallery.style.display = 'none';
+        if (txt) txt.textContent = 'Choose Gaming Preset Avatars (৭টি অ্যাভাটার)';
+    }
+}
+
+function selectPresetAvatar(avatarUrl, elem) {
+    var presetInput = document.getElementById('profileAvatarPresetInput');
+    if (presetInput) presetInput.value = avatarUrl;
+    
+    var preview = document.getElementById('currentAvatarPreview');
+    if (preview) {
+        preview.src = avatarUrl;
+        preview.style.display = 'block';
+    }
+
+    // Clear local file input so preset takes priority
+    var fileInput = document.getElementById('profileAvatarFileInput');
+    if (fileInput) fileInput.value = '';
+
+    // Highlight selected preset
+    document.querySelectorAll('.preset-avatar-option').forEach(function(el) {
+        el.classList.remove('border-cyan-400', 'ring-2', 'ring-cyan-400');
+        el.classList.add('border-white/10');
+        var chk = el.querySelector('.preset-check');
+        if (chk) {
+            chk.style.display = 'none';
+            chk.classList.add('hidden');
+            chk.classList.remove('flex');
+        }
+    });
+
+    if (elem) {
+        elem.classList.remove('border-white/10');
+        elem.classList.add('border-cyan-400', 'ring-2', 'ring-cyan-400');
+        var checkEl = elem.querySelector('.preset-check');
+        if (checkEl) {
+            checkEl.style.display = 'flex';
+            checkEl.classList.remove('hidden');
+            checkEl.classList.add('flex');
+        }
+    }
+}
+
+// Local File Upload live image reader
+var profileFileInput = document.getElementById('profileAvatarFileInput');
+if (profileFileInput) {
+    profileFileInput.addEventListener('change', function(e) {
+        var file = e.target.files && e.target.files[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                showProfileAlert('Image file size must be less than 5MB.', false);
+                profileFileInput.value = '';
+                return;
+            }
+            var reader = new FileReader();
+            reader.onload = function(evt) {
+                var preview = document.getElementById('currentAvatarPreview');
+                if (preview) {
+                    preview.src = evt.target.result;
+                    preview.style.display = 'block';
+                }
+                // Clear preset selection
+                var presetInput = document.getElementById('profileAvatarPresetInput');
+                if (presetInput) presetInput.value = '';
+
+                document.querySelectorAll('.preset-avatar-option').forEach(function(el) {
+                    el.classList.remove('border-cyan-400', 'ring-2', 'ring-cyan-400');
+                    el.classList.add('border-white/10');
+                    var chk = el.querySelector('.preset-check');
+                    if (chk) {
+                        chk.style.display = 'none';
+                        chk.classList.add('hidden');
+                        chk.classList.remove('flex');
+                    }
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+function showProfileAlert(message, isSuccess) {
+    var box = document.getElementById('profileAlertBox');
+    var icon = document.getElementById('profileAlertIcon');
+    var msg = document.getElementById('profileAlertMsg');
+    if (!box || !msg) return;
+
+    msg.textContent = message;
+    if (isSuccess) {
+        box.className = 'mb-6 p-4 rounded-2xl flex items-center justify-between gap-3 text-xs font-bold border bg-emerald-500/15 border-emerald-500/40 text-emerald-300';
+        if (icon) icon.className = 'fas fa-check-circle text-base text-emerald-400';
+    } else {
+        box.className = 'mb-6 p-4 rounded-2xl flex items-center justify-between gap-3 text-xs font-bold border bg-red-500/15 border-red-500/40 text-red-300';
+        if (icon) icon.className = 'fas fa-exclamation-circle text-base text-red-400';
+    }
+    box.style.display = 'flex';
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function resetProfileForm() {
+    var form = document.getElementById('profileUpdateForm');
+    if (form) form.reset();
+    window.location.reload();
+}
+
+// Handle Form Submission via AJAX
+var profileForm = document.getElementById('profileUpdateForm');
+if (profileForm) {
+    profileForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var nameInput = document.getElementById('profileNameInput');
+        if (!nameInput || !nameInput.value.trim()) {
+            showProfileAlert('দয়া করে আপনার নাম প্রদান করুন (Please provide your name).', false);
+            return;
+        }
+
+        var btn = document.getElementById('btnSaveProfile');
+        var originalBtnHtml = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving Changes...';
+        }
+
+        try {
+            var formData = new FormData(profileForm);
+            var res = await fetch('/api/profile/update', {
+                method: 'POST',
+                headers: { 'Accept': 'application/json' },
+                body: formData
+            });
+            var data = await res.json();
+
+            if (data.success) {
+                showProfileAlert(data.message || 'Profile updated successfully!', true);
+
+                if (data.user) {
+                    // Update Top Header Banner
+                    var headerName = document.getElementById('accountHeaderName');
+                    if (headerName && data.user.name) headerName.textContent = data.user.name;
+
+                    var headerPhone = document.getElementById('accountHeaderPhone');
+                    var headerPhoneWrap = document.getElementById('accountHeaderPhoneWrapper');
+                    if (headerPhone && data.user.phone) {
+                        headerPhone.textContent = data.user.phone;
+                        if (headerPhoneWrap) headerPhoneWrap.style.display = 'inline-flex';
+                    }
+
+                    if (data.user.avatar) {
+                        var headerAvatar = document.getElementById('headerProfileAvatarImg');
+                        var headerIcon = document.getElementById('headerProfileAvatarIcon');
+                        if (headerAvatar) {
+                            headerAvatar.src = data.user.avatar;
+                            headerAvatar.style.display = 'block';
+                            if (headerIcon) headerIcon.style.display = 'none';
+                        }
+                        var preview = document.getElementById('currentAvatarPreview');
+                        if (preview) preview.src = data.user.avatar;
+
+                        // Update navbar avatar images
+                        document.querySelectorAll('.user-nav-avatar-img').forEach(function(img) {
+                            img.src = data.user.avatar;
+                            img.style.display = 'inline-block';
+                        });
+                    }
+
+                    // Update navbar name texts
+                    document.querySelectorAll('.user-display-name-nav').forEach(function(el) {
+                        el.textContent = data.user.name;
+                    });
+                }
+
+                // Smooth reload to apply language and currency across entire store
+                setTimeout(function() {
+                    window.location.reload();
+                }, 600);
+            } else {
+                showProfileAlert(data.message || 'Failed to update profile.', false);
+            }
+        } catch(err) {
+            showProfileAlert('Network error: ' + err.message, false);
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+            }
+        }
+    });
+}
+
+function openHwidResetModal(orderId, productName, licenseKey) {
+    var modal = document.getElementById('modalHwidReset');
+    if (!modal) return;
+    document.getElementById('hwidOrderId').value = orderId;
+    document.getElementById('hwidProductName').value = productName;
+    document.getElementById('hwidLicenseKey').value = licenseKey;
+    document.getElementById('hwidDeviceModel').value = '';
+    modal.style.display = 'flex';
+}
+
+function closeHwidResetModal() {
+    var modal = document.getElementById('modalHwidReset');
+    if (modal) modal.style.display = 'none';
+}
+
+var formHwid = document.getElementById('formHwidResetRequest');
+if (formHwid) {
+    formHwid.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var order_id = document.getElementById('hwidOrderId').value;
+        var product_name = document.getElementById('hwidProductName').value;
+        var license_key = document.getElementById('hwidLicenseKey').value;
+        var reason = document.getElementById('hwidReason').value;
+        var device_model = document.getElementById('hwidDeviceModel').value;
+
+        var btn = document.getElementById('btnSubmitHwidReset');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Submitting...';
+        }
+
+        try {
+            var res = await fetch('/api/hwid/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    order_id: order_id,
+                    product_name: product_name,
+                    license_key: license_key,
+                    reason: reason,
+                    device_model: device_model
+                })
+            });
+            var data = await res.json();
+            if (data.success) {
+                alert(data.message || 'HWID reset request submitted successfully!');
+                closeHwidResetModal();
+                window.location.href = '/account?tab=hwid';
+            } else {
+                alert(data.message || 'Failed to submit request.');
+            }
+        } catch(err) {
+            alert('Network error submitting request: ' + err.message);
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane mr-1"></i> Submit Reset Request';
+            }
+        }
+    });
+}
+</script>
+
+<!-- HWID RESET REQUEST MODAL DIALOG -->
+<div id="modalHwidReset" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md" style="display: none;">
+    <div class="bg-[#0b1329] border border-amber-500/50 rounded-3xl max-w-lg w-full p-6 text-white shadow-2xl relative animate-fadeIn">
+        <button type="button" onclick="closeHwidResetModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold cursor-pointer transition">&times;</button>
+        
+        <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center text-lg">
+                <i class="fas fa-microchip"></i>
+            </div>
+            <div>
+                <h3 class="text-sm font-black uppercase font-orbitron text-white m-0 tracking-wide">Request Device / HWID Reset</h3>
+                <p class="text-[11px] text-gray-400 m-0">Unlock your license key for phone format or new device.</p>
+            </div>
+        </div>
+
+        <!-- 1-TIME STRICT LIMIT WARNING -->
+        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] mb-4 flex items-start gap-2.5">
+            <i class="fas fa-exclamation-triangle text-amber-400 text-sm mt-0.5 shrink-0"></i>
+            <div class="leading-relaxed">
+                <strong class="text-amber-200 uppercase font-mono block mb-0.5">১ বার রিসেট সীমাবদ্ধতা (Strict 1-Time Rule):</strong>
+                প্রতিটি লাইসেন্স কীতে গ্রাহক সর্বোচ্চ <b>১ বার</b> HWID রিসেট রিকোয়েস্ট করতে পারবেন। একবার রিসেট হয়ে গেলে এই কী-তে আর ডিভাইস পরিবর্তন করা যাবে না।
+            </div>
+        </div>
+
+        <form id="formHwidResetRequest">
+            <input type="hidden" id="hwidOrderId" value="">
+            
+            <div class="mb-3">
+                <label class="text-[11px] font-bold text-gray-400 uppercase font-mono block mb-1">Product</label>
+                <input type="text" id="hwidProductName" readonly class="w-full px-3 py-2 rounded-xl bg-black/60 border border-white/10 text-white font-bold text-xs font-mono outline-none">
+            </div>
+
+            <div class="mb-3">
+                <label class="text-[11px] font-bold text-gray-400 uppercase font-mono block mb-1">License Key to Unlock</label>
+                <input type="text" id="hwidLicenseKey" readonly class="w-full px-3 py-2 rounded-xl bg-black/60 border border-yellow-500/40 text-yellow-300 font-mono font-bold text-xs outline-none select-all">
+            </div>
+
+            <div class="mb-3">
+                <label class="text-[11px] font-bold text-gray-400 uppercase font-mono block mb-1">Reason for Device Reset *</label>
+                <select id="hwidReason" class="w-full px-3 py-2 rounded-xl bg-[#070d1a] border border-cyan-500/40 text-white text-xs outline-none cursor-pointer">
+                    <option value="Changed to new phone / device">📱 Changed to new phone / device</option>
+                    <option value="Phone formatted / factory reset">🔄 Phone formatted / factory reset</option>
+                    <option value="App reinstalled / HWID error in panel">⚠️ App reinstalled / HWID error in panel</option>
+                    <option value="Other reason">💬 Other reason</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="text-[11px] font-bold text-gray-400 uppercase font-mono block mb-1">New Device Model / Notes (Optional)</label>
+                <input type="text" id="hwidDeviceModel" placeholder="e.g. Redmi Note 12, Samsung S23, Realme..." class="w-full px-3 py-2 rounded-xl bg-[#070d1a] border border-cyan-500/40 text-white text-xs outline-none">
+            </div>
+
+            <div class="flex gap-2">
+                <button type="submit" id="btnSubmitHwidReset" class="flex-1 py-2.5 px-4 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-black text-xs uppercase tracking-wider rounded-xl transition shadow cursor-pointer">
+                    <i class="fas fa-paper-plane mr-1"></i> Submit Reset Request
+                </button>
+                <button type="button" onclick="closeHwidResetModal()" class="py-2.5 px-4 bg-white/10 hover:bg-white/15 text-white font-bold text-xs uppercase rounded-xl transition cursor-pointer">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

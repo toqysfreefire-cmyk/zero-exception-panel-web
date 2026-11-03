@@ -1,0 +1,230 @@
+<%- include('partials/header') %>
+
+<% 
+    let highestRewardText = '70৳';
+    if (mysterySettings.rewards && mysterySettings.rewards.length > 0) {
+        const walletRewards = mysterySettings.rewards.filter(r => r.type === 'wallet' && Number(r.amount) > 0);
+        if (walletRewards.length > 0) {
+            const maxWallet = walletRewards.reduce((max, r) => Math.max(max, Number(r.amount)), 0);
+            highestRewardText = maxWallet + '৳';
+        } else {
+            highestRewardText = mysterySettings.rewards[0].name || 'আকর্ষণীয় উপহার';
+        }
+    }
+%>
+
+<div class="container mx-auto px-4 py-10 max-w-4xl">
+    <!-- Header -->
+    <div class="text-center relative mb-8">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/40 text-cyan-300 text-xs font-black uppercase tracking-widest mb-3 shadow-[0_0_15px_rgba(6,182,212,0.25)]">
+            <i class="fas fa-cube text-cyan-400"></i> Cyberpunk Gacha Drop
+        </div>
+        <h1 class="text-3xl md:text-5xl font-black text-white tracking-wider uppercase font-primary">
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-amber-400"><%= mysterySettings.title || 'CYBER MYSTERY BOX' %></span>
+        </h1>
+        <p class="text-slate-400 text-xs sm:text-sm mt-2 max-w-lg mx-auto">
+            আনলক করুন সর্বোচ্চ <%= highestRewardText %> ক্যাশ, প্রিমিয়াম Free Fire লাইসেন্স কি, ফ্রি স্পিন টিকেট এবং আকর্ষণীয় ড্রপ!
+        </p>
+    </div>
+
+    <!-- Live Recent Winners Ticker -->
+    <% if (mysterySettings.recent_drops && mysterySettings.recent_drops.length > 0) { %>
+    <div class="mb-8 bg-[#0b1329] border border-cyan-900/50 rounded-2xl p-3 flex items-center gap-3 overflow-hidden shadow-inner">
+        <div class="shrink-0 flex items-center gap-1.5 text-xs font-black text-cyan-400 bg-cyan-950/80 px-3 py-1 rounded-lg border border-cyan-500/30">
+            <i class="fas fa-bolt animate-pulse text-amber-400"></i> LIVE DROPS:
+        </div>
+        <div class="flex-1 overflow-x-auto whitespace-nowrap scrollbar-none flex items-center gap-4 text-xs">
+            <% mysterySettings.recent_drops.forEach(drop => { %>
+                <div class="inline-flex items-center gap-2 bg-[#111c38] px-3 py-1 rounded-xl border border-slate-800">
+                    <span class="font-bold text-slate-300"><%= drop.user_name %></span>
+                    <span class="text-slate-600">•</span>
+                    <span class="font-extrabold" style="color: <%= drop.color || '#00f0ff' %>"><%= drop.reward_name %></span>
+                    <span class="text-[9px] px-1.5 py-0.2 rounded font-black text-black" style="background-color: <%= drop.color || '#00f0ff' %>"><%= drop.badge %></span>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+    <% } %>
+
+    <!-- Mystery Chest Arena -->
+    <div class="bg-gradient-to-b from-[#0f172a] via-[#111827] to-[#070b14] border border-cyan-500/30 rounded-3xl p-8 sm:p-12 mb-10 shadow-[0_10px_50px_rgba(0,240,255,0.12)] text-center relative overflow-hidden">
+        <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- 3D Cyber Mystery Chest Graphic -->
+        <div class="relative z-10 my-4">
+            <div id="chestContainer" class="inline-block relative transition-transform duration-500 hover:scale-105 cursor-pointer" onclick="handleOpenBox()">
+                <!-- Floating Glow Rings -->
+                <div id="chestGlow" class="absolute -inset-6 bg-gradient-to-r from-cyan-500/20 via-pink-500/20 to-amber-500/20 rounded-full blur-2xl transition duration-500 animate-pulse"></div>
+
+                <div class="relative w-44 h-44 sm:w-52 sm:h-52 mx-auto rounded-3xl bg-gradient-to-br from-[#1e293b] to-[#0f172a] border-2 border-cyan-400/60 p-6 flex flex-col items-center justify-center shadow-[0_0_40px_rgba(0,240,255,0.3)]">
+                    <div id="chestIconWrap" class="text-7xl sm:text-8xl text-cyan-400 drop-shadow-[0_0_20px_rgba(0,240,255,0.6)] transition-all duration-300">
+                        <i id="chestIcon" class="fas fa-gift"></i>
+                    </div>
+                    <div class="mt-3 text-[11px] font-mono tracking-widest text-cyan-300 uppercase font-black">
+                        CYBER CRATE
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unlocking Price & Button -->
+        <div class="mt-8 relative z-10 max-w-sm mx-auto">
+            <div class="text-xs text-slate-400 mb-3 flex items-center justify-center gap-2">
+                <span>Unlock Cost:</span>
+                <span class="text-lg font-black font-mono text-cyan-400"><%= mysterySettings.box_cost %>৳</span>
+                <span class="text-slate-600">|</span>
+                <span>Highest Reward:</span>
+                <span class="text-base font-black font-mono text-amber-400"><%= highestRewardText %></span>
+            </div>
+
+            <div class="text-xs text-slate-400 mb-4">
+                Your Wallet: <strong class="font-mono text-emerald-400"><%= currentUser ? (currentUser.wallet_balance || 0) + '৳' : '0৳' %></strong>
+            </div>
+
+            <% if (currentUser) { %>
+                <button type="button" id="btnOpenBox" onclick="handleOpenBox()"
+                    class="w-full py-3.5 px-6 rounded-2xl font-black text-base text-black bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 active:scale-95 transition shadow-[0_0_30px_rgba(0,240,255,0.4)] flex items-center justify-center gap-2">
+                    <i class="fas fa-lock-open"></i>
+                    <span id="btnOpenText">UNLOCK BOX (<%= mysterySettings.box_cost %>৳)</span>
+                </button>
+            <% } else { %>
+                <a href="/login?returnUrl=/mystery-box"
+                    class="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl font-black text-base text-black bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 transition shadow-[0_0_30px_rgba(0,240,255,0.4)] no-underline">
+                    <i class="fas fa-sign-in-alt"></i> Login to Unlock Box
+                </a>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Potential Rewards Pool -->
+    <div class="mb-10">
+        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <i class="fas fa-trophy text-amber-400"></i> বক্সের ড্রপ ও রিওয়ার্ড পুল (Reward Pool)
+        </h3>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
+            <% (mysterySettings.rewards || []).forEach(r => { %>
+                <% const rColor = r.color || '#00f0ff'; %>
+                <div class="bg-[#0f172a] border border-slate-800 rounded-2xl p-4 flex items-center gap-3.5 relative overflow-hidden group hover:border-slate-700 transition">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0" style="background: <%= rColor %>1a; color: <%= rColor %>;">
+                        <i class="fas <%= r.icon || 'fa-gift' %>"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="text-xs font-bold text-white truncate"><%= r.name %></div>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span class="text-[9px] font-black uppercase px-1.5 py-0.2 rounded text-black" style="background-color: <%= rColor %>"><%= r.badge || 'TIER' %></span>
+                            <span class="text-[10px] text-slate-400 font-mono"><%= r.chance %>% Rate</span>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</div>
+
+<!-- WINNER MODAL (Hidden with inline style to prevent CSS class override) -->
+<div id="rewardModal" style="display: none;" class="fixed inset-0 z-[99999] bg-black/85 backdrop-blur-md items-center justify-center p-4">
+    <div class="bg-gradient-to-b from-[#111827] to-[#0b0f19] border-2 border-cyan-400 rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-[0_0_60px_rgba(0,240,255,0.5)] transform transition-all duration-300 relative mx-auto">
+        <div class="w-20 h-20 mx-auto rounded-2xl bg-cyan-500/10 border border-cyan-400/40 flex items-center justify-center text-4xl text-cyan-400 mb-4 shadow-[0_0_25px_rgba(0,240,255,0.4)]">
+            <i id="modalRewardIcon" class="fas fa-gift"></i>
+        </div>
+        <div id="modalRewardBadge" class="inline-block text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full text-black mb-2 bg-amber-400">
+            LEGENDARY DROP
+        </div>
+        <h3 id="modalRewardTitle" class="text-xl font-black text-white mb-2">70৳ Wallet Cash</h3>
+        <p id="modalRewardDesc" class="text-xs text-slate-300 leading-relaxed mb-6">
+            অভিনন্দন! আপনার রিওয়ার্ড সরাসরি ওয়ালেটে যুক্ত করা হয়েছে।
+        </p>
+
+        <button type="button" onclick="closeRewardModal()"
+            class="w-full py-3 px-6 rounded-xl font-black text-sm text-black bg-cyan-400 hover:bg-cyan-300 active:scale-95 transition shadow-lg">
+            Awesome! Collect Reward
+        </button>
+    </div>
+</div>
+
+<script>
+    let isOpening = false;
+
+    async function handleOpenBox() {
+        if (isOpening) return;
+        if (typeof playCyberSfx === 'function') playCyberSfx('click');
+
+        const btn = document.getElementById('btnOpenBox');
+        const btnText = document.getElementById('btnOpenText');
+        const chest = document.getElementById('chestContainer');
+        const chestIcon = document.getElementById('chestIcon');
+        const chestGlow = document.getElementById('chestGlow');
+
+        isOpening = true;
+        if (btn) btn.disabled = true;
+        if (btnText) btnText.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Decrypting Crate...';
+
+        // Play tension sound & shake animation
+        if (typeof playCyberSfx === 'function') playCyberSfx('mystery');
+        chest.classList.add('animate-bounce');
+        chestGlow.classList.add('from-pink-500', 'via-purple-500', 'to-cyan-400');
+
+        try {
+            const res = await fetch('/api/mystery-box/open', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await res.json();
+
+            // Wait 1.2s for dramatic suspense
+            await new Promise(r => setTimeout(r, 1200));
+
+            chest.classList.remove('animate-bounce');
+
+            if (!res.ok || !data.success) {
+                alert(data.message || 'বক্স ওপেন করা যায়নি। ওয়ালেট ব্যালেন্স চেক করুন।');
+                if (data.message && data.message.includes('Insufficient')) {
+                    if (confirm("আপনার ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই। এখনই টাকা লোড (Add Funds) করতে চান?")) {
+                        window.location.href = '/add-funds';
+                    }
+                }
+                isOpening = false;
+                if (btn) btn.disabled = false;
+                if (btnText) btnText.innerHTML = 'UNLOCK BOX (<%= mysterySettings.box_cost %>৳)';
+                return;
+            }
+
+            // Success reveal
+            if (typeof playCyberSfx === 'function') playCyberSfx('success');
+            chestIcon.className = 'fas fa-box-open text-amber-400';
+
+            showRewardModal(data.reward, data.message);
+
+        } catch (err) {
+            console.error(err);
+            chest.classList.remove('animate-bounce');
+            alert('সার্ভার এরর হয়েছে। আবার চেষ্টা করুন।');
+        } finally {
+            isOpening = false;
+            if (btn) btn.disabled = false;
+            if (btnText) btnText.innerHTML = 'UNLOCK BOX (<%= mysterySettings.box_cost %>৳)';
+        }
+    }
+
+    function showRewardModal(reward, msg) {
+        document.getElementById('modalRewardTitle').innerText = reward.name;
+        document.getElementById('modalRewardBadge').innerText = reward.badge;
+        document.getElementById('modalRewardBadge').style.backgroundColor = reward.color || '#00f0ff';
+        document.getElementById('modalRewardDesc').innerText = msg;
+        
+        const iconEl = document.getElementById('modalRewardIcon');
+        iconEl.className = 'fas ' + (reward.icon || 'fa-gift');
+        iconEl.style.color = reward.color || '#00f0ff';
+
+        const modal = document.getElementById('rewardModal');
+        modal.style.display = 'flex';
+    }
+
+    function closeRewardModal() {
+        document.getElementById('rewardModal').style.display = 'none';
+        window.location.reload();
+    }
+</script>
+
+<%- include('partials/footer') %>

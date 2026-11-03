@@ -1,0 +1,10 @@
+{
+  "enabled": true,
+  "title": "🏆 TOP SPENDERS LEADERBOARD",
+  "subtitle": "চলতি মাসের সেরা ১০ ক্রেতা!",
+  "rank1_reward": "200৳ ক্যাশ বোনাস",
+  "rank2_reward": "150৳ ক্যাশ বোনাস",
+  "rank3_reward": "75৳ ক্যাশ বোনাস",
+  "rank_other_reward": "10৳ ভাউচার কোড",
+  "custom_note": "মাসের ১ তারিখে স্বয়ংক্রিয়ভাবে রিওয়ার্ড পাঠানো হয়।"
+}

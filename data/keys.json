@@ -1,0 +1,93 @@
+[
+  {
+    "id": "KEY-1001",
+    "product_id": 1,
+    "product_title": "DRIP WIRE EXTERNAL",
+    "variant": "1 Day Key",
+    "license_key": "DRIP-1D-9A7F-4B2C",
+    "status": "used",
+    "assigned_order_id": "ORD-75625",
+    "assigned_to": "2326922147",
+    "created_at": "2026-10-27T10:00:00.000Z",
+    "used_at": "2026-11-01T09:22:54.670Z",
+    "notes": "Fast OB45 patch key"
+  },
+  {
+    "id": "KEY-1002",
+    "product_id": 1,
+    "product_title": "DRIP WIRE EXTERNAL",
+    "variant": "7 Days Key",
+    "license_key": "DRIP-7D-88K1-99X0",
+    "status": "available",
+    "assigned_order_id": null,
+    "assigned_to": null,
+    "created_at": "2026-10-27T10:00:00.000Z",
+    "used_at": null,
+    "notes": "Weekly key batch"
+  },
+  {
+    "id": "KEY-1003",
+    "product_id": 1,
+    "product_title": "DRIP WIRE EXTERNAL",
+    "variant": "30 Days Key",
+    "license_key": "DRIP-30D-VIP-55T2-11Q9",
+    "status": "available",
+    "assigned_order_id": null,
+    "assigned_to": null,
+    "created_at": "2026-10-27T10:00:00.000Z",
+    "used_at": null,
+    "notes": "VIP Monthly Key"
+  },
+  {
+    "id": "KEY-1004",
+    "product_id": 3,
+    "product_title": "BALA MOD NON ROOT",
+    "variant": "1 Day Key",
+    "license_key": "BALA-1D-4K99-P021",
+    "status": "available",
+    "assigned_order_id": null,
+    "assigned_to": null,
+    "created_at": "2026-10-27T10:00:00.000Z",
+    "used_at": null,
+    "notes": "Anti-blacklist key"
+  },
+  {
+    "id": "KEY-1005",
+    "product_id": 3,
+    "product_title": "BALA MOD NON ROOT",
+    "variant": "30 Days Key",
+    "license_key": "BALA-30D-PRO-8712-AA99",
+    "status": "used",
+    "assigned_order_id": "ORD-52231",
+    "assigned_to": "2326922147",
+    "created_at": "2026-10-26T18:00:00.000Z",
+    "used_at": "2026-10-26T18:15:00.000Z",
+    "notes": "Delivered to buyer via WhatsApp"
+  },
+  {
+    "id": "KEY-1006",
+    "product_id": 6,
+    "product_title": "ELITE MODZ",
+    "variant": "30 Days Key",
+    "license_key": "ELITE-ROOT-30D-9981-KK02",
+    "status": "used",
+    "assigned_order_id": "ORD-10028",
+    "assigned_to": "294810293",
+    "created_at": "2026-10-26T19:00:00.000Z",
+    "used_at": "2026-10-26T19:10:00.000Z",
+    "notes": "Root edition"
+  },
+  {
+    "id": "KEY-1007",
+    "product_id": 4,
+    "product_title": "PHANTOM ANDROID-IOS",
+    "variant": "1 Day Key",
+    "license_key": "PHANTOM-1D-iOS-7761",
+    "status": "available",
+    "assigned_order_id": null,
+    "assigned_to": null,
+    "created_at": "2026-10-27T11:00:00.000Z",
+    "used_at": null,
+    "notes": "iOS certificate compatible"
+  }
+]

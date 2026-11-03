@@ -1,0 +1,454 @@
+<%- include('partials/header') %>
+
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Breadcrumb / Back Navigation -->
+    <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6 font-mono">
+        <a href="/" class="hover:text-emerald-500 transition no-underline">Home</a>
+        <span>/</span>
+        <a href="/account" class="hover:text-emerald-500 transition no-underline">Account</a>
+        <span>/</span>
+        <span class="text-emerald-500 font-bold">Add Funds</span>
+    </div>
+
+    <!-- Page Header Banner -->
+    <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-emerald-950 via-[#06181e] to-cyan-950 border border-emerald-500/40 shadow-2xl text-white mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400/50 text-emerald-400 flex items-center justify-center text-3xl shrink-0 shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <div>
+                <span class="text-xs uppercase font-mono tracking-widest text-emerald-400 font-black">STORE WALLET DEPOSIT</span>
+                <h1 class="text-2xl sm:text-3xl font-black font-orbitron tracking-wide text-white m-0">Add Funds / টাকা লোড</h1>
+                <p class="text-xs text-gray-300 mt-1 max-w-md">
+                    আপনার অ্যাকাউন্টে ব্যালেন্স যোগ করুন। ব্যালেন্স দিয়ে যেকোনো গেম প্যানেল বা কী অর্ডার করার সময় কোনো TrxID লাগবে না—১-ক্লিক ইনস্ট্যান্ট বাই হবে!
+                </p>
+            </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-black/50 border border-emerald-500/40 text-center sm:text-right shrink-0 min-w-[180px]">
+            <span class="text-[11px] uppercase font-bold text-gray-400 block tracking-wider">Current Balance:</span>
+            <div class="flex items-baseline justify-center sm:justify-end gap-1.5 mt-0.5">
+                <span class="text-3xl font-black font-orbitron text-emerald-400" id="currentWalletBalanceDisplay"><%= (user.wallet_balance || 0) %></span>
+                <span class="text-sm font-bold text-white">৳ BDT</span>
+            </div>
+            <span class="text-[10px] text-gray-400 block mt-1"><i class="fas fa-check-circle text-emerald-400"></i> Active & Ready</span>
+        </div>
+    </div>
+
+    <!-- Main Grid: Deposit Form + Gateway Numbers -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-10">
+        <!-- Left Column: Add Funds Form (7 Cols) -->
+        <div class="lg:col-span-7 bg-gradient-to-b from-[#091224] to-[#050b17] border border-cyan-500/30 rounded-3xl p-6 sm:p-7 shadow-2xl text-white">
+            <h2 class="text-base font-black uppercase font-orbitron text-cyan-400 tracking-wider mb-5 flex items-center gap-2">
+                <i class="fas fa-plus-circle text-emerald-400"></i> Submit Deposit Request
+            </h2>
+
+            <form id="addFundsForm">
+                <!-- Step 1: Select Gateway -->
+                <div class="mb-5">
+                    <label class="block text-xs font-bold text-gray-300 uppercase mb-2">
+                        Step 1: Choose Deposit Method <span class="text-[#ff007f]">*</span>
+                    </label>
+                    <div class="grid grid-cols-2 gap-2.5" id="fundGatewaySelector">
+                        <button type="button" class="fund-gw-btn active" data-method="bKash" data-number="<%= (settings.payment_methods && settings.payment_methods.bkash && settings.payment_methods.bkash.number) || settings.payment_number %>" data-note="Send Money (Personal)">
+                            <div class="fund-gw-check"><i class="fas fa-check"></i></div>
+                            <span class="font-orbitron font-black text-[#ff007f] block text-sm">bKash</span>
+                            <span class="text-[10px] text-gray-400 block">Personal</span>
+                        </button>
+                        <button type="button" class="fund-gw-btn" data-method="Nagad" data-number="<%= (settings.payment_methods && settings.payment_methods.nagad && settings.payment_methods.nagad.number) || settings.payment_number %>" data-note="Send Money (Personal)">
+                            <div class="fund-gw-check"><i class="fas fa-check"></i></div>
+                            <span class="font-orbitron font-black text-[#ff7700] block text-sm">Nagad</span>
+                            <span class="text-[10px] text-gray-400 block">Personal</span>
+                        </button>
+                        <button type="button" class="fund-gw-btn" data-method="Rocket" data-number="<%= (settings.payment_methods && settings.payment_methods.rocket && settings.payment_methods.rocket.number) || settings.payment_number %>" data-note="Send Money (Personal)">
+                            <div class="fund-gw-check"><i class="fas fa-check"></i></div>
+                            <span class="font-orbitron font-black text-[#a78bfa] block text-sm">Rocket</span>
+                            <span class="text-[10px] text-gray-400 block">Personal</span>
+                        </button>
+                        <button type="button" class="fund-gw-btn" data-method="Binance" data-number="<%= (settings.payment_methods && settings.payment_methods.binance && settings.payment_methods.binance.number) || 'Pay ID: 1290554507' %>" data-note="Crypto / USDT Pay ID">
+                            <div class="fund-gw-check"><i class="fas fa-check"></i></div>
+                            <span class="font-orbitron font-black text-[#fde047] block text-sm">Binance</span>
+                            <span class="text-[10px] text-gray-400 block">USDT / Crypto</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Gateway Number Preview Box -->
+                <div style="background: rgba(8, 15, 35, 0.85); border: 1.5px solid rgba(0, 240, 255, 0.35); border-radius: 16px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+                    <div>
+                        <div style="font-size: 11px; text-transform: uppercase; font-weight: bold; color: #94a3b8; margin-bottom: 3px;" id="gwNameDisplay">
+                            Send Money to bKash:
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span style="font-family: monospace; font-size: 17px; font-weight: 900; color: #00f0ff; letter-spacing: 1px; user-select: all;" id="gwNumberDisplay"><%= (settings.payment_methods && settings.payment_methods.bkash && settings.payment_methods.bkash.number) || settings.payment_number %></span>
+                            <span style="font-size: 11px; color: #cbd5e1; background: rgba(255,255,255,0.08); padding: 2px 8px; border-radius: 6px;" id="gwNoteDisplay">(Send Money - Personal)</span>
+                        </div>
+                    </div>
+                    <button type="button" id="btnCopyGwNumber" style="background: rgba(0, 240, 255, 0.15); border: 1.5px solid #00f0ff; color: #00f0ff; padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                        <i class="fas fa-copy"></i> Copy Number
+                    </button>
+                </div>
+
+                <!-- Step 2: Quick Amount Selector -->
+                <div class="mb-5">
+                    <label class="block text-xs font-bold text-gray-300 uppercase mb-2">
+                        Step 2: Deposit Amount (৳) <span class="text-[#ff007f]">*</span>
+                    </label>
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-2.5">
+                        <button type="button" class="amount-pill-btn" data-amount="100">100৳</button>
+                        <button type="button" class="amount-pill-btn" data-amount="200">200৳</button>
+                        <button type="button" class="amount-pill-btn active" data-amount="500">500৳</button>
+                        <button type="button" class="amount-pill-btn" data-amount="1000">1000৳</button>
+                        <button type="button" class="amount-pill-btn" data-amount="2000">2000৳</button>
+                        <button type="button" class="amount-pill-btn" data-amount="5000">5000৳</button>
+                    </div>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400 font-bold">৳</span>
+                        <input type="number" id="inputDepositAmount" min="10" step="1" value="500" required placeholder="Or enter custom amount..." class="w-full pl-9 pr-4 py-2.5 bg-black/60 border border-cyan-500/40 rounded-xl text-white text-sm font-bold font-orbitron focus:outline-none focus:border-cyan-400">
+                    </div>
+                </div>
+
+                <!-- Step 3: Transaction ID (TrxID) -->
+                <div class="mb-5">
+                    <label class="block text-xs font-bold text-cyan-400 uppercase mb-1.5">
+                        Step 3: Transaction ID (TrxID) <span class="text-[#ff007f]">*</span>
+                    </label>
+                    <input type="text" id="inputTrxId" name="transaction_id" required placeholder="Enter SMS TrxID (e.g. 9J4K7L8M)" class="w-full px-4 py-2.5 bg-black/60 border border-cyan-500/40 rounded-xl text-white text-sm font-mono font-bold uppercase focus:outline-none focus:border-cyan-400">
+                    <small class="text-[11px] text-gray-400 mt-1 block">টাকা পাঠানোর পর প্রাপ্ত SMS থেকে TrxID কপি করে এখানে বসান।</small>
+                </div>
+
+                <!-- Step 4: Sender Phone / WhatsApp -->
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-gray-300 uppercase mb-1.5">
+                        Step 4: Your Sender Phone / WhatsApp <span class="text-[#ff007f]">*</span>
+                    </label>
+                    <input type="text" id="inputSenderPhone" name="sender_phone" value="<%= user.phone || '' %>" required placeholder="e.g. 017XXXXXXXX" class="w-full px-4 py-2.5 bg-black/60 border border-cyan-500/40 rounded-xl text-white text-sm font-bold focus:outline-none focus:border-cyan-400">
+                    <small class="text-[11px] text-gray-400 mt-1 block">যে নম্বর থেকে টাকা পাঠিয়েছেন তা উল্লেখ করুন।</small>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="btnSubmitAddFunds" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 via-cyan-500 to-emerald-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-black text-sm uppercase tracking-wider rounded-xl transition shadow-[0_0_25px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Confirm &amp; Submit Add Fund Request</span>
+                </button>
+
+                <!-- Feedback Message -->
+                <div id="addFundsAlert" class="mt-4 p-3.5 rounded-xl text-xs font-bold" style="display:none;"></div>
+            </form>
+        </div>
+
+        <!-- Right Column: How to Deposit & Support (5 Cols) -->
+        <div class="lg:col-span-5 flex flex-col gap-5">
+            <!-- Guidelines Card -->
+            <div class="p-6 rounded-3xl bg-gradient-to-b from-[#091224] to-[#050b17] border border-emerald-500/30 text-white shadow-xl">
+                <h3 class="text-sm font-black uppercase font-orbitron text-emerald-400 mb-3 flex items-center gap-2">
+                    <i class="fas fa-info-circle"></i> রিচার্জ করার নিয়ম
+                </h3>
+                <ul class="text-xs text-gray-300 space-y-2.5 list-disc pl-4 m-0">
+                    <li>বিকাশ, নগদ বা রকেট অ্যাপে গিয়ে <b>Send Money</b> অপশন সিলেক্ট করুন।</li>
+                    <li>আমাদের দেওয়া পারসোনাল নম্বরে আপনার কাঙ্ক্ষিত পরিমাণ টাকা পাঠান।</li>
+                    <li>টাকা পাঠানোর পর বিকাশ/নগদের কনফার্মেশন মেসেজ থেকে <b>TrxID</b> কপি করুন।</li>
+                    <li>বাম পাশের ফর্মে মেথড, টাকার পরিমাণ এবং TrxID দিয়ে সাবমিট করুন।</li>
+                    <li>এডমিন ট্রানজেকশন ভেরিফাই করে ১ থেকে ৩ মিনিটের মধ্যে সরাসরি আপনার অ্যাকাউন্টে ব্যালেন্স যোগ করে দেবে।</li>
+                </ul>
+            </div>
+
+            <!-- Instant WhatsApp Assistance -->
+            <div class="p-6 rounded-3xl bg-gradient-to-b from-emerald-950/80 to-[#04121a] border border-emerald-500/40 text-white shadow-xl">
+                <div class="flex items-center gap-3 mb-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl shrink-0">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-black uppercase text-white m-0">24/7 Manual Help</h4>
+                        <span class="text-[10px] text-emerald-300">Direct Admin Assistance</span>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-300 mb-4 leading-relaxed">
+                    টাকা পাঠাতে বা ব্যালেন্স অ্যাড করতে কোনো অসুবিধা হলে সরাসরি এডমিনের সাথে হোয়াটসঅ্যাপে যোগাযোগ করুন।
+                </p>
+                <a href="https://wa.me/<%= settings.whatsapp_intl %>?text=Hello%20Admin,%20I%20want%20to%20add%20funds%20to%20my%20wallet" target="_blank" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition shadow flex items-center justify-center gap-2 no-underline">
+                    <i class="fab fa-whatsapp text-sm"></i> WhatsApp Support
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Fund Requests History -->
+    <div class="bg-gradient-to-b from-[#091224] to-[#050b17] border border-cyan-500/30 rounded-3xl p-6 sm:p-7 shadow-2xl text-white">
+        <h2 class="text-base font-black uppercase font-orbitron text-white tracking-wider mb-4 flex items-center gap-2">
+            <i class="fas fa-history text-cyan-400"></i> My Recent Fund Requests
+        </h2>
+
+        <% if (myRequests && myRequests.length > 0) { %>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-gray-300">
+                <thead class="text-[11px] uppercase bg-black/40 text-gray-400 border-b border-cyan-500/20">
+                    <tr>
+                        <th class="py-3 px-3">Request ID</th>
+                        <th class="py-3 px-3">Gateway</th>
+                        <th class="py-3 px-3">Amount</th>
+                        <th class="py-3 px-3">TrxID</th>
+                        <th class="py-3 px-3">Status</th>
+                        <th class="py-3 px-3">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5 font-mono">
+                    <% myRequests.forEach(function(r) { %>
+                    <tr class="hover:bg-white/5 transition">
+                        <td class="py-3 px-3 font-bold text-cyan-400"><%= r.id %></td>
+                        <td class="py-3 px-3 font-sans font-bold"><%= r.payment_method %></td>
+                        <td class="py-3 px-3 font-bold text-emerald-400 font-orbitron">+<%= r.amount %>৳</td>
+                        <td class="py-3 px-3 select-all truncate max-w-xs text-yellow-300"><%= r.transaction_id %></td>
+                        <td class="py-3 px-3">
+                            <% if (r.status === 'approved') { %>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                                <i class="fas fa-check-circle mr-1"></i> Approved
+                            </span>
+                            <% } else if (r.status === 'rejected') { %>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-500/20 text-red-400 border border-red-500/40">
+                                <i class="fas fa-times-circle mr-1"></i> Rejected
+                            </span>
+                            <% } else { %>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">
+                                <i class="fas fa-clock mr-1"></i> Under Review
+                            </span>
+                            <% } %>
+                        </td>
+                        <td class="py-3 px-3 text-gray-400"><%= r.created_at ? new Date(r.created_at).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' }) : 'Recently' %></td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+        <% } else { %>
+        <div class="text-center py-8 text-gray-400 bg-black/30 rounded-2xl border border-white/5">
+            <i class="fas fa-receipt text-3xl mb-2 text-gray-500"></i>
+            <p class="text-xs m-0">No fund requests yet. Deposit money to top up your balance!</p>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+<style>
+.fund-gw-btn {
+    border: 1.5px solid rgba(0, 240, 255, 0.25) !important;
+    background: #080d1c !important;
+    border-radius: 14px;
+    padding: 12px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    user-select: none;
+    color: #ffffff !important;
+}
+.fund-gw-btn:hover {
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.3) !important;
+    transform: translateY(-1px);
+}
+.fund-gw-btn.active {
+    border-color: #10b981 !important;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 30, 15, 0.95) 100%) !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.55) !important;
+}
+.fund-gw-btn .fund-gw-check {
+    display: none;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #10b981;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 900;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px #10b981;
+}
+.fund-gw-btn.active .fund-gw-check {
+    display: flex;
+}
+
+.amount-pill-btn {
+    padding: 10px 4px !important;
+    border-radius: 12px !important;
+    background: #080f24 !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.3) !important;
+    color: #ffffff !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    font-family: 'Orbitron', sans-serif !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    text-align: center !important;
+}
+.amount-pill-btn:hover {
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.5) !important;
+    transform: translateY(-1px);
+}
+.amount-pill-btn.active {
+    background: linear-gradient(135deg, #00f0ff 0%, #10b981 100%) !important;
+    color: #050811 !important;
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.75) !important;
+}
+
+#inputDepositAmount, #inputTrxId, #inputSenderPhone {
+    background: rgba(0, 0, 0, 0.65) !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.35) !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    border-radius: 12px !important;
+}
+#inputDepositAmount:focus, #inputTrxId:focus, #inputSenderPhone:focus {
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.45) !important;
+    outline: none !important;
+}
+
+#btnSubmitAddFunds {
+    background: linear-gradient(135deg, #10b981 0%, #00f0ff 100%) !important;
+    color: #020617 !important;
+    font-weight: 900 !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 13px !important;
+    letter-spacing: 0.5px !important;
+    border: none !important;
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.6) !important;
+    cursor: pointer !important;
+    transition: all 0.25s ease !important;
+    opacity: 1 !important;
+}
+#btnSubmitAddFunds:hover {
+    background: linear-gradient(135deg, #34d399 0%, #38bdf8 100%) !important;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.8) !important;
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var selectedMethod = 'bKash';
+    var gwBtns = document.querySelectorAll('.fund-gw-btn');
+    var gwNameDisplay = document.getElementById('gwNameDisplay');
+    var gwNumberDisplay = document.getElementById('gwNumberDisplay');
+    var gwNoteDisplay = document.getElementById('gwNoteDisplay');
+    var btnCopyGwNumber = document.getElementById('btnCopyGwNumber');
+
+    var amountBtns = document.querySelectorAll('.amount-pill-btn');
+    var inputAmount = document.getElementById('inputDepositAmount');
+    var form = document.getElementById('addFundsForm');
+    var btnSubmit = document.getElementById('btnSubmitAddFunds');
+    var alertBox = document.getElementById('addFundsAlert');
+
+    // Gateway switch
+    gwBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            gwBtns.forEach(function(b) { b.classList.remove('active'); });
+            this.classList.add('active');
+
+            selectedMethod = this.getAttribute('data-method') || 'bKash';
+            var num = this.getAttribute('data-number') || '';
+            var note = this.getAttribute('data-note') || '';
+
+            if (gwNameDisplay) gwNameDisplay.textContent = 'Send Money to ' + selectedMethod + ':';
+            if (gwNumberDisplay) gwNumberDisplay.textContent = num;
+            if (gwNoteDisplay) gwNoteDisplay.textContent = '(' + note + ')';
+        });
+    });
+
+    // Copy gateway number
+    if (btnCopyGwNumber && gwNumberDisplay) {
+        btnCopyGwNumber.addEventListener('click', function() {
+            var text = gwNumberDisplay.textContent.trim();
+            navigator.clipboard.writeText(text).then(function() {
+                btnCopyGwNumber.innerHTML = '<i class="fas fa-check text-emerald-400"></i> Copied!';
+                setTimeout(function() {
+                    btnCopyGwNumber.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                }, 2000);
+            });
+        });
+    }
+
+    // Quick Amount Pills
+    amountBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            amountBtns.forEach(function(b) { b.classList.remove('active'); });
+            this.classList.add('active');
+            var val = this.getAttribute('data-amount');
+            if (inputAmount) inputAmount.value = val;
+        });
+    });
+
+    if (inputAmount) {
+        inputAmount.addEventListener('input', function() {
+            var val = this.value;
+            amountBtns.forEach(function(b) {
+                if (b.getAttribute('data-amount') === val) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+        });
+    }
+
+    // Form Submit
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var amt = inputAmount ? inputAmount.value : '500';
+            var trxId = document.getElementById('inputTrxId').value.trim();
+            var senderPhone = document.getElementById('inputSenderPhone').value.trim();
+
+            if (!trxId) {
+                alert('অনুগ্রহ করে Transaction ID (TrxID) লিখুন!');
+                return;
+            }
+
+            if (btnSubmit) btnSubmit.disabled = true;
+            alertBox.style.display = 'block';
+            alertBox.className = 'mt-4 p-3.5 rounded-xl text-xs font-bold bg-cyan-950/80 border border-cyan-500/50 text-cyan-300';
+            alertBox.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Submitting add funds request...';
+
+            fetch('/api/wallet/topup-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: amt,
+                    payment_method: selectedMethod,
+                    transaction_id: trxId,
+                    sender_phone: senderPhone
+                })
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (btnSubmit) btnSubmit.disabled = false;
+                if (data.success) {
+                    alertBox.className = 'mt-4 p-3.5 rounded-xl text-xs font-bold bg-emerald-950/90 border border-emerald-500 text-emerald-300';
+                    alertBox.innerHTML = '<i class="fas fa-check-circle mr-1"></i> ' + data.message;
+                    form.reset();
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 2500);
+                } else {
+                    alertBox.className = 'mt-4 p-3.5 rounded-xl text-xs font-bold bg-red-950/90 border border-red-500 text-red-300';
+                    alertBox.innerHTML = '<i class="fas fa-times-circle mr-1"></i> ' + (data.message || 'Error occurred');
+                }
+            })
+            .catch(function(err) {
+                if (btnSubmit) btnSubmit.disabled = false;
+                alertBox.className = 'mt-4 p-3.5 rounded-xl text-xs font-bold bg-red-950/90 border border-red-500 text-red-300';
+                alertBox.innerHTML = '<i class="fas fa-times-circle mr-1"></i> Failed to submit request. Please try again.';
+            });
+        });
+    }
+});
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "all",
+    "name": "All",
+    "is_primary": true
+  },
+  {
+    "id": "non-root",
+    "name": "NON ROOT",
+    "is_primary": true
+  },
+  {
+    "id": "root",
+    "name": "ROOT",
+    "is_primary": true
+  },
+  {
+    "id": "accounts",
+    "name": "ACCOUNTS",
+    "is_primary": true
+  },
+  {
+    "id": "i-phone",
+    "name": "I PHONE",
+    "is_primary": false
+  },
+  {
+    "id": "pc",
+    "name": "PC",
+    "is_primary": false
+  },
+  {
+    "id": "other",
+    "name": "OTHER",
+    "is_primary": false
+  },
+  {
+    "id": "pubg",
+    "name": "PUBG",
+    "is_primary": false
+  },
+  {
+    "id": "demo",
+    "name": "DEMO / TOOLS",
+    "is_primary": false
+  }
+]
