@@ -205,11 +205,11 @@
 
                         <% if (product.is_maintenance) { %>
                         <a href="javascript:void(0)" class="product-img-link js-maintenance-notice" data-notice-title="<%= product.title %>" data-notice-message="<%= product.maintenance_message %>">
-                            <img src="<%= (product.image && (product.image.startsWith('/') || product.image.startsWith('http'))) ? product.image : ('/' + (product.image || 'images/logo.jpg')) %>" alt="<%= product.title %>" class="product-img" loading="lazy" onerror="this.onerror=null; this.src='/images/logo.jpg';">
+                            <img src="<%= (product.image && (product.image.startsWith('/') || product.image.startsWith('http') || product.image.startsWith('data:'))) ? product.image : ('/' + (product.image || 'images/logo.jpg')) %>" alt="<%= product.title %>" class="product-img" loading="lazy" onerror="this.onerror=null; this.src='/images/logo.jpg';">
                         </a>
                         <% } else { %>
                         <a href="/topup/<%= product.slug %>" class="product-img-link">
-                            <img src="<%= (product.image && (product.image.startsWith('/') || product.image.startsWith('http'))) ? product.image : ('/' + (product.image || 'images/logo.jpg')) %>" alt="<%= product.title %>" class="product-img" loading="lazy" onerror="this.onerror=null; this.src='/images/logo.jpg';">
+                            <img src="<%= (product.image && (product.image.startsWith('/') || product.image.startsWith('http') || product.image.startsWith('data:'))) ? product.image : ('/' + (product.image || 'images/logo.jpg')) %>" alt="<%= product.title %>" class="product-img" loading="lazy" onerror="this.onerror=null; this.src='/images/logo.jpg';">
                         </a>
                         <% } %>
 

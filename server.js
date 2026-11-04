@@ -3486,6 +3486,27 @@ app.post('/api/save-products', async (req, res) => {
 
         // 1. Save products.json (both in public and data directory for live site)
         if (products && Array.isArray(products) && products.length > 0) {
+            // Auto convert base64 image data to files
+            products.forEach((p, idx) => {
+                if (p && p.image && typeof p.image === 'string' && p.image.startsWith('data:image')) {
+                    try {
+                        const matches = p.image.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+                        if (matches) {
+                            const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+                            const buffer = Buffer.from(matches[2], 'base64');
+                            const dir = path.join(__dirname, 'public', 'uploads', 'products');
+                            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+                            const filename = 'prod_' + (p.id || idx || Date.now()) + '_' + Date.now() + '.' + ext;
+                            const filePath = path.join(dir, filename);
+                            fs.writeFileSync(filePath, buffer);
+                            p.image = '/uploads/products/' + filename;
+                        }
+                    } catch(imgErr) {
+                        console.error('Error saving base64 product image:', imgErr);
+                    }
+                }
+            });
+
             const pubProdPath = path.join(__dirname, 'public', 'products.json');
             fs.writeFileSync(pubProdPath, JSON.stringify(products, null, 4), 'utf-8');
 
