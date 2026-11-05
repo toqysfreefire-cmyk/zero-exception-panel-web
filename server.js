@@ -1,5 +1,6 @@
 // server.js - Panel Sell Platform Engine
 const express = require('express');
+const crypto = require('crypto');
 const session = require('express-session');
 const path = require('path');
 const fs = require('fs');
@@ -26,6 +27,48 @@ const multer = require('multer');
 const nodemailer = require('nodemailer');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+
+// =============================================================
+// PERSISTENT AUTHENTICATION ENGINE (SURVIVES SERVER REDEPLOYS)
+// =============================================================
+const AUTH_COOKIE_NAME = 'zx_persist_auth';
+const AUTH_SECRET = 'zero-exception-auth-secret-permanent-2026';
+
+function generateAuthToken(userId) {
+    const signature = crypto.createHmac('sha256', AUTH_SECRET).update(String(userId)).digest('hex');
+    return `${userId}.${signature}`;
+}
+
+function verifyAuthToken(token) {
+    if (!token || typeof token !== 'string') return null;
+    const parts = token.split('.');
+    if (parts.length !== 2) return null;
+    const [userId, sig] = parts;
+    const expectedSig = crypto.createHmac('sha256', AUTH_SECRET).update(String(userId)).digest('hex');
+    if (sig === expectedSig) return userId;
+    return null;
+}
+
+function setPersistentAuthCookie(res, userId) {
+    if (!res || res.headersSent) return;
+    try {
+        const token = generateAuthToken(userId);
+        res.cookie(AUTH_COOKIE_NAME, token, {
+            httpOnly: true,
+            maxAge: 365 * 24 * 60 * 60 * 1000, // 365 days
+            sameSite: 'lax',
+            path: '/'
+        });
+    } catch(e) {}
+}
+
+function clearPersistentAuthCookie(res) {
+    if (!res || res.headersSent) return;
+    try {
+        res.clearCookie(AUTH_COOKIE_NAME, { path: '/' });
+    } catch(e) {}
+}
 
 const app = express();
 app.set('trust proxy', 1);
@@ -1557,10 +1600,12 @@ app.get('/auth/google/callback', (req, res, next) => {
             req.session.admin = true;
             req.session.adminUser = user;
             req.session.user = null;
+            setPersistentAuthCookie(res, user.id);
             return req.session.save(() => res.redirect('/admin'));
         } else {
             req.session.user = user;
             req.session.admin = false;
+            setPersistentAuthCookie(res, user.id);
             return req.session.save(() => res.redirect('/'));
         }
     })(req, res, next);
@@ -1588,6 +1633,7 @@ app.post('/login', (req, res) => {
     const matchedUser = users.find(u => (u.email || '').toLowerCase() === email && u.password === password);
 
     if (isDefaultAdmin || (matchedUser && matchedUser.role === 'admin')) {
+        setPersistentAuthCookie(res, matchedUser ? matchedUser.id : 1);
         req.session.admin = true;
         req.session.adminUser = matchedUser || {
             name: 'Super Admin',
@@ -1603,6 +1649,7 @@ app.post('/login', (req, res) => {
     }
 
     if (matchedUser) {
+        setPersistentAuthCookie(res, matchedUser.id);
         req.session.user = matchedUser;
         req.session.admin = false;
         req.session.save((err) => {
@@ -1658,6 +1705,7 @@ app.post('/register', (req, res) => {
     writeJson(USERS_FILE, users);
 
     req.session.user = newUser;
+    setPersistentAuthCookie(res, newUser.id);
     req.session.save(() => {
         res.redirect('/');
     });
@@ -2554,6 +2602,7 @@ app.get('/account', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
+    clearPersistentAuthCookie(res);
     req.session.destroy(() => {
         res.clearCookie('connect.sid');
         res.redirect('/');
@@ -5385,6 +5434,7 @@ app.post('/api/admin/users/unblock-fraud', (req, res) => {
 
 // Admin Logout
 app.get('/admin/logout', (req, res) => {
+    clearPersistentAuthCookie(res);
     req.session.admin = false;
     req.session.adminUser = null;
     req.session.destroy(() => {

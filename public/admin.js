@@ -713,27 +713,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadSettings() {
         try {
+            const res = await fetch('/settings.json?_t=' + Date.now(), { cache: 'no-store' });
+            if (res.ok) {
+                const fetched = await res.json();
+                settings = { ...settings, ...fetched };
+                localStorage.setItem('bpo_store_settings', JSON.stringify(settings));
+                if (!settings.admins || !Array.isArray(settings.admins) || settings.admins.length === 0) {
+                    initAdminsArray();
+                }
+                return;
+            }
+        } catch(e) {
+            console.warn('Could not load settings.json directly; falling back to local memory.');
+        }
+
+        try {
             const raw = localStorage.getItem('bpo_store_settings');
             if (raw) {
                 settings = { ...settings, ...JSON.parse(raw) };
-            } else {
-                const res = await fetch('/settings.json');
-                if (res.ok) {
-                    const fetched = await res.json();
-                    settings = { ...settings, ...fetched };
-                    localStorage.setItem('bpo_store_settings', JSON.stringify(settings));
-            try {
-                fetch('/api/save-products', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ products, settings })
-                }).catch(() => {});
-            } catch(syncErr) {}
-                }
             }
-        } catch(e) {
-            console.log('Using default settings fallback.');
-        }
+        } catch(e) {}
 
         if (!settings.admins || !Array.isArray(settings.admins) || settings.admins.length === 0) {
             initAdminsArray();
@@ -758,6 +757,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadProducts() {
         try {
+            const res = await fetch('/products.json?_t=' + Date.now(), { cache: 'no-store' });
+            if (res.ok) {
+                const fetched = await res.json();
+                if (Array.isArray(fetched) && fetched.length > 0) {
+                    products = fetched;
+                    localStorage.setItem('bpo_full_catalog_v2', JSON.stringify(products));
+                    return;
+                }
+            }
+        } catch(e) {
+            console.warn('Could not load products.json directly; falling back to local storage.');
+        }
+
+        try {
             const raw = localStorage.getItem('bpo_full_catalog_v2');
             if (raw) {
                 const parsed = JSON.parse(raw);
@@ -766,16 +779,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
             }
-            
-            const res = await fetch('/products.json?_t=' + Date.now(), { cache: 'no-store' });
-            if (res.ok) {
-                products = await res.json();
-                localStorage.setItem('bpo_full_catalog_v2', JSON.stringify(products));
-                return;
-            }
-        } catch(e) {
-            console.warn('Could not load products.json directly; falling back to local memory.');
-        }
+        } catch(e) {}
 
         if (!products || !Array.isArray(products) || products.length === 0) {
             products = getFallbackProducts();
@@ -1837,7 +1841,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getGitHubConfig() {
         let config = {
-            repo: 'toqysfreefire-cmyk/zero-exception-panel',
+            repo: 'toqysfreefire-cmyk/zero-exception-panel-web',
             branch: 'main',
             token: DEFAULT_GH_TOKEN,
             autoDeploy: true
@@ -1895,7 +1899,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveGitHubConfigFromInputs() {
-        const repo = ghRepoName ? ghRepoName.value.trim() : 'toqysfreefire-cmyk/zero-exception-panel';
+        const repo = ghRepoName ? ghRepoName.value.trim() : 'toqysfreefire-cmyk/zero-exception-panel-web';
         const branch = ghBranchName ? ghBranchName.value.trim() : 'main';
         const token = ghPersonalToken ? ghPersonalToken.value.trim() : '';
         const autoDeploy = ghAutoDeployOnSave ? ghAutoDeployOnSave.checked : true;
@@ -2253,26 +2257,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     { "name": "30 Days", "price": 700 }
                 ]
             },
-            {
-                "id": "alpha-non-root",
-                "title": "ALPHA NON ROOT",
-                "category": "non-root",
-                "categoryName": "Free Fire NON ROOT",
-                "basePrice": 70,
-                "oldPrice": 140,
-                "discount": "50% OFF",
-                "status": "new",
-                "statusText": "New Version",
-                "image": "images/jitu.jpg",
-                "description": "ALPHA NON ROOT headshot scope and ESP locator.",
-                "packages": [
-                    { "name": "1 Day", "price": 70 },
-                    { "name": "3 Days", "price": 112 },
-                    { "name": "7 Days", "price": 210 },
-                    { "name": "14 Days", "price": 350 },
-                    { "name": "30 Days", "price": 560 }
-                ]
-            },
+
             {
                 "id": "aim-hack-ios",
                 "title": "AIM HACK NON ROOT + IOS",
@@ -3923,7 +3908,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/api/admin/sliders?_t=' + Date.now());
             const data = await res.json();
             if (data.success) {
-                bannersList = data.sliders || [];
+                let deletedIds = [];
+                try { deletedIds = JSON.parse(localStorage.getItem('zero_deleted_slider_ids') || '[]'); } catch(e) {}
+                let list = data.sliders || [];
+                if (deletedIds.length > 0) {
+                    list = list.filter(b => !deletedIds.includes(String(b.id)));
+                }
+                bannersList = list;
                 renderBannerCards();
             } else {
                 bannersGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: #f87171;">Failed to load banners. Please try refreshing.</div>`;
@@ -4005,6 +3996,13 @@ document.addEventListener('DOMContentLoaded', () => {
     window.deleteBanner = async function(id) {
         if (!confirm('Are you sure you want to delete this banner from the homepage carousel?')) return;
         try {
+            let deletedIds = [];
+            try { deletedIds = JSON.parse(localStorage.getItem('zero_deleted_slider_ids') || '[]'); } catch(e) {}
+            if (!deletedIds.includes(String(id))) {
+                deletedIds.push(String(id));
+                localStorage.setItem('zero_deleted_slider_ids', JSON.stringify(deletedIds));
+            }
+
             const res = await fetch('/api/admin/sliders/delete/' + encodeURIComponent(id), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }

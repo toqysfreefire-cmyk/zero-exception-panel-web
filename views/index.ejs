@@ -1,6 +1,7 @@
 <%- include('partials/header') %>
 
 <!-- Hero Slider Section -->
+<% if (typeof sliders !== 'undefined' && sliders && sliders.length > 0) { %>
 <section class="container m-auto px-2 px-md-3 mt-2 mt-md-3">
     <div class="hero-slider">
         <section class="carousel slider-wrapper" aria-label="Gallery" dir="ltr" tabindex="0">
@@ -39,6 +40,7 @@
         </section>
     </div>
 </section>
+<% } %>
 
 <!-- Topup & Products Section -->
 <section id="topup" class="my-2">
@@ -589,7 +591,8 @@
     var nextBtn = document.getElementById('sliderNextBtn');
     var dots = document.querySelectorAll('#sliderDots button');
     var currentIndex = 0;
-    var totalSlides = <%= sliders.length %>;
+    var totalSlides = <%= (typeof sliders !== 'undefined' && sliders) ? sliders.length : 0 %>;
+    if (!track || totalSlides === 0) return;
 
     function goToSlide(index) {
         if (index < 0) index = totalSlides - 1;
